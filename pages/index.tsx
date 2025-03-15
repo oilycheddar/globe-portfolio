@@ -5,11 +5,11 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
-import { ValueToggle } from "../components/valueToggle";
 import { useEffect, useRef } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
+import { ToggleButton } from "../components/toggleButton";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -50,14 +50,6 @@ export default function Home() {
   const topTextRef = useRef<HTMLHeadingElement>(null);
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
-
-  // Apply theme variables
-  useEffect(() => {
-    const themeVars = themes[theme as keyof typeof themes];
-    Object.entries(themeVars).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(key, value);
-    });
-  }, [theme]);
 
   // Get random character set
   const getRandomCharSet = () => {
@@ -205,15 +197,13 @@ export default function Home() {
         >
           vibe coder
         </p>
-        <div ref={toggleRef} className="mt-[var(--space-sm)]">
-          <ValueToggle
-            type="multi"
-            label="theme"
-            value={theme}
-            values={themeKeys as readonly string[]}
-            onClick={cycleTheme}
-          />
-        </div>
+        <ToggleButton
+          type="multi"
+          label="theme"
+          value={theme}
+          options={themeKeys}
+          onChange={setTheme}
+        />
       </StyledContent>
     </PageWrapper>
   );

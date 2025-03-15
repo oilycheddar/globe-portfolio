@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  color: var(--color-text);
+}
+
+.button {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background-color: var(--color-accent-secondary);
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button.active {
+  background-color: var(--color-accent-primary);
+}
+
+/* Multi-toggle variant always uses primary color */
+.button[data-type="multi"] {
+  background-color: var(--color-accent-primary);
+}
+
+.value {
+  color: var(--color-text-secondary);
+} 
