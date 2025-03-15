@@ -10,6 +10,7 @@ import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
 import { ToggleButton } from "../components/toggleButton";
+import { Navbar } from "../components/Navbar";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -27,6 +28,13 @@ const scrambleCharSets = {
 };
 
 // Styled container to ensure theme variables are properly applied
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh; /* Ensure full viewport height */
+`;
+
 const StyledContent = styled.div`
   --space-xs: 8px;
   --space-sm: 12px;
@@ -38,7 +46,7 @@ const StyledContent = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  flex-grow: 1; /* Allow content to grow and center */
   gap: var(--space-md);
 `;
 
@@ -102,103 +110,122 @@ export default function Home() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Initial state
-      gsap.set([helloTextRef.current, topTextRef.current, bottomTextRef.current, toggleRef.current], {
-        opacity: 0,
-        scrambleText: {
-          text: " ",
-          chars: "!<>-_\\/[]{}—=+*^?#",
-          revealDelay: 0.4,
-          speed: 0.8,
-          delimiter: "",
-        }
-      });
-
-      // Create timeline for the sequence
-      const tl = gsap.timeline();
-
-      // Logo container animation
-      tl.fromTo(contentRef.current,
-        {
+      if (helloTextRef.current && topTextRef.current && bottomTextRef.current && toggleRef.current) {
+        // Initial state
+        gsap.set([helloTextRef.current, topTextRef.current, bottomTextRef.current, toggleRef.current], {
           opacity: 0,
-          y: 20
-        },
-        {
+          scrambleText: {
+            text: " ",
+            chars: "!<>-_\\/[]{}—=+*^?#",
+            revealDelay: 0.4,
+            speed: 0.8,
+            delimiter: "",
+          }
+        });
+
+        // Create timeline for the sequence
+        const tl = gsap.timeline();
+
+        // Logo container animation
+        tl.fromTo(contentRef.current,
+          {
+            opacity: 0,
+            y: 20
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.68,
+            delay: 1.6,
+            ease: "sine.out"
+          }
+        );
+
+        // Text animations with scramble effect
+        tl.to(topTextRef.current, {
           opacity: 1,
-          y: 0,
           duration: 0.68,
-          delay: 1.6,
-          ease: "sine.out"
-        }
-      );
+          scrambleText: {
+            text: "product designer",
+            chars: "プロダクトデザイナー",
+            revealDelay: 0.4,
+            speed: 0.8,
+            rightToLeft: false,
+            delimiter: ""
+          }
+        }, "+=0.2");
 
-      // Text animations with scramble effect
+        tl.to(bottomTextRef.current, {
+          opacity: 1,
+          duration: 0.68,
+          scrambleText: {
+            text: "vibe coder",
+            chars: "アイウエオカキクケコサシスセソタチツテト",
+            revealDelay: 0.4,
+            speed: 0.8,
+            rightToLeft: false,
+            delimiter: ""
+          }
+        }, "+=0.2");
 
-      tl.to(topTextRef.current, {
-        opacity: 1,
-        duration: 0.68,
-        scrambleText: {
-          text: "product designer",
-          chars: "プロダクトデザイナー",
-          revealDelay: 0.4,
-          speed: 0.8,
-          rightToLeft: false,
-          delimiter: ""
-        }
-      }, "+=0.2");
-
-      tl.to(bottomTextRef.current, {
-        opacity: 1,
-        duration: 0.68,
-        scrambleText: {
-          text: "vibe coder",
-          chars: "アイウエオカキクケコサシスセソタチツテト",
-          revealDelay: 0.4,
-          speed: 0.8,
-          rightToLeft: false,
-          delimiter: ""
-        }
-      }, "+=0.2");
-
-      // Add toggle animation
-      tl.to(toggleRef.current, {
-        opacity: 1,
-        duration: 0.68,
-      }, "+=0.2");
+        // Add toggle animation
+        tl.to(toggleRef.current, {
+          opacity: 1,
+          duration: 0.68,
+        }, "+=0.2");
+      }
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [theme]);
+
+  // Test handlers for navbar
+  const handleGridToggle = (value: boolean) => {
+    console.log('Grid toggled:', value);
+  };
+
+  const handleNoiseToggle = (value: boolean) => {
+    console.log('Noise toggled:', value);
+  };
+
+  const handleDvdToggle = (value: boolean) => {
+    console.log('DVD toggled:', value);
+  };
+
+  const handleSpeedToggle = (value: boolean) => {
+    console.log('Speed toggled:', value);
+  };
 
   return (
     <PageWrapper>
-      <StyledContent 
-        ref={contentRef}
-        className={jetbrainsMono.className}
-      >
-        <h1 
-          ref={topTextRef}
-          className={`${textStyles.caption} text-[var(--color-text)]`}
-        >
-          product designer
-        </h1>
-        <div className="w-[50vw] aspect-[2/1]">
-          <Logo />
-        </div>
-        <p 
-          ref={bottomTextRef}
-          className={`${textStyles.caption} text-[var(--color-text)]`}
-        >
-          vibe coder
-        </p>
-        <ToggleButton
-          type="multi"
-          label="theme"
-          value={theme}
-          options={themeKeys}
-          onChange={setTheme}
+      <ContentWrapper>
+        <Navbar
+          onGridToggle={handleGridToggle}
+          onNoiseToggle={handleNoiseToggle}
+          onDvdToggle={handleDvdToggle}
+          onSpeedToggle={handleSpeedToggle}
         />
-      </StyledContent>
+        <StyledContent 
+          ref={contentRef}
+          className={jetbrainsMono.className}
+        >
+          <h1 
+            ref={topTextRef}
+            className={`${textStyles.caption} text-[var(--color-text)]`}
+          >
+            product designer
+          </h1>
+          <div className="w-[50vw] aspect-[2/1]">
+            <Logo />
+          </div>
+          <p 
+            ref={bottomTextRef}
+            className={`${textStyles.caption} text-[var(--color-text)]`}
+          >
+            vibe coder
+          </p>
+        </StyledContent>
+      </ContentWrapper>
     </PageWrapper>
   );
 }

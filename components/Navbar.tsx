@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
 import { useState } from 'react';
+import { textStyles } from '../styles/text';
 
 const NavContainer = styled.nav`
   width: 100%;
@@ -10,13 +11,24 @@ const NavContainer = styled.nav`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-page-content);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 `;
 
 const ToggleGroup = styled.div`
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 `;
 
 interface NavbarProps {
@@ -50,7 +62,9 @@ export function Navbar({
           value={theme}
           options={themeKeys}
           onChange={setTheme}
-        />
+                  />
+
+        
         <ToggleButton
           type="boolean"
           label="grid"

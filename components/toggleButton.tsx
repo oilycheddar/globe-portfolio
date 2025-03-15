@@ -32,7 +32,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${textStyles.caption}`}>
       <span className={`${textStyles.caption} ${styles.label}`}>{props.label}</span>
       <div 
         onClick={handleClick}
