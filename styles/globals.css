@@ -4,9 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
 :root {
   --font-mono: "JetBrains Mono", monospace;
 }

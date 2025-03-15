@@ -5,7 +5,6 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
-import ToggleButton from "../components/toggleButton";
 import { useEffect, useRef } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
@@ -173,14 +172,6 @@ export default function Home() {
         >
           no code developer
         </p>
-
-        <ToggleButton
-          mode="cycle"
-          label="theme"
-          values={themeKeys}
-          currentValue={theme}
-          onClick={cycleTheme}
-        />
       </div>
     </PageWrapper>
   );
