@@ -177,12 +177,6 @@ export default function Home() {
         className={jetbrainsMono.className}
       >
         <h1 
-          ref={helloTextRef}
-          className={`${textStyles.caption} text-[var(--color-text)]`}
-        >
-          hello jason
-        </h1>
-        <h1 
           ref={topTextRef}
           className={`${textStyles.caption} text-[var(--color-text)]`}
         >
