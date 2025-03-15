@@ -5,9 +5,11 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
+import { ValueToggle } from "../components/valueToggle";
 import { useEffect, useRef } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
+import styled from 'styled-components';
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -24,6 +26,22 @@ const scrambleCharSets = {
   code: "{([/\\])}@#$%^&*<>+="
 };
 
+// Styled container to ensure theme variables are properly applied
+const StyledContent = styled.div`
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: var(--space-md);
+`;
+
 export default function Home() {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -31,6 +49,15 @@ export default function Home() {
   const helloTextRef = useRef<HTMLHeadingElement>(null);
   const topTextRef = useRef<HTMLHeadingElement>(null);
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
+  const toggleRef = useRef<HTMLDivElement>(null);
+
+  // Apply theme variables
+  useEffect(() => {
+    const themeVars = themes[theme as keyof typeof themes];
+    Object.entries(themeVars).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+  }, [theme]);
 
   // Get random character set
   const getRandomCharSet = () => {
@@ -69,7 +96,7 @@ export default function Home() {
         gsap.to(bottomTextRef.current, {
           duration: 0.68,
           scrambleText: {
-            text: "no code developer",
+            text: "vibe coder",
             chars: secondCharSet,
             revealDelay: 0.4,
             speed: 0.8,
@@ -84,7 +111,7 @@ export default function Home() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Initial state
-      gsap.set([helloTextRef.current, topTextRef.current, bottomTextRef.current], {
+      gsap.set([helloTextRef.current, topTextRef.current, bottomTextRef.current, toggleRef.current], {
         opacity: 0,
         scrambleText: {
           text: " ",
@@ -132,13 +159,19 @@ export default function Home() {
         opacity: 1,
         duration: 0.68,
         scrambleText: {
-          text: "no code developer",
+          text: "vibe coder",
           chars: "アイウエオカキクケコサシスセソタチツテト",
           revealDelay: 0.4,
           speed: 0.8,
           rightToLeft: false,
           delimiter: ""
         }
+      }, "+=0.2");
+
+      // Add toggle animation
+      tl.to(toggleRef.current, {
+        opacity: 1,
+        duration: 0.68,
       }, "+=0.2");
     });
 
@@ -147,9 +180,9 @@ export default function Home() {
 
   return (
     <PageWrapper>
-      <div 
+      <StyledContent 
         ref={contentRef}
-        className={`${jetbrainsMono.className} flex flex-col items-center justify-center min-h-screen gap-[var(--space-md)]`}
+        className={jetbrainsMono.className}
       >
         <h1 
           ref={helloTextRef}
@@ -170,9 +203,18 @@ export default function Home() {
           ref={bottomTextRef}
           className={`${textStyles.caption} text-[var(--color-text)]`}
         >
-          no code developer
+          vibe coder
         </p>
-      </div>
+        <div ref={toggleRef} className="mt-[var(--space-sm)]">
+          <ValueToggle
+            type="multi"
+            label="theme"
+            value={theme}
+            values={themeKeys as readonly string[]}
+            onClick={cycleTheme}
+          />
+        </div>
+      </StyledContent>
     </PageWrapper>
   );
 }

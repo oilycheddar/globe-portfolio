@@ -1,9 +1,11 @@
+import type { AppProps } from 'next/app';
+import { StyledComponentsProvider } from '../providers/StyledComponentsProvider';
 import "../styles/globals.css";
 import { useEffect } from "react";
 import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
 
-export default function MyApp({ Component, pageProps }: { Component: React.ComponentType; pageProps: any }) {
+export default function App({ Component, pageProps }: AppProps) {
   const { theme } = useThemeStore();
 
   useEffect(() => {
@@ -16,8 +18,8 @@ export default function MyApp({ Component, pageProps }: { Component: React.Compo
   }, [theme]);
 
   return (
-    <main>
+    <StyledComponentsProvider>
       <Component {...pageProps} />
-    </main>
+    </StyledComponentsProvider>
   );
 }
