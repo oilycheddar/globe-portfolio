@@ -1,61 +1,149 @@
 import { colors } from "./colors";
 
+// Define spacing scale
+export const spacing = {
+  xs: '8px',
+  sm: '12px',
+  md: '16px',
+  lg: '24px',
+  xl: '40px',
+} as const;
+
 export const themes = {
     slime: {
       "--color-page-content": colors.water.water900,
-      "--noise-bg-image": "url('/public/images/slime_bg_noise.png')",
-      "--noise-page-image": "url('/public/images/slime_page_noise.png')", /* Page content noise */
+      "--bg-noise": "url('/images/optimized/slime_bg_noise.webp')", /* Background noise */
+      "--page-noise": "url('/images/optimized/slime_page_noise.webp')", /* Page content noise */
+      "--logo-noise": "url('/images/slime_logo_noise.png')", /* logo noise */
       "--color-bg": colors.earth.earth800, 
       "--color-text": colors.dune.dune50,
       "--color-text-secondary": colors.water.water900,
       "--color-accent-primary": colors.earth.earth100,
       "--color-accent-secondary": colors.water.water800,
-      "--slime_shadow": "0px -16px 150px rgba(196, 223, 30, 0.4)",
-
+      "--slime_shadow": "0px -16px 100px rgba(196, 223, 30, 0.4)",
+      // Animated noise parameters
+      "--animated-noise-opacity": "0.12",
+      "--animated-noise-density": "120",
+      "--animated-noise-speed": "4.5s",
+      "--animated-noise-blur": "0.4px",
+      "--animated-noise-blend": "overlay",
+      "--animated-noise-brightness": "60%",
+      "--animated-noise-contrast": "160%",
+      "--animated-noise-hue": "85deg",
+      // Spacing variables
+      "--space-xs": spacing.xs,
+      "--space-sm": spacing.sm,
+      "--space-md": spacing.md,
+      "--space-lg": spacing.lg,
+      "--space-xl": spacing.xl,
     },
     water: {
         "--color-page-content": colors.water.water700,
-        "--noise-bg-opacity": "0.2",
+        "--bg-noise": "url('/images/optimized/bg-noise-water.webp')", /* Background noise */
+        "--page-noise": "url('/images/optimized/page-noise-water.webp')", /* Page content noise */
+        "--logo-noise": "url('/images/water_logo_noise.png')", /* logo noise */
         "--color-bg": colors.water.water300, 
-        "--noise-page-opacity": "0.1",
         "--color-text": colors.earth.earth50,
         "--color-text-secondary": colors.water.water700,
         "--color-accent-primary": colors.water.water300,
         "--color-accent-secondary": colors.water.water700,
-        "--water_shadow": "0px -48.34934616088867px 453.2751159667969px rgba(230, 214, 251, 0.4)"
-      },
-      acid: {
+        "--water_shadow": "0px -16px 100px rgba(230, 214, 251, 0.5)",
+        // Animated noise parameters
+        "--animated-noise-opacity": "0.15",
+        "--animated-noise-density": "100",
+        "--animated-noise-speed": "5s",
+        "--animated-noise-blur": "0.5px",
+        "--animated-noise-blend": "soft-light",
+        "--animated-noise-brightness": "55%",
+        "--animated-noise-contrast": "140%",
+        "--animated-noise-hue": "200deg",
+        // Spacing variables
+        "--space-xs": spacing.xs,
+        "--space-sm": spacing.sm,
+        "--space-md": spacing.md,
+        "--space-lg": spacing.lg,
+        "--space-xl": spacing.xl,
+    },
+    acid: {
         "--color-page-content": colors.earth.earth100,
-        "--noise-bg-opacity": "0.2",
+        "--bg-noise": "url('/images/optimized/bg-noise-acid.webp')", /* Background noise */
+        "--page-noise": "url('/images/optimized/page-noise-acid.webp')", /* Page content noise */
+        "--logo-noise": "url('/images/acid_logo_noise.png')", /* logo noise */
         "--color-bg": colors.water.water100, 
-        "--noise-page-opacity": "0.1",
         "--color-text": colors.water.water900,
         "--color-text-secondary": colors.earth.earth50,
         "--color-accent-primary": colors.water.water700,
         "--color-accent-secondary": colors.earth.earth300,
-        "--acid_shadow": "0px 4px 150px rgba(99, 33, 238, 0.4)"
-      },    
-      bunny: {
+        "--acid_shadow": "0px -16px 100px rgba(99, 33, 238, 0.5)",
+        // Animated noise parameters
+        "--animated-noise-opacity": "0.18",
+        "--animated-noise-density": "150",
+        "--animated-noise-speed": "4s",
+        "--animated-noise-blur": "0.3px",
+        "--animated-noise-blend": "color-dodge",
+        "--animated-noise-brightness": "45%",
+        "--animated-noise-contrast": "180%",
+        "--animated-noise-hue": "280deg",
+        // Spacing variables
+        "--space-xs": spacing.xs,
+        "--space-sm": spacing.sm,
+        "--space-md": spacing.md,
+        "--space-lg": spacing.lg,
+        "--space-xl": spacing.xl,
+    },    
+    bunny: {
         "--color-page-content": colors.water.water50,
-        "--noise-bg-opacity": "0.2",
+        "--bg-noise": "url('/images/optimized/bg-noise-bunny.webp')", /* Background noise */
+        "--page-noise": "url('/images/page-noise-bunny3.png')", /* Page content noise */
+        "--logo-noise": "url('/images/bunny_logo_noise.png')", /* logo noise */
         "--color-bg": colors.water.water500, 
-        "--noise-page-opacity": "0.1",
         "--color-text": colors.earth.earth900,
         "--color-text-secondary": colors.water.water50,
         "--color-accent-primary": colors.water.water100,
         "--color-accent-secondary": colors.water.water300,
-        "--bunny_shadow": "0px 4px 170px rgba(223, 30, 155, 0.4)"
-      },
-      dune: {
+        "--bunny_shadow": "0px -16px 100px rgba(223, 30, 155, 0.5)",
+        // Animated noise parameters
+        "--animated-noise-opacity": "0.14",
+        "--animated-noise-density": "110",
+        "--animated-noise-speed": "4.8s",
+        "--animated-noise-blur": "0.45px",
+        "--animated-noise-blend": "overlay",
+        "--animated-noise-brightness": "52%",
+        "--animated-noise-contrast": "145%",
+        "--animated-noise-hue": "330deg",
+        // Spacing variables
+        "--space-xs": spacing.xs,
+        "--space-sm": spacing.sm,
+        "--space-md": spacing.md,
+        "--space-lg": spacing.lg,
+        "--space-xl": spacing.xl,
+    },
+    dune: {
         "--color-page-content": colors.dune.dune300,
-        "--noise-bg-opacity": "0.2",
+        "--bg-noise": "url('/images/optimized/bg-noise-dune.webp')", /* Background noise */
+        "--page-noise": "url('/images/optimized/page-noise-dune.webp')", /* Page content noise */
+        "--logo-noise": "url('/images/dune_logo_noise.png')", /* logo noise */
         "--color-bg": colors.dune.dune500, 
-        "--noise-page-opacity": "0.1",
         "--color-text": colors.earth.earth900,
         "--color-text-secondary": colors.dune.dune200,
         "--color-accent-primary": colors.dune.dune100,
         "--color-accent-secondary": colors.dune.dune200,
-        "--dune_shadow": "0px 4px 170px rgba(8, 34, 163, 0.5)"
-      }
-  };
+        "--dune_shadow": "0px -16px 100px rgba(8, 34, 163, 0.5)",
+        // Animated noise parameters
+        "--animated-noise-opacity": "0.16",
+        "--animated-noise-density": "130",
+        "--animated-noise-speed": "5.2s",
+        "--animated-noise-blur": "0.55px",
+        "--animated-noise-blend": "soft-light",
+        "--animated-noise-brightness": "48%",
+        "--animated-noise-contrast": "155%",
+        "--animated-noise-hue": "30deg",
+        // Spacing variables
+        "--space-xs": spacing.xs,
+        "--space-sm": spacing.sm,
+        "--space-md": spacing.md,
+        "--space-lg": spacing.lg,
+        "--space-xl": spacing.xl,
+    }
+};
   

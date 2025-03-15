@@ -8,7 +8,7 @@ export default function MyApp({ Component, pageProps }: { Component: React.Compo
 
   useEffect(() => {
     const root = document.documentElement;
-    const themeStyles = themes[theme as keyof typeof themes]; // ✅ Fix type error
+    const themeStyles = themes[theme as keyof typeof themes];
 
     Object.entries(themeStyles).forEach(([key, value]) => {
       root.style.setProperty(key, value);
@@ -16,6 +16,8 @@ export default function MyApp({ Component, pageProps }: { Component: React.Compo
   }, [theme]);
 
   return (
-    <Component {...pageProps} />
+    <main>
+      <Component {...pageProps} />
+    </main>
   );
 }
