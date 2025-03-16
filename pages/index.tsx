@@ -225,6 +225,12 @@ export default function Home() {
     return () => ctx.revert();
   }, []); // Only run once on mount
 
+  // Set initial theme-color
+  useEffect(() => {
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+  }, [theme]); // Update whenever theme changes
+
   // Remove the mobile state effect that was clearing props
   useEffect(() => {
     const checkMobile = () => {
@@ -251,6 +257,10 @@ export default function Home() {
     const currentIndex = themeKeys.indexOf(theme);
     const nextIndex = (currentIndex + 1) % themeKeys.length;
     setTheme(themeKeys[nextIndex]);
+
+    // Update theme-color meta tag to match current theme's background color
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
 
     // Get two different random character sets
     const firstCharSet = getRandomCharSet();
