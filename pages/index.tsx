@@ -51,6 +51,14 @@ const StyledContent = styled.div`
   gap: var(--space-md);
 `;
 
+interface NavbarProps {
+  onGridToggle: (value: boolean) => void;
+  onNoiseToggle: (value: boolean) => void;
+  onDvdToggle: (value: boolean) => void;
+  onSpeedToggle: (value: boolean) => void;
+  onThemeChange?: () => void;
+}
+
 export default function Home() {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -262,6 +270,7 @@ export default function Home() {
           onNoiseToggle={handleNoiseToggle}
           onDvdToggle={handleDvdToggle}
           onSpeedToggle={handleSpeedToggle}
+          onThemeChange={cycleTheme}
         />
         <StyledContent 
           ref={contentRef}

@@ -36,6 +36,7 @@ interface NavbarProps {
   onNoiseToggle: (value: boolean) => void;
   onDvdToggle: (value: boolean) => void;
   onSpeedToggle: (value: boolean) => void;
+  onThemeChange?: () => void;
 }
 
 export interface NavbarRef {
@@ -51,7 +52,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onGridToggle, 
   onNoiseToggle, 
   onDvdToggle, 
-  onSpeedToggle 
+  onSpeedToggle,
+  onThemeChange 
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -82,6 +84,11 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     onDvdToggle(value);
   };
 
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    onThemeChange?.();
+  };
+
   return (
     <NavContainer ref={containerRef}>
       <ToggleGroup>
@@ -91,7 +98,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
             label="theme"
             value={theme}
             options={themeKeys}
-            onChange={setTheme}
+            onChange={handleThemeChange}
           />
         </div>
         <div ref={toggleRefs.grid}>
