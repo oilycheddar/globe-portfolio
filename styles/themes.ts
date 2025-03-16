@@ -129,15 +129,6 @@ export const themes = {
         "--color-accent-primary": colors.dune.dune100,
         "--color-accent-secondary": colors.dune.dune200,
         "--dune_shadow": "0px -16px 100px rgba(8, 34, 163, 0.5)",
-        // Animated noise parameters
-        "--animated-noise-opacity": "0.16",
-        "--animated-noise-density": "130",
-        "--animated-noise-speed": "5.2s",
-        "--animated-noise-blur": "0.55px",
-        "--animated-noise-blend": "soft-light",
-        "--animated-noise-brightness": "48%",
-        "--animated-noise-contrast": "155%",
-        "--animated-noise-hue": "30deg",
         // Spacing variables
         "--space-xs": spacing.xs,
         "--space-sm": spacing.sm,
