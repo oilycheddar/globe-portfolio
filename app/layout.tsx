@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { ThemeColorManager } from '../components/ThemeColorManager';
 
 export const metadata: Metadata = {
   viewport: {
@@ -16,7 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ThemeColorManager />
+        {children}
+      </body>
     </html>
   );
 } 

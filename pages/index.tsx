@@ -258,10 +258,6 @@ export default function Home() {
     const nextIndex = (currentIndex + 1) % themeKeys.length;
     setTheme(themeKeys[nextIndex]);
 
-    // Update theme-color meta tag to match current theme's background color
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-
     // Get two different random character sets
     const firstCharSet = getRandomCharSet();
     let secondCharSet = getRandomCharSet();
