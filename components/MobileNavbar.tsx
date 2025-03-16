@@ -32,6 +32,7 @@ const NavContainer = styled.div<{ $isExpanded: boolean }>`
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   overflow: hidden;
+  padding-top: env(safe-area-inset-top);
   
   /* Add noise overlay */
   &::before {
@@ -41,6 +42,17 @@ const NavContainer = styled.div<{ $isExpanded: boolean }>`
     background-size: cover;
     pointer-events: none;
     z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background-color: var(--color-bg);
+    z-index: 29;
   }
 `;
 
