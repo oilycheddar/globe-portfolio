@@ -42,7 +42,7 @@ export const themes = {
         "--bg-noise": "url('/images/optimized/bg-noise-water.webp')", /* Background noise */
         "--page-noise": "url('/images/optimized/page-noise-water.webp')", /* Page content noise */
         "--logo-noise": "url('/images/water_logo_noise.png')", /* logo noise */
-        "--color-bg": colors.water.water300, 
+        "--color-bg": colors.dune.dune100, 
         "--color-text": colors.earth.earth50,
         "--color-text-secondary": colors.water.water700,
         "--color-accent-primary": colors.water.water300,

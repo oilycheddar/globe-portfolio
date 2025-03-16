@@ -5,13 +5,14 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
-import { Ref, useEffect, useRef } from "react";
+import { Ref, useEffect, useRef, useState } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
 import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
+import { MobileNavbar } from "../components/MobileNavbar";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -30,10 +31,21 @@ const scrambleCharSets = {
 
 // Styled container to ensure theme variables are properly applied
 const ContentWrapper = styled.div`
-  display: grid;
-  grid-template-rows: auto 1fr;
+  position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+  /* Position for mobile navbar */
+  .mobile-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+  }
 `;
 
 const StyledContent = styled.div`
@@ -44,14 +56,20 @@ const StyledContent = styled.div`
   --space-xl: 40px;
   --navbar-height: 64px;
   
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
-  align-self: center;
-  margin-top: calc(-1 * var(--navbar-height)); /* Offset up by navbar height */
-
+  transform: translateY(calc(var(--navbar-height) / -2));
+  transition: filter 0.4s ease;
+  
+  /* Responsive adjustments */
+  @media (max-width: 440px) {
+    gap: var(--space-sm);
+  }
 `;
 
 interface NavbarProps {
@@ -71,6 +89,157 @@ export default function Home() {
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isNavExpanded, setIsNavExpanded] = useState(false);
+
+  // Initialize GSAP animations
+  const initializeGSAPAnimations = () => {
+    gsap.registerPlugin(ScrambleTextPlugin);
+    
+    const ctx = gsap.context(() => {
+      // Initial state setup for main content
+      gsap.set([topTextRef.current, bottomTextRef.current], {
+        opacity: 0,
+      });
+
+      // Initial state for navbar and toggle buttons
+      const navbar = (navbarRef.current as unknown) as NavbarRef;
+      if (navbar?.container) {
+        // Hide navbar container
+        gsap.set(navbar.container, {
+          opacity: 0,
+          y: -20,
+          visibility: 'visible' // Make visible before animation
+        });
+
+        // Hide all toggle buttons
+        const toggleButtons = [
+          navbar.theme,
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.speed
+        ];
+
+        toggleButtons.forEach(button => {
+          if (button) {
+            gsap.set(button, {
+              opacity: 0,
+              y: -10,
+              filter: 'blur(20px)'
+            });
+          }
+        });
+      }
+
+      // Set initial state for content
+      gsap.set(contentRef.current, {
+        opacity: 0,
+        y: 20,
+        visibility: 'visible' // Make visible before animation
+      });
+
+      // Create main timeline with a delay to wait for innerShape animation
+      const tl = gsap.timeline({
+        delay: 1.25,
+        defaults: {
+          ease: "sine.out",
+        }
+      });
+
+      // Animate content container
+      tl.to(contentRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+        }
+      );
+
+      // Animate top text with scramble effect
+      tl.to(topTextRef.current, {
+        opacity: 1,
+        duration: 0.8,
+        scrambleText: {
+          text: "product designer",
+          chars: scrambleCharSets.japanese,
+          revealDelay: 0.4,
+          speed: 0.8,
+          delimiter: ""
+        }
+      }, "+=0.2");
+
+      // Animate bottom text with scramble effect
+      tl.to(bottomTextRef.current, {
+        opacity: 1,
+        duration: 0.8,
+        scrambleText: {
+          text: "no code developer",
+          chars: scrambleCharSets.matrix,
+          revealDelay: 0.4,
+          speed: 0.8,
+          delimiter: ""
+        }
+      }, "+=0.2");
+
+      // Animate navbar container
+      if (navbar?.container) {
+        tl.to(navbar.container, {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          ease: "power2.out",
+          clearProps: "all"
+        }, "+=0.2");
+
+        // Staggered animation for toggle buttons
+        const toggleButtons = [
+          navbar.theme,
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd
+        ];
+
+        toggleButtons.forEach((button, index) => {
+          if (button) {
+            tl.to(button, {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 0.6,
+              ease: "power2.out",
+              stagger: 0.1,
+              clearProps: "all"
+            }, `-=0.45`); // Slightly more overlap for smoother sequence
+          }
+        });
+      }
+    }, contentRef);
+
+    return ctx;
+  };
+
+  // Effect for handling GSAP animations
+  useEffect(() => {
+    const ctx = initializeGSAPAnimations();
+    return () => ctx.revert();
+  }, []); // Only run once on mount
+
+  // Remove the mobile state effect that was clearing props
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 440);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Add listener for window resize
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Get random character set
   const getRandomCharSet = () => {
@@ -121,132 +290,6 @@ export default function Home() {
     });
   };
 
-  useEffect(() => {
-    // Register plugin if needed (though it should be registered in utils/gsap.ts)
-    gsap.registerPlugin(ScrambleTextPlugin);
-    
-    // Create a GSAP context
-    const ctx = gsap.context(() => {
-      // Initial state setup for main content
-      gsap.set([topTextRef.current, bottomTextRef.current], {
-        opacity: 0,
-      });
-
-      // Initial state for navbar and toggle buttons
-      const navbar = navbarRef.current as any;
-      if (navbar) {
-        // Hide navbar container
-        gsap.set(navbar, {
-          opacity: 0,
-          y: -20
-        });
-
-        // Hide all toggle buttons
-        const toggleButtons = [
-          navbar.theme,
-          navbar.grid,
-          navbar.noise,
-          navbar.dvd,
-          navbar.speed
-        ];
-
-        toggleButtons.forEach(button => {
-          if (button) {
-            gsap.set(button, {
-              opacity: 0,
-              y: -10,
-              filter: 'blur(20px)'
-            });
-          }
-        });
-      }
-
-      // Set initial state for content
-      gsap.set(contentRef.current, {
-        opacity: 0,
-        y: 20
-      });
-
-      // Create main timeline with a delay to wait for innerShape animation
-      const tl = gsap.timeline({
-        delay: 1.25, // Wait for innerShape animation (1.95s) to complete
-        defaults: {
-          ease: "sine.out",
-        }
-      });
-
-      // Animate content container
-      tl.to(contentRef.current,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-        }
-      );
-
-      // Animate top text with scramble effect
-      tl.to(topTextRef.current, {
-        opacity: 1,
-        duration: 0.8,
-        scrambleText: {
-          text: "product designer",
-          chars: scrambleCharSets.japanese,
-          revealDelay: 0.4,
-          speed: 0.8,
-          delimiter: ""
-        }
-      }, "+=0.2");
-
-      // Animate bottom text with scramble effect
-      tl.to(bottomTextRef.current, {
-        opacity: 1,
-        duration: 0.8,
-        scrambleText: {
-          text: "no code developer",
-          chars: scrambleCharSets.matrix,
-          revealDelay: 0.4,
-          speed: 0.8,
-          delimiter: ""
-        }
-      }, "+=0.2");
-
-      // Animate navbar container
-      tl.to(navbar, {
-        opacity: 1,
-        y: 0,
-        duration: 0.4,
-        ease: "power2.out"
-      }, "+=0.2");
-
-      // Staggered animation for toggle buttons
-      if (navbar) {
-        const toggleButtons = [
-          navbar.theme,
-          navbar.grid,
-          navbar.noise,
-          navbar.dvd
-        ];
-
-        toggleButtons.forEach((button, index) => {
-          if (button) {
-            tl.to(button, {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              duration: 0.6,
-              ease: "power2.out",
-              stagger: 0.1
-            }, `-=0.45`); // Slightly more overlap for smoother sequence
-          }
-        });
-      }
-
-    }, contentRef); // Scope to content container
-
-    // Cleanup
-    return () => ctx.revert();
-  }, []); // Empty dependency array since we want this to run once on mount
-
   // Test handlers for navbar
   const handleGridToggle = (value: boolean) => {
     console.log('Grid toggled:', value);
@@ -267,17 +310,33 @@ export default function Home() {
   return (
     <PageWrapper>
       <ContentWrapper>
-        <Navbar
-          ref={navbarRef as Ref<NavbarRef>}
-          onGridToggle={handleGridToggle}
-          onNoiseToggle={handleNoiseToggle}
-          onDvdToggle={handleDvdToggle}
-          onSpeedToggle={handleSpeedToggle}
-          onThemeChange={cycleTheme}
-        />
+        {isMobile ? (
+          <MobileNavbar
+            ref={navbarRef as any}
+            onGridToggle={handleGridToggle}
+            onNoiseToggle={handleNoiseToggle}
+            onDvdToggle={handleDvdToggle}
+            onSpeedToggle={handleSpeedToggle}
+            onThemeChange={cycleTheme}
+            onExpandedChange={setIsNavExpanded}
+            className="mobile-navbar"
+          />
+        ) : (
+          <Navbar
+            ref={navbarRef as Ref<NavbarRef>}
+            onGridToggle={handleGridToggle}
+            onNoiseToggle={handleNoiseToggle}
+            onDvdToggle={handleDvdToggle}
+            onSpeedToggle={handleSpeedToggle}
+            onThemeChange={cycleTheme}
+          />
+        )}
         <StyledContent 
           ref={contentRef}
-          className={jetbrainsMono.className}
+          className={`${jetbrainsMono.className}`}
+          style={isMobile && isNavExpanded ? {
+            filter: 'blur(8px)'
+          } : undefined}
         >
           <h1 
             ref={topTextRef}

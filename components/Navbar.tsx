@@ -5,7 +5,9 @@ import { themes } from '../styles/themes';
 import { useState, forwardRef, useRef, useImperativeHandle } from 'react';
 import { textStyles } from '../styles/text';
 
-const NavContainer = styled.nav`
+const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
+  className: props.className || ''
+}))`
   width: 100%;
   height: 64px;
   display: flex;
@@ -16,6 +18,8 @@ const NavContainer = styled.nav`
   line-height: 15.8px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  position: relative;
+  z-index: 10;
 `;
 
 const ToggleGroup = styled.div`
@@ -37,6 +41,7 @@ interface NavbarProps {
   onDvdToggle: (value: boolean) => void;
   onSpeedToggle: (value: boolean) => void;
   onThemeChange?: () => void;
+  className?: string;
 }
 
 export interface NavbarRef {
@@ -53,7 +58,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onNoiseToggle, 
   onDvdToggle, 
   onSpeedToggle,
-  onThemeChange 
+  onThemeChange,
+  className = ''
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -90,7 +96,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   };
 
   return (
-    <NavContainer ref={containerRef}>
+    <NavContainer ref={containerRef} className={className}>
       <ToggleGroup>
         <div ref={toggleRefs.theme}>
           <ToggleButton

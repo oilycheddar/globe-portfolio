@@ -12,30 +12,43 @@ export default function PageWrapper({ children }: PageWrapperProps) {
 
   useEffect(() => {
     if (innerShapeRef.current) {
-      gsap.fromTo(innerShapeRef.current, 
-        {
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-        },
-        {
-          top: 24,
-          right: 24,
-          bottom: 24,
-          left: 24,
-          duration: 1.2,
-          delay: 0.75,
-          ease: "expo.out"
-        }
-      );
+      const mediaQuery = window.matchMedia('(max-width: 440px)');
+      
+      const updateInset = (e: MediaQueryListEvent | MediaQueryList) => {
+        gsap.fromTo(innerShapeRef.current, 
+          {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          },
+          {
+            top: e.matches ? 'max(16px, env(safe-area-inset-top))' : '16px',
+            right: e.matches ? '16px' : '16px',
+            bottom: e.matches ? '16px' : '16px',
+            left: e.matches ? '16px' : '16px',
+            duration: 1.2,
+            delay: 0.75,
+            ease: "expo.out"
+          }
+        );
+      };
+
+      // Initial check
+      updateInset(mediaQuery);
+
+      // Add listener for changes
+      mediaQuery.addEventListener('change', updateInset);
+
+      // Cleanup
+      return () => mediaQuery.removeEventListener('change', updateInset);
     }
   }, []);
 
   return (
     <div className="fixed w-screen h-screen flex items-center justify-center bg-[var(--color-bg)] p-0">      
       {/* Outer Shape (Darker Background) */}
-      <div className="fixed w-screen h-screen flex items-center justify-center noise-overlay overflow-hidden">
+      <div className="fixed w-screen h-screen flex items-center justify-center overflow-hidden">
         {/* Static BG Noise */}
       </div>
       
