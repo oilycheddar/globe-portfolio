@@ -30,10 +30,10 @@ const scrambleCharSets = {
 
 // Styled container to ensure theme variables are properly applied
 const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr;
   width: 100%;
-  height: 100vh; /* Ensure full viewport height */
+  height: 100vh;
 `;
 
 const StyledContent = styled.div`
@@ -42,13 +42,16 @@ const StyledContent = styled.div`
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 40px;
+  --navbar-height: 64px;
   
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-grow: 1; /* Allow content to grow and center */
   gap: var(--space-md);
+  align-self: center;
+  margin-top: calc(-1 * var(--navbar-height)); /* Offset up by navbar height */
+
 `;
 
 interface NavbarProps {
@@ -106,7 +109,7 @@ export default function Home() {
         gsap.to(bottomTextRef.current, {
           duration: 0.68,
           scrambleText: {
-            text: "vibe coder",
+            text: "no code developer",
             chars: secondCharSet,
             revealDelay: 0.4,
             speed: 0.8,
@@ -199,7 +202,7 @@ export default function Home() {
         opacity: 1,
         duration: 0.8,
         scrambleText: {
-          text: "vibe coder",
+          text: "no code developer",
           chars: scrambleCharSets.matrix,
           revealDelay: 0.4,
           speed: 0.8,
