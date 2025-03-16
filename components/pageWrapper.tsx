@@ -7,14 +7,12 @@ interface PageWrapperProps {
 }
 
 export default function PageWrapper({ children }: PageWrapperProps) {
-  const { theme } = useThemeStore();
   const innerShapeRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const noiseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      if (innerShapeRef.current && wrapperRef.current && noiseRef.current) {
+      if (innerShapeRef.current && wrapperRef.current) {
         const mediaQuery = window.matchMedia('(max-width: 440px)');
         
         // Initial animation timeline
@@ -26,13 +24,6 @@ export default function PageWrapper({ children }: PageWrapperProps) {
           duration: 0.4,
           ease: "power2.out"
         });
-
-        // Fade in noise with slight delay
-        tl.to(noiseRef.current, {
-          opacity: 1,
-          duration: 0.6,
-          ease: "power2.out"
-        }, "-=0.2");
 
         // Animate the inner shape
         const updateInset = (e: MediaQueryListEvent | MediaQueryList) => {
@@ -61,17 +52,8 @@ export default function PageWrapper({ children }: PageWrapperProps) {
       ref={wrapperRef} 
       className="fixed w-screen h-screen flex items-center justify-center bg-[var(--color-bg)] p-0 opacity-0">      
       {/* Outer Shape (Darker Background) */}
-      <div className="fixed w-screen h-screen flex items-center justify-center overflow-hidden">
-        <div ref={noiseRef} className="noise-overlay opacity-0"></div>
-      </div>
+      <div className="fixed w-screen h-screen flex items-center justify-center overflow-hidden" />
       
-      {/* Animated Noise Layer - Only apply if not Dune theme */}
-      {theme !== 'dune' && (
-        <div className="noise-animated-layer">
-          <div className="noise-animated"></div>
-        </div>
-      )}
-
       {/* Inner Shape (Lighter Page Content) */}
       <div 
         ref={innerShapeRef}
@@ -83,20 +65,14 @@ export default function PageWrapper({ children }: PageWrapperProps) {
           left: 0
         }}
       >
-        {/* Page Content Noise - Only apply if not Dune theme */}
-        {theme !== 'dune' && (
-          <div className="absolute w-full h-full noise-page-overlay pointer-events-none overflow-hidden rounded-[8px]"></div>
-        )}
-        {/* Dune-specific noise layer */}
-        {theme === 'dune' && (
-          <div className="absolute w-full h-full pointer-events-none overflow-hidden rounded-[8px]"
-               style={{
-                 backgroundImage: 'var(--page-noise)',
-                 backgroundSize: 'cover',
-                 opacity: 0.15,
-                 mixBlendMode: 'multiply'
-               }}></div>
-        )}
+        <div 
+          className="absolute w-full h-full pointer-events-none overflow-hidden rounded-[8px]"
+          style={{
+            backgroundImage: 'var(--page-noise)',
+            backgroundSize: 'cover',
+            opacity: 1,
+          }}
+        />
         <div className="relative z-20">
           {children}
         </div>
