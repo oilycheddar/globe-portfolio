@@ -2,7 +2,7 @@ import { ToggleButton } from './toggleButton';
 import styled from 'styled-components';
 import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
-import { useState } from 'react';
+import { useState, forwardRef, useRef, useImperativeHandle } from 'react';
 import { textStyles } from '../styles/text';
 
 const NavContainer = styled.nav`
@@ -38,15 +38,44 @@ interface NavbarProps {
   onSpeedToggle: (value: boolean) => void;
 }
 
-export function Navbar({ 
+export interface NavbarRef {
+  container: HTMLDivElement | null;
+  theme: HTMLDivElement | null;
+  grid: HTMLDivElement | null;
+  noise: HTMLDivElement | null;
+  dvd: HTMLDivElement | null;
+  speed: HTMLDivElement | null;
+}
+
+export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
   onGridToggle, 
   onNoiseToggle, 
   onDvdToggle, 
   onSpeedToggle 
-}: NavbarProps) {
+}, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const [isDvdActive, setIsDvdActive] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Create refs for each toggle button container
+  const toggleRefs = {
+    theme: useRef<HTMLDivElement>(null),
+    grid: useRef<HTMLDivElement>(null),
+    noise: useRef<HTMLDivElement>(null),
+    dvd: useRef<HTMLDivElement>(null),
+    speed: useRef<HTMLDivElement>(null)
+  };
+
+  // Expose toggle refs to parent component
+  useImperativeHandle(ref, () => ({
+    container: containerRef.current,
+    theme: toggleRefs.theme.current,
+    grid: toggleRefs.grid.current,
+    noise: toggleRefs.noise.current,
+    dvd: toggleRefs.dvd.current,
+    speed: toggleRefs.speed.current
+  }));
 
   const handleDvdToggle = (value: boolean) => {
     setIsDvdActive(value);
@@ -54,44 +83,52 @@ export function Navbar({
   };
 
   return (
-    <NavContainer>
+    <NavContainer ref={containerRef}>
       <ToggleGroup>
-        <ToggleButton
-          type="multi"
-          label="theme"
-          value={theme}
-          options={themeKeys}
-          onChange={setTheme}
-                  />
-
-        
-        <ToggleButton
-          type="boolean"
-          label="grid"
-          value={false}
-          onChange={onGridToggle}
-        />
-        <ToggleButton
-          type="boolean"
-          label="noise"
-          value={false}
-          onChange={onNoiseToggle}
-        />
-        <ToggleButton
-          type="boolean"
-          label="dvd"
-          value={isDvdActive}
-          onChange={handleDvdToggle}
-        />
-        {isDvdActive && (
+        <div ref={toggleRefs.theme}>
+          <ToggleButton
+            type="multi"
+            label="theme"
+            value={theme}
+            options={themeKeys}
+            onChange={setTheme}
+          />
+        </div>
+        <div ref={toggleRefs.grid}>
           <ToggleButton
             type="boolean"
-            label="speed"
+            label="grid"
             value={false}
-            onChange={onSpeedToggle}
+            onChange={onGridToggle}
           />
+        </div>
+        <div ref={toggleRefs.noise}>
+          <ToggleButton
+            type="boolean"
+            label="noise"
+            value={false}
+            onChange={onNoiseToggle}
+          />
+        </div>
+        <div ref={toggleRefs.dvd}>
+          <ToggleButton
+            type="boolean"
+            label="dvd"
+            value={isDvdActive}
+            onChange={handleDvdToggle}
+          />
+        </div>
+        {isDvdActive && (
+          <div ref={toggleRefs.speed}>
+            <ToggleButton
+              type="boolean"
+              label="speed"
+              value={false}
+              onChange={onSpeedToggle}
+            />
+          </div>
         )}
       </ToggleGroup>
     </NavContainer>
   );
-} 
+}); 

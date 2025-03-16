@@ -5,12 +5,13 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
-import { useEffect, useRef } from "react";
+import { Ref, useEffect, useRef } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
 import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
+import type { NavbarRef } from "../components/Navbar";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -58,6 +59,7 @@ export default function Home() {
   const topTextRef = useRef<HTMLHeadingElement>(null);
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
+  const navbarRef = useRef<HTMLDivElement>(null);
 
   // Get random character set
   const getRandomCharSet = () => {
@@ -109,75 +111,130 @@ export default function Home() {
   };
 
   useEffect(() => {
+    // Register plugin if needed (though it should be registered in utils/gsap.ts)
+    gsap.registerPlugin(ScrambleTextPlugin);
+    
+    // Create a GSAP context
     const ctx = gsap.context(() => {
-      if (helloTextRef.current && topTextRef.current && bottomTextRef.current && toggleRef.current) {
-        // Initial state
-        gsap.set([helloTextRef.current, topTextRef.current, bottomTextRef.current, toggleRef.current], {
+      // Initial state setup for main content
+      gsap.set([topTextRef.current, bottomTextRef.current], {
+        opacity: 0,
+      });
+
+      // Initial state for navbar and toggle buttons
+      const navbar = navbarRef.current as any;
+      if (navbar) {
+        // Hide navbar container
+        gsap.set(navbar, {
           opacity: 0,
-          scrambleText: {
-            text: " ",
-            chars: "!<>-_\\/[]{}—=+*^?#",
-            revealDelay: 0.4,
-            speed: 0.8,
-            delimiter: "",
-          }
+          y: -20
         });
 
-        // Create timeline for the sequence
-        const tl = gsap.timeline();
+        // Hide all toggle buttons
+        const toggleButtons = [
+          navbar.theme,
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.speed
+        ];
 
-        // Logo container animation
-        tl.fromTo(contentRef.current,
-          {
-            opacity: 0,
-            y: 20
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.68,
-            delay: 1.6,
-            ease: "sine.out"
+        toggleButtons.forEach(button => {
+          if (button) {
+            gsap.set(button, {
+              opacity: 0,
+              y: -10,
+              filter: 'blur(20px)'
+            });
           }
-        );
-
-        // Text animations with scramble effect
-        tl.to(topTextRef.current, {
-          opacity: 1,
-          duration: 0.68,
-          scrambleText: {
-            text: "product designer",
-            chars: "プロダクトデザイナー",
-            revealDelay: 0.4,
-            speed: 0.8,
-            rightToLeft: false,
-            delimiter: ""
-          }
-        }, "+=0.2");
-
-        tl.to(bottomTextRef.current, {
-          opacity: 1,
-          duration: 0.68,
-          scrambleText: {
-            text: "vibe coder",
-            chars: "アイウエオカキクケコサシスセソタチツテト",
-            revealDelay: 0.4,
-            speed: 0.8,
-            rightToLeft: false,
-            delimiter: ""
-          }
-        }, "+=0.2");
-
-        // Add toggle animation
-        tl.to(toggleRef.current, {
-          opacity: 1,
-          duration: 0.68,
-        }, "+=0.2");
+        });
       }
-    });
 
+      // Set initial state for content
+      gsap.set(contentRef.current, {
+        opacity: 0,
+        y: 20
+      });
+
+      // Create main timeline with a delay to wait for innerShape animation
+      const tl = gsap.timeline({
+        delay: 1.75, // Wait for innerShape animation (1.95s) to complete
+        defaults: {
+          ease: "sine.out",
+        }
+      });
+
+      // Animate content container
+      tl.to(contentRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+        }
+      );
+
+      // Animate top text with scramble effect
+      tl.to(topTextRef.current, {
+        opacity: 1,
+        duration: 0.8,
+        scrambleText: {
+          text: "product designer",
+          chars: scrambleCharSets.japanese,
+          revealDelay: 0.4,
+          speed: 0.8,
+          delimiter: ""
+        }
+      }, "+=0.2");
+
+      // Animate bottom text with scramble effect
+      tl.to(bottomTextRef.current, {
+        opacity: 1,
+        duration: 0.8,
+        scrambleText: {
+          text: "vibe coder",
+          chars: scrambleCharSets.matrix,
+          revealDelay: 0.4,
+          speed: 0.8,
+          delimiter: ""
+        }
+      }, "+=0.2");
+
+      // Animate navbar container
+      tl.to(navbar, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out"
+      }, "+=0.2");
+
+      // Staggered animation for toggle buttons
+      if (navbar) {
+        const toggleButtons = [
+          navbar.theme,
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd
+        ];
+
+        toggleButtons.forEach((button, index) => {
+          if (button) {
+            tl.to(button, {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 0.6,
+              ease: "power2.out",
+              stagger: 0.1
+            }, `-=0.45`); // Slightly more overlap for smoother sequence
+          }
+        });
+      }
+
+    }, contentRef); // Scope to content container
+
+    // Cleanup
     return () => ctx.revert();
-  }, [theme]);
+  }, []); // Empty dependency array since we want this to run once on mount
 
   // Test handlers for navbar
   const handleGridToggle = (value: boolean) => {
@@ -200,6 +257,7 @@ export default function Home() {
     <PageWrapper>
       <ContentWrapper>
         <Navbar
+          ref={navbarRef as Ref<NavbarRef>}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
           onDvdToggle={handleDvdToggle}
