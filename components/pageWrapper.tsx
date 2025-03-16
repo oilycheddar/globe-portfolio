@@ -1,4 +1,5 @@
 import { useThemeStore } from "../hooks/useThemeStore";
+import { useNoiseStore } from "../hooks/useNoiseStore";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
@@ -9,6 +10,7 @@ interface PageWrapperProps {
 export default function PageWrapper({ children }: PageWrapperProps) {
   const innerShapeRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { isNoiseEnabled } = useNoiseStore();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -65,14 +67,16 @@ export default function PageWrapper({ children }: PageWrapperProps) {
           left: 0
         }}
       >
-        <div 
-          className="absolute w-full h-full pointer-events-none overflow-hidden rounded-[8px]"
-          style={{
-            backgroundImage: 'var(--page-noise)',
-            backgroundSize: 'cover',
-            opacity: 1,
-          }}
-        />
+        {isNoiseEnabled && (
+          <div 
+            className="absolute w-full h-full pointer-events-none overflow-hidden rounded-[8px]"
+            style={{
+              backgroundImage: 'var(--page-noise)',
+              backgroundSize: 'cover',
+              opacity: 1,
+            }}
+          />
+        )}
         <div className="relative z-20">
           {children}
         </div>

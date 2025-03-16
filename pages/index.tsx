@@ -13,6 +13,7 @@ import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
+import { useNoiseStore } from "../hooks/useNoiseStore";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -88,9 +89,10 @@ export default function Home() {
   const topTextRef = useRef<HTMLHeadingElement>(null);
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
-  const navbarRef = useRef<HTMLDivElement>(null);
+  const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const { toggleNoise, isNoiseEnabled } = useNoiseStore();
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -296,7 +298,7 @@ export default function Home() {
   };
 
   const handleNoiseToggle = (value: boolean) => {
-    console.log('Noise toggled:', value);
+    toggleNoise();
   };
 
   const handleDvdToggle = (value: boolean) => {
@@ -310,25 +312,24 @@ export default function Home() {
   return (
     <PageWrapper>
       <ContentWrapper>
-        {isMobile ? (
+        {!isMobile ? (
+          <Navbar
+            ref={navbarRef}
+            onGridToggle={handleGridToggle}
+            onNoiseToggle={handleNoiseToggle}
+            onDvdToggle={handleDvdToggle}
+            onSpeedToggle={handleSpeedToggle}
+            onThemeChange={cycleTheme}
+          />
+        ) : (
           <MobileNavbar
-            ref={navbarRef as any}
+            className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
             onDvdToggle={handleDvdToggle}
             onSpeedToggle={handleSpeedToggle}
             onThemeChange={cycleTheme}
             onExpandedChange={setIsNavExpanded}
-            className="mobile-navbar"
-          />
-        ) : (
-          <Navbar
-            ref={navbarRef as Ref<NavbarRef>}
-            onGridToggle={handleGridToggle}
-            onNoiseToggle={handleNoiseToggle}
-            onDvdToggle={handleDvdToggle}
-            onSpeedToggle={handleSpeedToggle}
-            onThemeChange={cycleTheme}
           />
         )}
         <StyledContent 

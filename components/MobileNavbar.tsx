@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { textStyles, typography } from '../styles/text';
 import { ToggleButton } from './toggleButton';
 import { useThemeStore } from '../hooks/useThemeStore';
+import { useNoiseStore } from '../hooks/useNoiseStore';
 import { themes } from '../styles/themes';
 import { JetBrains_Mono } from 'next/font/google';
 import { gsap } from '../utils/gsap';
@@ -123,6 +124,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   className = ''
 }, ref) => {
   const { theme } = useThemeStore();
+  const { isNoiseEnabled } = useNoiseStore();
   const themeKeys = Object.keys(themes);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -259,49 +261,41 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
               type="boolean"
               label="grid"
               value={pendingChanges.grid}
-              onChange={(value) => {
-                setPendingChanges(prev => ({ ...prev, grid: value }));
-                onGridToggle(value);
-              }}
+              onChange={(value) => setPendingChanges(prev => ({ ...prev, grid: value }))}
             />
             <ToggleButton
               type="boolean"
               label="noise"
-              value={pendingChanges.noise}
-              onChange={(value) => {
-                setPendingChanges(prev => ({ ...prev, noise: value }));
-                onNoiseToggle(value);
-              }}
+              value={isNoiseEnabled}
+              onChange={onNoiseToggle}
             />
             <ToggleButton
               type="boolean"
               label="dvd"
               value={pendingChanges.dvd}
-              onChange={(value) => {
-                setPendingChanges(prev => ({ ...prev, dvd: value }));
-                onDvdToggle(value);
-              }}
+              onChange={(value) => setPendingChanges(prev => ({ ...prev, dvd: value }))}
             />
             {pendingChanges.dvd && (
               <ToggleButton
                 type="boolean"
                 label="speed"
                 value={pendingChanges.speed}
-                onChange={(value) => {
-                  setPendingChanges(prev => ({ ...prev, speed: value }));
-                  onSpeedToggle(value);
-                }}
+                onChange={(value) => setPendingChanges(prev => ({ ...prev, speed: value }))}
               />
             )}
           </ToggleButtonsGrid>
-          
           <ApplyButton 
             ref={applyButtonRef}
-            onClick={handleClose}
-            href="#"
-            className={jetbrainsMono.className}
+            onClick={() => {
+              onGridToggle(pendingChanges.grid);
+              onDvdToggle(pendingChanges.dvd);
+              if (pendingChanges.dvd) {
+                onSpeedToggle(pendingChanges.speed);
+              }
+              handleClose();
+            }}
           >
-            <span>CLOSE</span>
+            <span>Apply Changes</span>
           </ApplyButton>
         </>
       )}

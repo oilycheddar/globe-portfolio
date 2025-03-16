@@ -1,6 +1,7 @@
 import { ToggleButton } from './toggleButton';
 import styled from 'styled-components';
 import { useThemeStore } from '../hooks/useThemeStore';
+import { useNoiseStore } from '../hooks/useNoiseStore';
 import { themes } from '../styles/themes';
 import { useState, forwardRef, useRef, useImperativeHandle } from 'react';
 import { textStyles } from '../styles/text';
@@ -62,6 +63,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   className = ''
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
+  const { isNoiseEnabled } = useNoiseStore();
   const themeKeys = Object.keys(themes);
   const [isDvdActive, setIsDvdActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,7 +121,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
           <ToggleButton
             type="boolean"
             label="noise"
-            value={false}
+            value={isNoiseEnabled}
             onChange={onNoiseToggle}
           />
         </div>
