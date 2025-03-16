@@ -166,7 +166,7 @@ export default function Home() {
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: 1.75, // Wait for innerShape animation (1.95s) to complete
+        delay: 1.25, // Wait for innerShape animation (1.95s) to complete
         defaults: {
           ease: "sine.out",
         }
@@ -177,7 +177,7 @@ export default function Home() {
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: 0.5,
         }
       );
 
@@ -211,7 +211,7 @@ export default function Home() {
       tl.to(navbar, {
         opacity: 1,
         y: 0,
-        duration: 0.6,
+        duration: 0.4,
         ease: "power2.out"
       }, "+=0.2");
 
@@ -289,7 +289,7 @@ export default function Home() {
             ref={bottomTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            vibe coder
+            no code developer
           </p>
         </StyledContent>
       </ContentWrapper>
