@@ -249,96 +249,89 @@ export default function Home() {
     return sets[Math.floor(Math.random() * sets.length)];
   };
 
-  const cycleTheme = () => {
+  // Optimize theme change handler for mobile
+  const handleMobileThemeChange = useCallback((newTheme: string) => {
+    // Get random character set once
+    const charSet = getRandomCharSet();
+
+    // Create a timeline for theme change animations
+    const tl = gsap.timeline({
+      defaults: {
+        ease: "power2.out",
+        duration: 0.3 // Reduced from 0.5
+      }
+    });
+
+    // Animate both texts simultaneously with stagger
+    tl.to(topTextRef.current, {
+      scrambleText: {
+        text: "product designer",
+        chars: charSet,
+        revealDelay: 0.1, // Reduced from 0.2
+        speed: 1.2, // Increased for faster animation
+        rightToLeft: false,
+        delimiter: ""
+      }
+    })
+    .to(bottomTextRef.current, {
+      scrambleText: {
+        text: "no code developer",
+        chars: charSet,
+        revealDelay: 0.1, // Reduced from 0.2
+        speed: 1.2, // Increased for faster animation
+        rightToLeft: false,
+        delimiter: ""
+      },
+      onComplete: () => {
+        // Clear any remaining animations
+        gsap.killTweensOf([topTextRef.current, bottomTextRef.current]);
+      }
+    }, "-=0.2"); // Start slightly before the first animation ends
+  }, []);
+
+  // Optimize cycle theme function
+  const cycleTheme = useCallback(() => {
     const currentIndex = themeKeys.indexOf(theme);
     const nextIndex = (currentIndex + 1) % themeKeys.length;
     setTheme(themeKeys[nextIndex]);
 
-    // Get two different random character sets
-    const firstCharSet = getRandomCharSet();
-    let secondCharSet = getRandomCharSet();
-    while (secondCharSet === firstCharSet) {
-      secondCharSet = getRandomCharSet();
-    }
+    // Get random character set once
+    const charSet = getRandomCharSet();
 
     // Create a timeline for theme change animations
     const tl = gsap.timeline({
       defaults: {
-        ease: "power2.out" // Changed from sine.out for better performance
+        ease: "power2.out",
+        duration: 0.3 // Reduced from 0.5
       }
     });
 
-    // Animate first text
+    // Animate both texts simultaneously with stagger
     tl.to(topTextRef.current, {
-      duration: 0.5, // Reduced from 0.68
       scrambleText: {
         text: "product designer",
-        chars: firstCharSet,
-        revealDelay: 0.2, // Reduced from 0.4
-        speed: 1, // Increased from 0.8
+        chars: charSet,
+        revealDelay: 0.1, // Reduced from 0.2
+        speed: 1.2, // Increased for faster animation
+        rightToLeft: false,
+        delimiter: ""
+      }
+    })
+    .to(bottomTextRef.current, {
+      scrambleText: {
+        text: "no code developer",
+        chars: charSet,
+        revealDelay: 0.1, // Reduced from 0.2
+        speed: 1.2, // Increased for faster animation
         rightToLeft: false,
         delimiter: ""
       },
       onComplete: () => {
-        // Show second text with scramble effect
-        gsap.to(bottomTextRef.current, {
-          duration: 0.5, // Reduced from 0.68
-          scrambleText: {
-            text: "no code developer",
-            chars: secondCharSet,
-            revealDelay: 0.2, // Reduced from 0.4
-            speed: 1, // Increased from 0.8
-            rightToLeft: false,
-            delimiter: ""
-          }
-        });
+        // Clear any remaining animations
+        gsap.killTweensOf([topTextRef.current, bottomTextRef.current]);
       }
-    });
-  };
-
-  // Simple theme change handler for mobile
-  const handleMobileThemeChange = useCallback((newTheme: string) => {
-    // Get two different random character sets
-    const firstCharSet = getRandomCharSet();
-    let secondCharSet = getRandomCharSet();
-    while (secondCharSet === firstCharSet) {
-      secondCharSet = getRandomCharSet();
-    }
-
-    // Create a timeline for theme change animations
-    const tl = gsap.timeline({
-      defaults: {
-        ease: "power2.out"
-      }
-    });
-
-    // Animate first text
-    tl.to(topTextRef.current, {
-      duration: 0.5,
-      scrambleText: {
-        text: "product designer",
-        chars: firstCharSet,
-        revealDelay: 0.2,
-        speed: 1,
-        rightToLeft: false,
-        delimiter: ""
-      },
-      onComplete: () => {
-        // Show second text with scramble effect
-        gsap.to(bottomTextRef.current, {
-          duration: 0.5,
-          scrambleText: {
-            text: "no code developer",
-            chars: secondCharSet,
-            revealDelay: 0.2,
-            speed: 1,
-            rightToLeft: false,
-            delimiter: ""
-          }
-        });
-      }
-    });
-  }, []);
+    }, "-=0.2"); // Start slightly before the first animation ends
+  }, [theme, themeKeys, setTheme]);
 
   // Test handlers for navbar
   const handleGridToggle = (value: boolean) => {
