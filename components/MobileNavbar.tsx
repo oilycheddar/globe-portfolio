@@ -156,7 +156,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     const tl = gsap.timeline({
       paused: true,
       defaults: {
-        duration: 0.3,
+        duration: 0.2,
         ease: "power2.out"
       }
     });
@@ -178,44 +178,33 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
 
     // Set up the animation
     if (isExpanded) {
-      // Expand animation
+      // Expand animation - simplified
       tl.to(containerRef.current, {
         width: "100%",
         maxWidth: "100%",
-        scale: 1,
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.out"
+        duration: 0.2
       })
-      .to(contentRef.current, {
-        scale: 1,
+      .to([contentRef.current, applyButtonRef.current], {
         opacity: 1,
-        y: 0,
-        duration: 0.2,
-        clearProps: "all"
-      }, "-=0.15")
-      .to(applyButtonRef.current, {
         scale: 1,
-        opacity: 1,
         y: 0,
-        duration: 0.2,
+        duration: 0.15,
+        stagger: 0.05,
         clearProps: "all"
-      }, "-=0.15");
+      }, "-=0.1");
     } else {
-      // Collapse animation
+      // Collapse animation - simplified
       tl.to([contentRef.current, applyButtonRef.current], {
-        scale: 0.98,
         opacity: 0,
+        scale: 0.98,
         y: -5,
-        duration: 0.2,
-        ease: "power2.in"
+        duration: 0.15,
+        stagger: 0.05
       })
       .to(containerRef.current, {
-        scale: 0.98,
         width: "44px",
         maxWidth: "44px",
-        duration: 0.2,
-        ease: "power2.inOut",
+        duration: 0.15,
         clearProps: "all"
       }, "-=0.1");
     }
@@ -232,35 +221,39 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     };
   }, [isExpanded]);
 
-  // Memoize the theme change handler to prevent unnecessary re-renders
+  // Optimize theme change handler
+  const themeChangeTimeout = useRef<NodeJS.Timeout | null>(null);
+  
   const handleThemeChange = useCallback((value: string) => {
-    onThemeChange?.(value);
+    // Debounce theme changes to prevent rapid re-renders
+    if (themeChangeTimeout.current) {
+      clearTimeout(themeChangeTimeout.current);
+    }
+    
+    themeChangeTimeout.current = setTimeout(() => {
+      onThemeChange?.(value);
+    }, 50);
   }, [onThemeChange]);
+  // Optimize close handler
+  const handleClose = useCallback(() => {
+    if (!containerRef.current || !contentRef.current || !applyButtonRef.current) return;
 
-  const handleClose = () => {
-    // Create a timeline for the collapse animation
     const tl = gsap.timeline({
       defaults: {
-        duration: 0.2,
+        duration: 0.15,
         ease: "power2.inOut"
       }
     });
 
-    // Animate content and button out
     tl.to([contentRef.current, applyButtonRef.current], {
-      scale: 0.98,
       opacity: 0,
-      y: -5,
-      duration: 0.2,
-      ease: "power2.in"
-    })
-    // Animate container collapse
-    .to(containerRef.current, {
       scale: 0.98,
+      y: -5,
+      stagger: 0.05
+    })
+    .to(containerRef.current, {
       width: "44px",
       maxWidth: "44px",
-      duration: 0.2,
-      ease: "power2.inOut",
       clearProps: "all",
       onComplete: () => {
         // Only update state after animation completes
@@ -268,7 +261,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
         onExpandedChange?.(false);
       }
     }, "-=0.1");
-  };
+  }, [theme, onExpandedChange, onThemeChange]);
 
   return (
     <NavContainer 
