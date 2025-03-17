@@ -1,4 +1,4 @@
-import { useState, forwardRef, useRef, useImperativeHandle, useEffect } from 'react';
+import { useState, forwardRef, useRef, useImperativeHandle, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { textStyles, typography } from '../styles/text';
 import { ToggleButton } from './toggleButton';
@@ -123,7 +123,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onExpandedChange,
   className = ''
 }, ref) => {
-  const { theme } = useThemeStore();
+  const { theme, setTheme } = useThemeStore();
   const { isNoiseEnabled } = useNoiseStore();
   const themeKeys = Object.keys(themes);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -156,8 +156,8 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     const tl = gsap.timeline({
       paused: true,
       defaults: {
-        duration: 0.4,
-        ease: "power3.out"
+        duration: 0.3,
+        ease: "power2.out"
       }
     });
 
@@ -171,8 +171,8 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     if (isExpanded) {
       gsap.set([contentRef.current, applyButtonRef.current], {
         opacity: 0,
-        scale: 0.95,
-        y: -10
+        scale: 0.98,
+        y: -5
       });
     }
 
@@ -184,40 +184,40 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
         maxWidth: "100%",
         scale: 1,
         opacity: 1,
-        duration: 0.4,
-        ease: "power3.out"
+        duration: 0.3,
+        ease: "power2.out"
       })
       .to(contentRef.current, {
         scale: 1,
         opacity: 1,
         y: 0,
-        duration: 0.3,
+        duration: 0.2,
         clearProps: "all"
-      }, "-=0.2")
+      }, "-=0.15")
       .to(applyButtonRef.current, {
         scale: 1,
         opacity: 1,
         y: 0,
-        duration: 0.3,
+        duration: 0.2,
         clearProps: "all"
-      }, "-=0.25");
+      }, "-=0.15");
     } else {
       // Collapse animation
       tl.to([contentRef.current, applyButtonRef.current], {
-        scale: 0.95,
+        scale: 0.98,
         opacity: 0,
-        y: -10,
-        duration: 0.25,
-        ease: "power3.in"
+        y: -5,
+        duration: 0.2,
+        ease: "power2.in"
       })
       .to(containerRef.current, {
-        scale: 0.95,
+        scale: 0.98,
         width: "44px",
         maxWidth: "44px",
-        duration: 0.3,
-        ease: "power3.inOut",
+        duration: 0.2,
+        ease: "power2.inOut",
         clearProps: "all"
-      }, "-=0.15");
+      }, "-=0.1");
     }
 
     // Play the animation
@@ -232,9 +232,44 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     };
   }, [isExpanded]);
 
+  // Memoize the theme change handler to prevent unnecessary re-renders
+  const handleThemeChange = useCallback((value: string) => {
+    onThemeChange?.(value);
+  }, [onThemeChange]);
+
   const handleClose = () => {
-    setIsExpanded(false);
-    onExpandedChange?.(false);
+    // Create a timeline for the collapse animation
+    const tl = gsap.timeline({
+      defaults: {
+        duration: 0.2,
+        ease: "power2.inOut"
+      }
+    });
+
+    // Animate content and button out
+    tl.to([contentRef.current, applyButtonRef.current], {
+      scale: 0.98,
+      opacity: 0,
+      y: -5,
+      duration: 0.2,
+      ease: "power2.in"
+    })
+    // Animate container collapse
+    .to(containerRef.current, {
+      scale: 0.98,
+      width: "44px",
+      maxWidth: "44px",
+      duration: 0.2,
+      ease: "power2.inOut",
+      clearProps: "all",
+      onComplete: () => {
+        // Only update state and trigger theme change after animation completes
+        setIsExpanded(false);
+        onExpandedChange?.(false);
+        // Trigger theme change after collapse animation
+        onThemeChange?.(theme);
+      }
+    }, "-=0.1");
   };
 
   return (
@@ -255,7 +290,10 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
               label="theme"
               value={theme}
               options={themeKeys}
-              onChange={(value: string) => onThemeChange?.(value)}
+              onChange={(value: string) => {
+                // Just update the theme value without triggering animation
+                setTheme(value);
+              }}
             />
             <ToggleButton
               type="boolean"
@@ -286,16 +324,9 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
           </ToggleButtonsGrid>
           <ApplyButton 
             ref={applyButtonRef}
-            onClick={() => {
-              onGridToggle(pendingChanges.grid);
-              onDvdToggle(pendingChanges.dvd);
-              if (pendingChanges.dvd) {
-                onSpeedToggle(pendingChanges.speed);
-              }
-              handleClose();
-            }}
+            onClick={handleClose}
           >
-            <span>Apply Changes</span>
+            <span>Close</span>
           </ApplyButton>
         </>
       )}

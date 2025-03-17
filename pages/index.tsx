@@ -5,7 +5,7 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
-import { Ref, useEffect, useRef, useState } from "react";
+import { Ref, useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
@@ -262,28 +262,32 @@ export default function Home() {
     }
 
     // Create a timeline for theme change animations
-    const tl = gsap.timeline();
+    const tl = gsap.timeline({
+      defaults: {
+        ease: "power2.out" // Changed from sine.out for better performance
+      }
+    });
 
     // Animate first text
     tl.to(topTextRef.current, {
-      duration: 0.68,
+      duration: 0.5, // Reduced from 0.68
       scrambleText: {
         text: "product designer",
         chars: firstCharSet,
-        revealDelay: 0.4,
-        speed: 0.8,
+        revealDelay: 0.2, // Reduced from 0.4
+        speed: 1, // Increased from 0.8
         rightToLeft: false,
         delimiter: ""
       },
       onComplete: () => {
         // Show second text with scramble effect
         gsap.to(bottomTextRef.current, {
-          duration: 0.68,
+          duration: 0.5, // Reduced from 0.68
           scrambleText: {
             text: "no code developer",
             chars: secondCharSet,
-            revealDelay: 0.4,
-            speed: 0.8,
+            revealDelay: 0.2, // Reduced from 0.4
+            speed: 1, // Increased from 0.8
             rightToLeft: false,
             delimiter: ""
           }
@@ -291,6 +295,50 @@ export default function Home() {
       }
     });
   };
+
+  // Simple theme change handler for mobile
+  const handleMobileThemeChange = useCallback((newTheme: string) => {
+    // Get two different random character sets
+    const firstCharSet = getRandomCharSet();
+    let secondCharSet = getRandomCharSet();
+    while (secondCharSet === firstCharSet) {
+      secondCharSet = getRandomCharSet();
+    }
+
+    // Create a timeline for theme change animations
+    const tl = gsap.timeline({
+      defaults: {
+        ease: "power2.out"
+      }
+    });
+
+    // Animate first text
+    tl.to(topTextRef.current, {
+      duration: 0.5,
+      scrambleText: {
+        text: "product designer",
+        chars: firstCharSet,
+        revealDelay: 0.2,
+        speed: 1,
+        rightToLeft: false,
+        delimiter: ""
+      },
+      onComplete: () => {
+        // Show second text with scramble effect
+        gsap.to(bottomTextRef.current, {
+          duration: 0.5,
+          scrambleText: {
+            text: "no code developer",
+            chars: secondCharSet,
+            revealDelay: 0.2,
+            speed: 1,
+            rightToLeft: false,
+            delimiter: ""
+          }
+        });
+      }
+    });
+  }, []);
 
   // Test handlers for navbar
   const handleGridToggle = (value: boolean) => {
@@ -352,7 +400,7 @@ export default function Home() {
             onNoiseToggle={handleNoiseToggle}
             onDvdToggle={handleDvdToggle}
             onSpeedToggle={handleSpeedToggle}
-            onThemeChange={cycleTheme}
+            onThemeChange={handleMobileThemeChange}
             onExpandedChange={setIsNavExpanded}
           />
         )}

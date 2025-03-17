@@ -73,7 +73,7 @@ export const themes = {
         "--color-text": colors.water.water900,
         "--color-text-secondary": colors.earth.earth50,
         "--color-accent-primary": colors.water.water700,
-        "--color-accent-secondary": colors.earth.earth300,
+        "--color-accent-secondary": colors.earth.earth100,
         "--acid_shadow": "0px -16px 100px rgba(99, 33, 238, 0.5)",
         // Animated noise parameters
         "--animated-noise-opacity": "0.18",
