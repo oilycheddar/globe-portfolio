@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useThemeStore } from '../hooks/useThemeStore';
 import styled from 'styled-components';
 
@@ -30,6 +30,9 @@ const META_TAGS = [
   { name: 'apple-mobile-web-app-status-bar-style' }, // iOS
 ] as const;
 
+// Cache for meta tags to avoid unnecessary DOM queries
+const metaTagCache = new Map<string, HTMLMetaElement>();
+
 export function ThemeColorManager() {
   const { theme } = useThemeStore();
   const [debugInfo, setDebugInfo] = useState<{
@@ -38,7 +41,8 @@ export function ThemeColorManager() {
     metaTags: Record<string, string>;
   }>({ theme: '', color: '', metaTags: {} });
 
-  useEffect(() => {
+  // Memoize the update function to prevent unnecessary re-renders
+  const updateMetaTags = useCallback(() => {
     // Get the current theme's background color
     const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
     
@@ -46,13 +50,15 @@ export function ThemeColorManager() {
 
     // Handle each meta tag type
     META_TAGS.forEach(({ name }) => {
-      let metaTag = document.querySelector(`meta[name="${name}"]`);
+      // Use cached meta tag or create new one
+      let metaTag = metaTagCache.get(name) || document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
       
       // Create if doesn't exist
       if (!metaTag) {
         metaTag = document.createElement('meta');
-        (metaTag as HTMLMetaElement).name = name;
+        metaTag.name = name;
         document.head.appendChild(metaTag);
+        metaTagCache.set(name, metaTag);
       }
 
       // Set the color
@@ -73,5 +79,14 @@ export function ThemeColorManager() {
     });
   }, [theme]);
 
+  useEffect(() => {
+    // Initialize meta tags on mount
+    updateMetaTags();
 
+    // Update meta tags when theme changes
+    updateMetaTags();
+  }, [updateMetaTags]);
+
+  // Return null since this component doesn't need to render anything
+  return null;
 } 

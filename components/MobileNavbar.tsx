@@ -263,11 +263,9 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
       ease: "power2.inOut",
       clearProps: "all",
       onComplete: () => {
-        // Only update state and trigger theme change after animation completes
+        // Only update state after animation completes
         setIsExpanded(false);
         onExpandedChange?.(false);
-        // Trigger theme change after collapse animation
-        onThemeChange?.(theme);
       }
     }, "-=0.1");
   };
@@ -291,8 +289,10 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
               value={theme}
               options={themeKeys}
               onChange={(value: string) => {
-                // Just update the theme value without triggering animation
+                // Immediately update theme without waiting for animation
                 setTheme(value);
+                // Trigger any additional theme change effects
+                onThemeChange?.(value);
               }}
             />
             <ToggleButton
