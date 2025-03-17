@@ -14,6 +14,8 @@ import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
 import { useNoiseStore } from "../hooks/useNoiseStore";
+import { NavigationBars } from "../components/NavigationBars";
+import { ExpandableToggleButton } from "../components/ExpandableToggleButton";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -35,7 +37,6 @@ const ContentWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   
@@ -57,14 +58,13 @@ const StyledContent = styled.div`
   --space-xl: 40px;
   --navbar-height: 64px;
   
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  inset: var(--navbar-height);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
-  transform: translateY(calc(var(--navbar-height) / -2));
   transition: filter 0.4s ease;
   
   /* Responsive adjustments */
@@ -313,13 +313,37 @@ export default function Home() {
     <PageWrapper>
       <ContentWrapper>
         {!isMobile ? (
-          <Navbar
-            ref={navbarRef}
-            onGridToggle={handleGridToggle}
-            onNoiseToggle={handleNoiseToggle}
-            onDvdToggle={handleDvdToggle}
-            onSpeedToggle={handleSpeedToggle}
-            onThemeChange={cycleTheme}
+          <NavigationBars
+            top={
+              <Navbar
+                ref={navbarRef}
+                onGridToggle={handleGridToggle}
+                onNoiseToggle={handleNoiseToggle}
+                onDvdToggle={handleDvdToggle}
+                onSpeedToggle={handleSpeedToggle}
+                onThemeChange={cycleTheme}
+              />
+            }
+            left={
+              <div className={`${textStyles.caption} text-[var(--color-text)]`}>
+                2025 running distance 464km
+              </div>
+            }
+            right={
+              <div className={`${textStyles.caption} text-[var(--color-text)]`}>
+                employer ramp
+              </div>
+            }
+            bottom={
+              <div className="flex items-center justify-center w-full">
+                <ExpandableToggleButton
+                  label="station"
+                  options={["work", "play", "about"]}
+                  value="work"
+                  onChange={(value) => console.log('Selected:', value)}
+                />
+              </div>
+            }
           />
         ) : (
           <MobileNavbar

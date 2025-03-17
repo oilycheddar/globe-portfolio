@@ -52,7 +52,8 @@ export default function PageWrapper({ children }: PageWrapperProps) {
   return (
     <div 
       ref={wrapperRef} 
-      className="fixed w-screen h-screen flex items-center justify-center bg-[var(--color-bg)] p-0 opacity-0">      
+      className="fixed w-screen h-screen flex items-center justify-center bg-[var(--color-bg)] p-0 opacity-0"
+    >      
       {/* Outer Shape (Darker Background) */}
       <div className="fixed w-screen h-screen flex items-center justify-center overflow-hidden" />
       
@@ -77,7 +78,7 @@ export default function PageWrapper({ children }: PageWrapperProps) {
             }}
           />
         )}
-        <div className="relative z-20">
+        <div className="relative w-full h-full">
           {children}
         </div>
       </div>

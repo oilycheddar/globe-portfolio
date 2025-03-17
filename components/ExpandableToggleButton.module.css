@@ -1,0 +1,88 @@
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.label {
+  color: var(--color-text);
+  padding-top: 4px;
+}
+
+.toggleWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.button {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background-color: var(--color-accent-primary);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.button[data-expanded="true"] {
+  background-color: var(--color-accent-primary);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.value {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.button[data-expanded="true"] .value {
+  color: var(--color-text-secondary);
+}
+
+.optionsContainer {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--color-accent-primary);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.option {
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  text-align: center;
+}
+
+.option:hover {
+  background-color: var(--color-accent-primary);
+}
+
+.option.selected {
+  background-color: var(--color-accent-primary);
+}
+
+.optionText {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.option:hover .optionText,
+.option.selected .optionText {
+  color: var(--color-text);
+} 
