@@ -7,7 +7,7 @@ export function ThemeColorManager() {
   const { theme } = useThemeStore();
 
   useEffect(() => {
-    // Create meta tag if it doesn't exist
+    // Create or update the theme-color meta tag
     let metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (!metaThemeColor) {
       metaThemeColor = document.createElement('meta');
@@ -15,9 +15,21 @@ export function ThemeColorManager() {
       document.head.appendChild(metaThemeColor);
     }
 
-    // Get the computed background color
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+    // Set theme-color to the computed --color-page-content value
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-page-content').trim();
     metaThemeColor.setAttribute('content', themeColor);
+
+    // Create or update the apple-mobile-web-app-status-bar-style meta tag for iOS Safari
+    let appleStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (!appleStatusBar) {
+      appleStatusBar = document.createElement('meta');
+      (appleStatusBar as HTMLMetaElement).name = 'apple-mobile-web-app-status-bar-style';
+      document.head.appendChild(appleStatusBar);
+    }
+
+    // Set to 'black-translucent' so that the background color extends into the status bar
+    appleStatusBar.setAttribute('content', 'black-translucent');
+
   }, [theme]);
 
   return null;
