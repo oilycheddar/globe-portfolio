@@ -85,7 +85,7 @@ export const themes = {
     dune: {
         "--color-page-content": colors.dune.dune300,
         "--bg-noise": "url('/images/optimized/bg-noise-dune.webp')", /* Background noise */
-        "--page-noise": "url('/images/optimized/page-noise-dune.webp')", /* Page content noise */
+        "--page-noise": "url('/images/page-noise-dune.png')", /* Page content noise */
         "--logo-noise": "url('/images/optimized/dune_logo_noise.webp')", /* logo noise */
         "--color-bg": colors.dune.dune500, 
         "--color-text": colors.earth.earth900,
