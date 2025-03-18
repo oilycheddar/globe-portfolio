@@ -6,13 +6,26 @@
 
 :root {
   --font-mono: "JetBrains Mono", monospace;
+  
+  /* Default theme values to prevent flash of unstyled content */
+  --color-page-content: #1A1A1A;
+  --color-bg: #1A1A1A;
+  --color-text: #FFFFFF;
+  --bg-noise: none;
+  --page-noise: none;
+  --logo-noise: none;
 }
 
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background-color: var(--color-page-content);
+    background-color: var(--color-bg);
+}
+
+/* Hide text content initially before GSAP animations */
+.text-content-hidden {
+    opacity: 0;
 }
 
 .noise-overlay {

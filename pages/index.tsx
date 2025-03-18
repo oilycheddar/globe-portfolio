@@ -349,7 +349,7 @@ export default function Home() {
         >
           <h1 
             ref={topTextRef}
-            className={`${textStyles.caption} text-[var(--color-text)]`}
+            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
           >
             product designer
           </h1>
@@ -358,7 +358,7 @@ export default function Home() {
           </div>
           <p 
             ref={bottomTextRef}
-            className={`${textStyles.caption} text-[var(--color-text)]`}
+            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
           >
             no code developer
           </p>
