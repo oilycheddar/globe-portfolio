@@ -30,7 +30,7 @@ html, body {
     inset: 0;
     background-image: var(--page-noise);
     background-size:cover;
-    opacity: 1;
+    opacity: 0.6;
     pointer-events: none;
     z-index: 1;
   }

@@ -25,6 +25,16 @@ const GlobalStyle = createGlobalStyle<{ theme: any }>`
       return styles;
     }}
   }
+
+  @media (max-width: 440px) {
+    :root {
+      --slime_shadow: 0px -16px 45px rgba(196,223,30,1);
+      --water_shadow: 0px -16px 45px rgba(230,214,251,1);
+      --acid_shadow: 0px -16px 45px rgba(99,33,238,1);
+      --bunny_shadow: 0px -16px 45px rgba(223,30,155,1);
+      --dune_shadow: 0px -16px 45px rgba(8,34,163,1);
+    }
+  }
 `;
 
 interface StyledComponentsProviderProps {

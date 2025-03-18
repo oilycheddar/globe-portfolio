@@ -20,7 +20,7 @@ export const themes = {
       "--color-text-secondary": colors.water.water900,
       "--color-accent-primary": colors.earth.earth100,
       "--color-accent-secondary": colors.water.water800,
-      "--slime_shadow": "0px -16px 100px rgba(196, 223, 30, 0.4)",
+      "--slime_shadow": "0px -8px 60px rgba(196, 223, 30, 0.5)",
       // Spacing variables
       "--space-xs": spacing.xs,
       "--space-sm": spacing.sm,
@@ -38,7 +38,7 @@ export const themes = {
         "--color-text-secondary": colors.water.water700,
         "--color-accent-primary": colors.water.water300,
         "--color-accent-secondary": colors.water.water700,
-        "--water_shadow": "0px -16px 100px rgba(230, 214, 251, 0.5)",
+        "--water_shadow": "0px -8px 60px rgba(230, 214, 251, 0.5)",
         // Spacing variables
         "--space-xs": spacing.xs,
         "--space-sm": spacing.sm,
@@ -56,7 +56,7 @@ export const themes = {
         "--color-text-secondary": colors.earth.earth50,
         "--color-accent-primary": colors.water.water700,
         "--color-accent-secondary": colors.earth.earth300,
-        "--acid_shadow": "0px -16px 100px rgba(99, 33, 238, 0.5)",
+        "--acid_shadow": "0px -8px 60px rgba(99, 33, 238, 0.5)",
         // Spacing variables
         "--space-xs": spacing.xs,
         "--space-sm": spacing.sm,
@@ -74,7 +74,7 @@ export const themes = {
         "--color-text-secondary": colors.water.water50,
         "--color-accent-primary": colors.water.water100,
         "--color-accent-secondary": colors.water.water300,
-        "--bunny_shadow": "0px -16px 100px rgba(223, 30, 155, 0.5)",
+        "--bunny_shadow": "0px -8px 60px rgba(223, 30, 155, 0.5)",
         // Spacing variables
         "--space-xs": spacing.xs,
         "--space-sm": spacing.sm,
@@ -92,7 +92,7 @@ export const themes = {
         "--color-text-secondary": colors.dune.dune200,
         "--color-accent-primary": colors.dune.dune100,
         "--color-accent-secondary": colors.dune.dune200,
-        "--dune_shadow": "0px -16px 100px rgba(8, 34, 163, 0.5)",
+        "--dune_shadow": "0px -8px 60px rgba(8, 34, 163, 0.5)",
         // Spacing variables
         "--space-xs": spacing.xs,
         "--space-sm": spacing.sm,
