@@ -14,17 +14,6 @@ html, body {
     height: 100%;
   }
   
-  :root {
-    --noise-bg-color: rgba(0, 0, 0, 0.05);
-    --noise-page-color: rgba(255, 255, 255, 0.1);
-    --noise-opacity: 0.5;
-    --noise-size: 3px;
-  }
-  
-  @keyframes noise-animation {
-    0% { background-position: 0 0; }
-    100% { background-position: 100px 100px; }
-  }
   
   .noise-overlay {
     position: absolute;

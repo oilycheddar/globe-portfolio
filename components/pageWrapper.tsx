@@ -53,11 +53,6 @@ export default function PageWrapper({ children, noiseEnabled = true }: PageWrapp
         {/* Static BG Noise */}
       </div>
       
-      {/* Animated Noise Layer */}
-      <div className="noise-animated-layer">
-        <div className="noise-animated"></div>
-      </div>
-
       {/* Inner Shape (Lighter Page Content) */}
       <div 
         ref={innerShapeRef}

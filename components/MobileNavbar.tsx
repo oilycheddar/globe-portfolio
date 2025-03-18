@@ -53,7 +53,7 @@ const IconWrapper = styled.div`
 const ToggleButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 16px;
   padding: 12px;
   width: 100%;
   justify-items: center;
@@ -66,7 +66,12 @@ const ToggleButtonsGrid = styled.div`
 `;
 
 const ApplyButton = styled.button`
-  ${textStyles.caption};
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-text);
   margin: 8px 0 12px;
   cursor: pointer;
@@ -78,7 +83,6 @@ const ApplyButton = styled.button`
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
-  font-family: var(--font-mono);
 `;
 
 const MenuIcon = () => (
@@ -261,7 +265,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
         ref={applyButtonRef}
         onClick={handleClose}
       >
-        Close
+        CLOSE
       </ApplyButton>
     </NavContainer>
   );

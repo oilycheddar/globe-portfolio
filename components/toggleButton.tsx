@@ -1,5 +1,43 @@
-import { textStyles } from '../styles/text';
-import styles from './ToggleButton.module.css';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const Label = styled.span`
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+`;
+
+const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean }>`
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background-color: ${props => props.$isMulti || props.$isActive ? 'var(--color-accent-primary)' : 'var(--color-accent-secondary)'};
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  text-align: center;
+`;
+
+const Value = styled.span<{ $isActive?: boolean; $isMulti?: boolean }>`
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: ${props => props.$isMulti || props.$isActive ? 'var(--color-text-secondary)' : 'var(--color-text)'};
+`;
 
 type BaseToggleProps = {
   label: string;
@@ -32,19 +70,21 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   };
 
   return (
-    <div className={`${styles.container} ${textStyles.caption}`}>
-      <span className={`${textStyles.caption} ${styles.label}`}>{props.label}</span>
-      <div 
+    <Container>
+      <Label>{props.label}</Label>
+      <Button 
         onClick={handleClick}
         data-type={props.type}
-        className={`${styles.button} ${
-          props.type === 'boolean' && props.value ? styles.active : ''
-        }`}
+        $isActive={props.type === 'boolean' && props.value}
+        $isMulti={props.type === 'multi'}
       >
-        <span className={`${textStyles.caption} ${styles.value}`}>
+        <Value 
+          $isActive={props.type === 'boolean' && props.value}
+          $isMulti={props.type === 'multi'}
+        >
           {props.type === 'boolean' ? (props.value ? 'ON' : 'OFF') : props.value}
-        </span>
-      </div>
-    </div>
+        </Value>
+      </Button>
+    </Container>
   );
 }
