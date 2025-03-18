@@ -28,11 +28,11 @@ const GlobalStyle = createGlobalStyle<{ theme: any }>`
 
   @media (max-width: 440px) {
     :root {
-      --slime_shadow: 0px -16px 45px rgba(196,223,30,1);
-      --water_shadow: 0px -16px 45px rgba(230,214,251,1);
-      --acid_shadow: 0px -16px 45px rgba(99,33,238,1);
-      --bunny_shadow: 0px -16px 45px rgba(223,30,155,1);
-      --dune_shadow: 0px -16px 45px rgba(8,34,163,1);
+      --slime_shadow: 0px -8px 50px rgba(196,223,30,.9);
+      --water_shadow: 0px -8px 50px rgba(230,214,251,.9);
+      --acid_shadow: 0px -8px 50px rgba(99,33,238,.9);
+      --bunny_shadow: 0px -8px 50px rgba(223,30,155,.9);
+      --dune_shadow: 0px -8px 50px rgba(8,34,163,.9);
     }
   }
 `;
