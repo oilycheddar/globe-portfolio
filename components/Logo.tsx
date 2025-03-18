@@ -26,7 +26,7 @@ export default function Logo({ className = '' }: LogoProps) {
         <defs>
           <pattern id="noisePattern" patternUnits="userSpaceOnUse" width="692" height="346">
             <image 
-              href={`/images/${theme}_logo_noise.png`}
+              href={`/images/optimized/${theme}_logo_noise.webp`}
               width="692" 
               height="346" 
               preserveAspectRatio="xMidYMid slice"
