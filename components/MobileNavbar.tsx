@@ -1,6 +1,6 @@
-import { useState, forwardRef, useRef, useImperativeHandle, useEffect } from 'react';
+import { useState, forwardRef, useRef, useImperativeHandle, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { textStyles, typography } from '../styles/text';
+import { textStyles } from '../styles/text';
 import { ToggleButton } from './toggleButton';
 import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
@@ -21,6 +21,8 @@ const NavContainer = styled.div<{ $isExpanded: boolean }>`
   margin: 0 auto;
   width: ${props => props.$isExpanded ? '100%' : '44px'};
   max-width: ${props => props.$isExpanded ? '100%' : '44px'};
+  height: ${props => props.$isExpanded ? 'auto' : '32px'};
+  max-height: ${props => props.$isExpanded ? '280px' : '32px'};
   background-color: var(--color-bg);
   display: flex;
   flex-direction: column;
@@ -32,28 +34,7 @@ const NavContainer = styled.div<{ $isExpanded: boolean }>`
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   overflow: hidden;
-  padding-top: env(safe-area-inset-top);
-  
-  /* Add noise overlay */
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  &::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: env(safe-area-inset-top);
-    background-color: var(--color-bg);
-    z-index: 29;
-  }
+  transition: width 0.2s ease-out, max-width 0.2s ease-out, height 0.2s ease-out, max-height 0.2s ease-out;
 `;
 
 const IconWrapper = styled.div`
@@ -67,42 +48,37 @@ const IconWrapper = styled.div`
   align-items: center;
   justify-content: center;
   color: var(--color-accent-primary);
-  
-  img {
-    color: inherit;
-  }
 `;
 
 const ToggleButtonsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 12px;
   width: 100%;
   justify-items: center;
   align-items: center;
   position: relative;
   z-index: 2;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
 `;
 
-const ApplyButton = styled.a`
-  ${typography.caption};
-  color: var(--color-text) !important;
-  text-decoration: none !important;
-  margin: 0 0 20px;
+const ApplyButton = styled.button`
+  ${textStyles.caption};
+  color: var(--color-text);
+  margin: 8px 0 12px;
   cursor: pointer;
   position: relative;
   z-index: 2;
-  display: inline-block;
-  
-  &:hover, &:visited, &:active {
-    color: var(--color-text) !important;
-    text-decoration: none !important;
-  }
-  
-  span {
-    color: var(--color-text) !important;
-  }
+  background: none;
+  border: none;
+  padding: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  font-family: var(--font-mono);
 `;
 
 const MenuIcon = () => (
@@ -116,9 +92,9 @@ interface MobileNavbarProps {
   onNoiseToggle: (value: boolean) => void;
   onDvdToggle: (value: boolean) => void;
   onSpeedToggle: (value: boolean) => void;
-  onThemeChange?: (theme: string) => void;
   onExpandedChange?: (expanded: boolean) => void;
   className?: string;
+  initialNoiseState?: boolean;
 }
 
 export interface MobileNavbarRef {
@@ -130,121 +106,110 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onNoiseToggle,
   onDvdToggle,
   onSpeedToggle,
-  onThemeChange,
   onExpandedChange,
-  className = ''
+  className = '',
+  initialNoiseState = true
 }, ref) => {
-  const { theme } = useThemeStore();
+  const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const applyButtonRef = useRef<HTMLAnchorElement>(null);
+  const applyButtonRef = useRef<HTMLButtonElement>(null);
   
-  // Store pending changes
-  const [pendingChanges, setPendingChanges] = useState({
-    grid: false,
-    noise: false,
-    dvd: false,
-    speed: false
-  });
+  const [isDvdActive, setIsDvdActive] = useState(false);
+  const [isNoiseActive, setIsNoiseActive] = useState(initialNoiseState);
 
   useImperativeHandle(ref, () => ({
     container: containerRef.current
   }));
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     const newExpanded = !isExpanded;
     setIsExpanded(newExpanded);
     onExpandedChange?.(newExpanded);
-  };
+  }, [isExpanded, onExpandedChange]);
 
-  // Animation effect
-  useEffect(() => {
-    if (!containerRef.current || !contentRef.current || !applyButtonRef.current) return;
+  // Memoize animation timeline creation
+  const createTimeline = useCallback(() => {
+    if (!containerRef.current || !contentRef.current || !applyButtonRef.current) return null;
 
     const tl = gsap.timeline({
       paused: true,
       defaults: {
-        duration: 0.4,
-        ease: "power3.out"
+        duration: 0.2,
+        ease: "power2.out"
       }
     });
 
-    // Set initial states
-    gsap.set(containerRef.current, {
-      transformOrigin: "top right",
-      width: isExpanded ? "100%" : "44px",
-      maxWidth: isExpanded ? "100%" : "44px"
-    });
-
     if (isExpanded) {
+      // Set initial state
       gsap.set([contentRef.current, applyButtonRef.current], {
+        visibility: 'visible',
         opacity: 0,
-        scale: 0.95,
-        y: -10
+        y: -10,
+        scale: 0.98
       });
-    }
 
-    // Set up the animation
-    if (isExpanded) {
       // Expand animation
       tl.to(containerRef.current, {
         width: "100%",
         maxWidth: "100%",
-        scale: 1,
-        opacity: 1,
-        duration: 0.4,
-        ease: "power3.out"
+        duration: 0.2
       })
-      .to(contentRef.current, {
-        scale: 1,
+      .to([contentRef.current, applyButtonRef.current], {
         opacity: 1,
         y: 0,
-        duration: 0.3,
-        clearProps: "all"
-      }, "-=0.2")
-      .to(applyButtonRef.current, {
         scale: 1,
-        opacity: 1,
-        y: 0,
-        duration: 0.3,
-        clearProps: "all"
-      }, "-=0.25");
+        duration: 0.2,
+        stagger: 0.05
+      }, "-=0.1");
     } else {
       // Collapse animation
       tl.to([contentRef.current, applyButtonRef.current], {
-        scale: 0.95,
         opacity: 0,
         y: -10,
-        duration: 0.25,
-        ease: "power3.in"
+        scale: 0.98,
+        duration: 0.15,
+        stagger: 0.05
       })
       .to(containerRef.current, {
-        scale: 0.95,
         width: "44px",
         maxWidth: "44px",
-        duration: 0.3,
-        ease: "power3.inOut",
-        clearProps: "all"
-      }, "-=0.15");
+        duration: 0.2
+      }, "-=0.1")
+      .set([contentRef.current, applyButtonRef.current], {
+        visibility: 'hidden'
+      });
     }
 
-    // Play the animation
-    tl.play();
-
-    // Cleanup
-    return () => {
-      tl.kill();
-      gsap.set([containerRef.current, contentRef.current, applyButtonRef.current], {
-        clearProps: "all"
-      });
-    };
+    return tl;
   }, [isExpanded]);
 
-  const handleClose = () => {
+  // Run animation effect
+  useEffect(() => {
+    const tl = createTimeline();
+    if (tl) {
+      tl.play();
+      return () => {
+        tl.kill();
+      };
+    }
+  }, [createTimeline]);
+
+  const handleClose = useCallback(() => {
     setIsExpanded(false);
     onExpandedChange?.(false);
+  }, [onExpandedChange]);
+
+  const handleDvdToggle = (value: boolean) => {
+    setIsDvdActive(value);
+    onDvdToggle(value);
+  };
+
+  const handleNoiseToggle = (value: boolean) => {
+    setIsNoiseActive(value);
+    onNoiseToggle(value);
   };
 
   return (
@@ -257,66 +222,47 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
         <MenuIcon />
       </IconWrapper>
       
-      {isExpanded && (
-        <>
-          <ToggleButtonsGrid ref={contentRef} className={jetbrainsMono.className}>
-            <ToggleButton
-              type="multi"
-              label="theme"
-              value={theme}
-              options={themeKeys}
-              onChange={(value: string) => onThemeChange?.(value)}
-            />
-            <ToggleButton
-              type="boolean"
-              label="grid"
-              value={pendingChanges.grid}
-              onChange={(value) => {
-                setPendingChanges(prev => ({ ...prev, grid: value }));
-                onGridToggle(value);
-              }}
-            />
-            <ToggleButton
-              type="boolean"
-              label="noise"
-              value={pendingChanges.noise}
-              onChange={(value) => {
-                setPendingChanges(prev => ({ ...prev, noise: value }));
-                onNoiseToggle(value);
-              }}
-            />
-            <ToggleButton
-              type="boolean"
-              label="dvd"
-              value={pendingChanges.dvd}
-              onChange={(value) => {
-                setPendingChanges(prev => ({ ...prev, dvd: value }));
-                onDvdToggle(value);
-              }}
-            />
-            {pendingChanges.dvd && (
-              <ToggleButton
-                type="boolean"
-                label="speed"
-                value={pendingChanges.speed}
-                onChange={(value) => {
-                  setPendingChanges(prev => ({ ...prev, speed: value }));
-                  onSpeedToggle(value);
-                }}
-              />
-            )}
-          </ToggleButtonsGrid>
-          
-          <ApplyButton 
-            ref={applyButtonRef}
-            onClick={handleClose}
-            href="#"
-            className={jetbrainsMono.className}
-          >
-            <span>CLOSE</span>
-          </ApplyButton>
-        </>
-      )}
+      <ToggleButtonsGrid ref={contentRef} className={jetbrainsMono.className}>
+        <ToggleButton
+          type="multi"
+          label="theme"
+          value={theme}
+          options={themeKeys}
+          onChange={setTheme}
+        />
+        <ToggleButton
+          type="boolean"
+          label="grid"
+          value={false}
+          onChange={onGridToggle}
+        />
+        <ToggleButton
+          type="boolean"
+          label="noise"
+          value={isNoiseActive}
+          onChange={handleNoiseToggle}
+        />
+        <ToggleButton
+          type="boolean"
+          label="dvd"
+          value={isDvdActive}
+          onChange={handleDvdToggle}
+        />
+        {isDvdActive && (
+          <ToggleButton
+            type="boolean"
+            label="speed"
+            value={false}
+            onChange={onSpeedToggle}
+          />
+        )}
+      </ToggleButtonsGrid>
+      <ApplyButton 
+        ref={applyButtonRef}
+        onClick={handleClose}
+      >
+        Close
+      </ApplyButton>
     </NavContainer>
   );
 }); 

@@ -4,9 +4,10 @@ import gsap from "gsap";
 
 interface PageWrapperProps {
   children: React.ReactNode;
+  noiseEnabled?: boolean;
 }
 
-export default function PageWrapper({ children }: PageWrapperProps) {
+export default function PageWrapper({ children, noiseEnabled = true }: PageWrapperProps) {
   const { theme } = useThemeStore();
   const innerShapeRef = useRef<HTMLDivElement>(null);
 
@@ -62,9 +63,11 @@ export default function PageWrapper({ children }: PageWrapperProps) {
         ref={innerShapeRef}
         className="fixed bg-[var(--color-page-content)] rounded-[20px] overflow-hidden"
       >
-        <div className="absolute w-full h-full noise-page-overlay pointer-events-none overflow-hidden rounded-[8px]">
-          {/* Page Content Noise */}
-        </div>
+        {noiseEnabled && (
+          <div className="absolute w-full h-full noise-page-overlay pointer-events-none overflow-hidden rounded-[8px]">
+            {/* Page Content Noise */}
+          </div>
+        )}
         <div className="relative z-20">
           {children}
         </div>

@@ -91,6 +91,7 @@ export default function Home() {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const [noiseEnabled, setNoiseEnabled] = useState(true);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -302,6 +303,7 @@ export default function Home() {
   };
 
   const handleNoiseToggle = (value: boolean) => {
+    setNoiseEnabled(value);
     console.log('Noise toggled:', value);
   };
 
@@ -314,7 +316,7 @@ export default function Home() {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
         {isMobile ? (
           <MobileNavbar
@@ -323,9 +325,9 @@ export default function Home() {
             onNoiseToggle={handleNoiseToggle}
             onDvdToggle={handleDvdToggle}
             onSpeedToggle={handleSpeedToggle}
-            onThemeChange={cycleTheme}
             onExpandedChange={setIsNavExpanded}
             className="mobile-navbar"
+            initialNoiseState={noiseEnabled}
           />
         ) : (
           <Navbar
@@ -335,6 +337,7 @@ export default function Home() {
             onDvdToggle={handleDvdToggle}
             onSpeedToggle={handleSpeedToggle}
             onThemeChange={cycleTheme}
+            initialNoiseState={noiseEnabled}
           />
         )}
         <StyledContent 

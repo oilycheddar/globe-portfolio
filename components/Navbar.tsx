@@ -42,6 +42,7 @@ interface NavbarProps {
   onSpeedToggle: (value: boolean) => void;
   onThemeChange?: () => void;
   className?: string;
+  initialNoiseState?: boolean;
 }
 
 export interface NavbarRef {
@@ -59,7 +60,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onDvdToggle, 
   onSpeedToggle,
   onThemeChange,
-  className = ''
+  className = '',
+  initialNoiseState = true
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -119,7 +121,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
           <ToggleButton
             type="boolean"
             label="noise"
-            value={false}
+            value={initialNoiseState}
             onChange={onNoiseToggle}
           />
         </div>
