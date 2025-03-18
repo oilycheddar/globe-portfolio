@@ -16,6 +16,7 @@ type MultiToggleProps<T> = BaseToggleProps & {
   value: T;
   options: T[];
   onChange: (value: T) => void;
+  link?: string;
 };
 
 type ToggleButtonProps<T> = BooleanToggleProps | MultiToggleProps<T>;
@@ -31,6 +32,28 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
     }
   };
 
+  const renderValue = () => {
+    if (props.type === 'boolean') {
+      return props.value ? 'ON' : 'OFF';
+    }
+    
+    if ('link' in props && props.link) {
+      return (
+        <a 
+          href={props.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.link}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {props.value}
+        </a>
+      );
+    }
+    
+    return props.value;
+  };
+
   return (
     <div className={`${styles.container} ${textStyles.caption}`}>
       <span className={`${textStyles.caption} ${styles.label}`}>{props.label}</span>
@@ -42,7 +65,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
         }`}
       >
         <span className={`${textStyles.caption} ${styles.value}`}>
-          {props.type === 'boolean' ? (props.value ? 'ON' : 'OFF') : props.value}
+          {renderValue()}
         </span>
       </div>
     </div>

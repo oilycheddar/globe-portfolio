@@ -1,11 +1,11 @@
-import { useThemeStore } from '../hooks/useThemeStore';
+import { useVisualStore } from '../hooks/useVisualStore';
 
 interface LogoProps {
   className?: string;
 }
 
-export default function Logo({ className = '' }: LogoProps) {
-  const { theme } = useThemeStore();
+export function Logo({ className = '' }: LogoProps) {
+  const { theme } = useVisualStore();
   
   const getImagePath = (theme: string) => {
     const webpPath = `/images/optimized/${theme}_logo_noise.webp`;

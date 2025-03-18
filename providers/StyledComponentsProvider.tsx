@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { themes } from '../styles/themes';
-import { useThemeStore } from '../hooks/useThemeStore';
+import { useVisualStore } from '../hooks/useVisualStore';
 
 const GlobalStyle = createGlobalStyle<{ theme: any }>`
   :root {
@@ -28,7 +28,7 @@ interface StyledComponentsProviderProps {
 }
 
 export function StyledComponentsProvider({ children }: StyledComponentsProviderProps) {
-  const { theme } = useThemeStore();
+  const { theme } = useVisualStore();
   const currentTheme = themes[theme as keyof typeof themes];
 
   return (

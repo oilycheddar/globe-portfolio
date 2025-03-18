@@ -1,10 +1,9 @@
 'use client';
 
-import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import Logo from "../components/Logo";
+import { Logo } from "../components/Logo";
 import { Ref, useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
@@ -13,9 +12,10 @@ import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
-import { useNoiseStore } from "../hooks/useNoiseStore";
+import { useVisualStore } from "../hooks/useVisualStore";
 import { NavigationBars } from "../components/NavigationBars";
 import { ExpandableToggleButton } from "../components/ExpandableToggleButton";
+import { useStravaDistance } from "../hooks/useStravaDistance";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -82,7 +82,7 @@ interface NavbarProps {
 }
 
 export default function Home() {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme } = useVisualStore();
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
   const helloTextRef = useRef<HTMLHeadingElement>(null);
@@ -92,7 +92,15 @@ export default function Home() {
   const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const { toggleNoise, isNoiseEnabled } = useNoiseStore();
+  const { toggleNoise } = useVisualStore();
+  const { distance, loading, error } = useStravaDistance();
+  const [runningDistance, setRunningDistance] = useState(loading ? "..." : `${distance}KM`);
+  const [employer, setEmployer] = useState("Ramp");
+  
+  // Add refs for navigation elements
+  const employerRef = useRef<HTMLDivElement>(null);
+  const stationRef = useRef<HTMLDivElement>(null);
+  const runningDistanceRef = useRef<HTMLDivElement>(null);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -111,7 +119,7 @@ export default function Home() {
         gsap.set(navbar.container, {
           opacity: 0,
           y: -20,
-          visibility: 'visible' // Make visible before animation
+          visibility: 'visible'
         });
 
         // Hide all toggle buttons
@@ -134,11 +142,18 @@ export default function Home() {
         });
       }
 
+      // Set initial states for other navigation elements
+      gsap.set([employerRef.current, stationRef.current, runningDistanceRef.current], {
+        opacity: 0,
+        filter: 'blur(20px)',
+        visibility: 'visible'
+      });
+
       // Set initial state for content
       gsap.set(contentRef.current, {
         opacity: 0,
         y: 20,
-        visibility: 'visible' // Make visible before animation
+        visibility: 'visible'
       });
 
       // Create main timeline with a delay to wait for innerShape animation
@@ -212,10 +227,20 @@ export default function Home() {
               ease: "power2.out",
               stagger: 0.1,
               clearProps: "all"
-            }, `-=0.45`); // Slightly more overlap for smoother sequence
+            }, `-=0.45`);
           }
         });
       }
+
+      // Animate other navigation elements simultaneously
+      // Start at the same time as the first toggle button but with longer duration
+      tl.to([employerRef.current, stationRef.current, runningDistanceRef.current], {
+        opacity: 1,
+        filter: 'blur(0px)',
+        duration: 0.8,
+        ease: "power2.out",
+        clearProps: "all"
+      }, "-=0.6"); // Start at the same time as the first toggle button
     }, contentRef);
 
     return ctx;
@@ -242,6 +267,12 @@ export default function Home() {
     // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (distance !== null) {
+      setRunningDistance(`${distance}KM`);
+    }
+  }, [distance]);
 
   // Get random character set
   const getRandomCharSet = () => {
@@ -366,17 +397,30 @@ export default function Home() {
               />
             }
             left={
-              <div className={`${textStyles.caption} text-[var(--color-text)]`}>
-                2025 running distance 464km
+              <div ref={runningDistanceRef}>
+                <ToggleButton
+                  type="multi"
+                  label="2025 running distance"
+                  value={runningDistance}
+                  options={[runningDistance]}
+                  onChange={setRunningDistance}
+                />
               </div>
             }
             right={
-              <div className={`${textStyles.caption} text-[var(--color-text)]`}>
-                employer ramp
+              <div ref={employerRef}>
+                <ToggleButton
+                  type="multi"
+                  label="employer"
+                  value={employer}
+                  options={["Ramp"]}
+                  onChange={setEmployer}
+                  link="https://www.ramp.com"
+                />
               </div>
             }
             bottom={
-              <div className="flex items-center justify-center w-full">
+              <div ref={stationRef} className="flex items-center justify-center w-full">
                 <ExpandableToggleButton
                   label="station"
                   options={["work", "play", "about"]}

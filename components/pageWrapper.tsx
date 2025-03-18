@@ -1,5 +1,4 @@
-import { useThemeStore } from "../hooks/useThemeStore";
-import { useNoiseStore } from "../hooks/useNoiseStore";
+import { useVisualStore } from "../hooks/useVisualStore";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
@@ -10,7 +9,7 @@ interface PageWrapperProps {
 export default function PageWrapper({ children }: PageWrapperProps) {
   const innerShapeRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { isNoiseEnabled } = useNoiseStore();
+  const { isNoiseEnabled } = useVisualStore();
 
   useEffect(() => {
     const ctx = gsap.context(() => {

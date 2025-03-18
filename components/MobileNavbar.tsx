@@ -2,8 +2,7 @@ import { useState, forwardRef, useRef, useImperativeHandle, useEffect, useCallba
 import styled from 'styled-components';
 import { textStyles, typography } from '../styles/text';
 import { ToggleButton } from './toggleButton';
-import { useThemeStore } from '../hooks/useThemeStore';
-import { useNoiseStore } from '../hooks/useNoiseStore';
+import { useVisualStore } from '../hooks/useVisualStore';
 import { themes } from '../styles/themes';
 import { JetBrains_Mono } from 'next/font/google';
 import { gsap } from '../utils/gsap';
@@ -123,8 +122,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onExpandedChange,
   className = ''
 }, ref) => {
-  const { theme, setTheme } = useThemeStore();
-  const { isNoiseEnabled } = useNoiseStore();
+  const { theme, setTheme, isNoiseEnabled, toggleNoise } = useVisualStore();
   const themeKeys = Object.keys(themes);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -156,19 +154,17 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     const tl = gsap.timeline({
       paused: true,
       defaults: {
-        duration: 0.2,
-        ease: "power2.out"
+        duration: 0.3,
+        ease: "power3.inOut"
       }
     });
 
     // Set initial states
-    gsap.set(containerRef.current, {
-      transformOrigin: "top right",
-      width: isExpanded ? "100%" : "44px",
-      maxWidth: isExpanded ? "100%" : "44px"
-    });
-
     if (isExpanded) {
+      gsap.set(containerRef.current, {
+        width: "44px",
+        maxWidth: "44px"
+      });
       gsap.set([contentRef.current, applyButtonRef.current], {
         opacity: 0,
         scale: 0.98,
@@ -178,35 +174,30 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
 
     // Set up the animation
     if (isExpanded) {
-      // Expand animation - simplified
+      // Expand animation
       tl.to(containerRef.current, {
         width: "100%",
         maxWidth: "100%",
-        duration: 0.2
       })
       .to([contentRef.current, applyButtonRef.current], {
         opacity: 1,
         scale: 1,
         y: 0,
-        duration: 0.15,
         stagger: 0.05,
         clearProps: "all"
-      }, "-=0.1");
+      }, "<"); // Start at the same time as the container animation
     } else {
-      // Collapse animation - simplified
-      tl.to([contentRef.current, applyButtonRef.current], {
+      // Collapse animation
+      tl.to(containerRef.current, {
+        width: "44px",
+        maxWidth: "44px",
+      })
+      .to([contentRef.current, applyButtonRef.current], {
         opacity: 0,
         scale: 0.98,
         y: -5,
-        duration: 0.15,
-        stagger: 0.05
-      })
-      .to(containerRef.current, {
-        width: "44px",
-        maxWidth: "44px",
-        duration: 0.15,
-        clearProps: "all"
-      }, "-=0.1");
+        stagger: 0.03,
+      }, "<"); // Start at the same time as the container animation
     }
 
     // Play the animation
@@ -222,18 +213,16 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   }, [isExpanded]);
 
   // Optimize theme change handler
-  const themeChangeTimeout = useRef<NodeJS.Timeout | null>(null);
-  
   const handleThemeChange = useCallback((value: string) => {
-    // Debounce theme changes to prevent rapid re-renders
-    if (themeChangeTimeout.current) {
-      clearTimeout(themeChangeTimeout.current);
-    }
+    if (value === theme) return;
     
-    themeChangeTimeout.current = setTimeout(() => {
+    // Batch theme updates
+    requestAnimationFrame(() => {
+      setTheme(value);
       onThemeChange?.(value);
-    }, 50);
-  }, [onThemeChange]);
+    });
+  }, [theme, setTheme, onThemeChange]);
+
   // Optimize close handler
   const handleClose = useCallback(() => {
     if (!containerRef.current || !contentRef.current || !applyButtonRef.current) return;
@@ -281,12 +270,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
               label="theme"
               value={theme}
               options={themeKeys}
-              onChange={(value: string) => {
-                // Immediately update theme without waiting for animation
-                setTheme(value);
-                // Trigger any additional theme change effects
-                onThemeChange?.(value);
-              }}
+              onChange={handleThemeChange}
             />
             <ToggleButton
               type="boolean"
@@ -298,7 +282,10 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
               type="boolean"
               label="noise"
               value={isNoiseEnabled}
-              onChange={onNoiseToggle}
+              onChange={() => {
+                toggleNoise();
+                onNoiseToggle(!isNoiseEnabled);
+              }}
             />
             <ToggleButton
               type="boolean"

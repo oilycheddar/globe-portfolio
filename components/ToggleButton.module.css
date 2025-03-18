@@ -43,4 +43,15 @@
 /* Multi-toggle variant always uses secondary color */
 .button[data-type="multi"] .value {
   color: var(--color-text-secondary);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  all: unset;
+}
+
+.link:hover {
+  opacity: 0.8;
 } 
