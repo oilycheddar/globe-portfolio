@@ -1,5 +1,5 @@
 import { useThemeStore } from "../hooks/useThemeStore";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
 interface PageWrapperProps {
@@ -11,53 +11,33 @@ export default function PageWrapper({ children, noiseEnabled = true }: PageWrapp
   const { theme } = useThemeStore();
   const innerShapeRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (innerShapeRef.current) {
       const mediaQuery = window.matchMedia('(max-width: 440px)');
-      
-      const updateInset = (e: MediaQueryListEvent | MediaQueryList) => {
-        gsap.fromTo(innerShapeRef.current, 
-          {
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          },
-          {
-            top: e.matches ? 'max(16px, env(safe-area-inset-top))' : '16px',
-            right: e.matches ? '16px' : '16px',
-            bottom: e.matches ? '16px' : '16px',
-            left: e.matches ? '16px' : '16px',
-            duration: 1.2,
-            delay: 0.75,
-            ease: "expo.out"
-          }
-        );
+      const topValue = mediaQuery.matches ? 'max(16px, env(safe-area-inset-top))' : '16px';
+
+      // Set the final position immediately with opacity 0
+      gsap.set(innerShapeRef.current, { top: topValue, right: '16px', bottom: '16px', left: '16px', opacity: 0 });
+
+      // Animate opacity from 0% to 100%
+      gsap.to(innerShapeRef.current, { opacity: 1, duration: 1, delay: 0.5, ease: "power1.out" });
+
+      // Listen for media query changes to update the top offset accordingly
+      const updateTop = (e: MediaQueryListEvent | MediaQueryList) => {
+        const newTop = e.matches ? 'max(16px, env(safe-area-inset-top))' : '16px';
+        gsap.set(innerShapeRef.current, { top: newTop });
       };
 
-      // Initial check
-      updateInset(mediaQuery);
+      mediaQuery.addEventListener('change', updateTop);
 
-      // Add listener for changes
-      mediaQuery.addEventListener('change', updateInset);
-
-      // Cleanup
-      return () => mediaQuery.removeEventListener('change', updateInset);
+      return () => mediaQuery.removeEventListener('change', updateTop);
     }
   }, []);
 
   return (
-    <div className="fixed w-screen h-screen flex items-center justify-center bg-[var(--color-bg)] p-0">      
-      {/* Outer Shape (Darker Background) */}
-      <div className="fixed w-screen h-screen flex items-center justify-center overflow-hidden">
-        {/* Static BG Noise */}
-      </div>
-      
+    <div className="fixed w-screen h-screen flex items-center justify-center bg-[var(--color-bg)] p-0">
       {/* Inner Shape (Lighter Page Content) */}
-      <div 
-        ref={innerShapeRef}
-        className="fixed bg-[var(--color-page-content)] rounded-[20px] overflow-hidden"
-      >
+      <div ref={innerShapeRef} className="fixed bg-[var(--color-page-content)] rounded-[20px] overflow-hidden">
         {noiseEnabled && (
           <div className="absolute w-full h-full noise-page-overlay pointer-events-none overflow-hidden rounded-[8px]">
             {/* Page Content Noise */}
