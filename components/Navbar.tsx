@@ -20,6 +20,10 @@ const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   text-transform: uppercase;
   position: relative;
   z-index: 10;
+
+  @media (max-width: 440px) {
+    display: none; /* Hide the top nav on mobile */
+  }
 `;
 
 const LeftNavContainer = styled(NavContainer)`
@@ -35,6 +39,10 @@ const LeftNavContainer = styled(NavContainer)`
   justify-content: center;
   pointer-events: auto;
   z-index: 20;
+
+  @media (max-width: 440px) {
+    display: none; /* Hide the left nav on mobile */
+  }
 `;
 
 const RightNavContainer = styled(NavContainer)`
@@ -50,6 +58,10 @@ const RightNavContainer = styled(NavContainer)`
   justify-content: center;
   pointer-events: auto;
   z-index: 20;
+
+  @media (max-width: 440px) {
+    display: none; /* Hide the right nav on mobile */
+  }
 `;
 
 const BottomNavContainer = styled(NavContainer)`
@@ -58,6 +70,11 @@ const BottomNavContainer = styled(NavContainer)`
   left: 0;
   right: 0;
   margin: 0 auto;
+  display: flex; /* Always visible */
+
+  @media (max-width: 440px) {
+    display: flex; /* Ensure bottom nav is visible on mobile */
+  }
 `;
 
 const ToggleGroup = styled.div`

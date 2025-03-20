@@ -319,56 +319,55 @@ export default function Home() {
     console.log('Speed toggled:', value);
   };
 
+  const handleNavExpandedChange = (value: boolean) => {
+    setIsNavExpanded(value);
+  };
+
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
-        <div className="relative w-full h-full">
-          {isMobile ? (
-            <MobileNavbar
-              ref={navbarRef as any}
-              onGridToggle={handleGridToggle}
-              onNoiseToggle={handleNoiseToggle}
-              onDvdToggle={handleDvdToggle}
-              onSpeedToggle={handleSpeedToggle}
-              onExpandedChange={setIsNavExpanded}
-              className="mobile-navbar"
-              initialNoiseState={noiseEnabled}
-            />
-          ) : (
-            <Navbar
-              ref={navbarRef as Ref<NavbarRef>}
-              onGridToggle={handleGridToggle}
-              onNoiseToggle={handleNoiseToggle}
-              onDvdToggle={handleDvdToggle}
-              onSpeedToggle={handleSpeedToggle}
-              onThemeChange={cycleTheme}
-              initialNoiseState={noiseEnabled}
-            />
-          )}
-          <StyledContent 
-            ref={contentRef}
-            className={`${jetbrainsMono.className}`}
-            style={isMobile && isNavExpanded ? {
-              filter: 'blur(8px)'
-            } : undefined}
+        {isMobile ? (
+          <MobileNavbar
+            className="mobile-navbar"
+            onGridToggle={handleGridToggle}
+            onNoiseToggle={handleNoiseToggle}
+            onDvdToggle={handleDvdToggle}
+            onSpeedToggle={handleSpeedToggle}
+            onExpandedChange={handleNavExpandedChange}
+            initialNoiseState={noiseEnabled}
+          />
+        ) : null}
+        <Navbar
+          onGridToggle={handleGridToggle}
+          onNoiseToggle={handleNoiseToggle}
+          onDvdToggle={handleDvdToggle}
+          onSpeedToggle={handleSpeedToggle}
+          onThemeChange={cycleTheme}
+          initialNoiseState={noiseEnabled}
+        />
+        <StyledContent 
+          ref={contentRef}
+          className={`${jetbrainsMono.className}`}
+          style={isMobile && isNavExpanded ? {
+            filter: 'blur(8px)'
+          } : undefined}
+        >
+          <h1 
+            ref={topTextRef}
+            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
           >
-            <h1 
-              ref={topTextRef}
-              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
-            >
-              product designer
-            </h1>
-            <div className="w-[50vw] aspect-[2/1]">
-              <Logo />
-            </div>
-            <p 
-              ref={bottomTextRef}
-              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
-            >
-              no code developer
-            </p>
-          </StyledContent>
-        </div>
+            product designer
+          </h1>
+          <div className="w-[50vw] aspect-[2/1]">
+            <Logo />
+          </div>
+          <p 
+            ref={bottomTextRef}
+            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+          >
+            no code developer
+          </p>
+        </StyledContent>
       </ContentWrapper>
     </PageWrapper>
   );
