@@ -19,9 +19,9 @@ const Label = styled.span`
   color: var(--color-text);
 `;
 
-const ButtonWrapper = styled.div`
+const ButtonWrapper = styled.div<{ $isExpandable?: boolean }>`
   position: relative;
-  width: 72px; /* Width of "ABOUT" + padding (8px * 2) */
+  width: ${props => props.$isExpandable ? '72px' : 'auto'}; /* Only fixed width for expandable */
 `;
 
 const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean; $isExpandable?: boolean }>`
@@ -37,7 +37,7 @@ const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded
   position: relative;
   z-index: 2;
   white-space: nowrap;
-  width: 100%;
+  width: ${props => props.$isExpandable ? '100%' : 'auto'}; /* Only full width for expandable */
 `;
 
 const Value = styled.span<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean; $isExpandable?: boolean }>`
@@ -174,7 +174,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   return (
     <Container ref={containerRef}>
       <Label>{props.label}</Label>
-      <ButtonWrapper>
+      <ButtonWrapper $isExpandable={props.type === 'expandable'}>
         <Button 
           onClick={handleClick}
           data-type={props.type}
