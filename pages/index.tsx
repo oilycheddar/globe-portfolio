@@ -31,12 +31,13 @@ const scrambleCharSets = {
 
 // Styled container to ensure theme variables are properly applied
 const ContentWrapper = styled.div`
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   
   /* Position for mobile navbar */
   .mobile-navbar {
@@ -55,20 +56,23 @@ const StyledContent = styled.div`
   --space-lg: 24px;
   --space-xl: 40px;
   --navbar-height: 64px;
-  
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: var(--navbar-height);
+  bottom: var(--navbar-height);
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
-  transform: translateY(calc(var(--navbar-height) / -2));
   transition: filter 0.4s ease;
-  
+  /* Add padding to prevent content from overlapping with navs */
+  padding: 0 var(--space-xl);
   /* Responsive adjustments */
   @media (max-width: 440px) {
     gap: var(--space-sm);
+    padding: 0 var(--space-md);
   }
 `;
 
@@ -318,51 +322,53 @@ export default function Home() {
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
-        {isMobile ? (
-          <MobileNavbar
-            ref={navbarRef as any}
-            onGridToggle={handleGridToggle}
-            onNoiseToggle={handleNoiseToggle}
-            onDvdToggle={handleDvdToggle}
-            onSpeedToggle={handleSpeedToggle}
-            onExpandedChange={setIsNavExpanded}
-            className="mobile-navbar"
-            initialNoiseState={noiseEnabled}
-          />
-        ) : (
-          <Navbar
-            ref={navbarRef as Ref<NavbarRef>}
-            onGridToggle={handleGridToggle}
-            onNoiseToggle={handleNoiseToggle}
-            onDvdToggle={handleDvdToggle}
-            onSpeedToggle={handleSpeedToggle}
-            onThemeChange={cycleTheme}
-            initialNoiseState={noiseEnabled}
-          />
-        )}
-        <StyledContent 
-          ref={contentRef}
-          className={`${jetbrainsMono.className}`}
-          style={isMobile && isNavExpanded ? {
-            filter: 'blur(8px)'
-          } : undefined}
-        >
-          <h1 
-            ref={topTextRef}
-            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+        <div className="relative w-full h-full">
+          {isMobile ? (
+            <MobileNavbar
+              ref={navbarRef as any}
+              onGridToggle={handleGridToggle}
+              onNoiseToggle={handleNoiseToggle}
+              onDvdToggle={handleDvdToggle}
+              onSpeedToggle={handleSpeedToggle}
+              onExpandedChange={setIsNavExpanded}
+              className="mobile-navbar"
+              initialNoiseState={noiseEnabled}
+            />
+          ) : (
+            <Navbar
+              ref={navbarRef as Ref<NavbarRef>}
+              onGridToggle={handleGridToggle}
+              onNoiseToggle={handleNoiseToggle}
+              onDvdToggle={handleDvdToggle}
+              onSpeedToggle={handleSpeedToggle}
+              onThemeChange={cycleTheme}
+              initialNoiseState={noiseEnabled}
+            />
+          )}
+          <StyledContent 
+            ref={contentRef}
+            className={`${jetbrainsMono.className}`}
+            style={isMobile && isNavExpanded ? {
+              filter: 'blur(8px)'
+            } : undefined}
           >
-            product designer
-          </h1>
-          <div className="w-[50vw] aspect-[2/1]">
-            <Logo />
-          </div>
-          <p 
-            ref={bottomTextRef}
-            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
-          >
-            no code developer
-          </p>
-        </StyledContent>
+            <h1 
+              ref={topTextRef}
+              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+            >
+              product designer
+            </h1>
+            <div className="w-[50vw] aspect-[2/1]">
+              <Logo />
+            </div>
+            <p 
+              ref={bottomTextRef}
+              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+            >
+              no code developer
+            </p>
+          </StyledContent>
+        </div>
       </ContentWrapper>
     </PageWrapper>
   );

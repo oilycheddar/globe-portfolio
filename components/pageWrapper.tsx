@@ -43,7 +43,7 @@ export default function PageWrapper({ children, noiseEnabled = true }: PageWrapp
             {/* Page Content Noise */}
           </div>
         )}
-        <div className="relative z-20">
+        <div className="relative z-20 w-full h-full">
           {children}
         </div>
       </div>
