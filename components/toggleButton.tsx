@@ -19,48 +19,54 @@ const Label = styled.span`
   color: var(--color-text);
 `;
 
-const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean }>`
+const ButtonWrapper = styled.div`
+  position: relative;
+  width: 72px; /* Width of "ABOUT" + padding (8px * 2) */
+`;
+
+const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean; $isExpandable?: boolean }>`
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 20px;
-  background-color: ${props => props.$isMulti || props.$isActive || props.$isExpanded ? 'var(--color-accent-primary)' : 'var(--color-accent-secondary)'};
+  background-color: ${props => props.$isMulti || props.$isActive || props.$isExpanded || props.$isExpandable ? 'var(--color-accent-primary)' : 'var(--color-accent-secondary)'};
   transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
   text-align: center;
   position: relative;
   z-index: 2;
+  white-space: nowrap;
+  width: 100%;
 `;
 
-const Value = styled.span<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean }>`
+const Value = styled.span<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean; $isExpandable?: boolean }>`
   font-size: 12px;
   font-family: var(--font-mono);
   font-weight: 700;
   line-height: 15.8px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${props => props.$isMulti || props.$isActive || props.$isExpanded ? 'var(--color-text-secondary)' : 'var(--color-text)'};
+  color: ${props => props.$isMulti || props.$isActive || props.$isExpanded || props.$isExpandable ? 'var(--color-text-secondary)' : 'var(--color-text)'};
+  white-space: nowrap;
 `;
 
 const DropdownMenu = styled.div`
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
   background-color: var(--color-accent-primary);
   border-radius: 20px;
   padding: 8px;
-  margin-bottom: 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 120px;
   z-index: 1;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  width: 100%;
 `;
 
 const DropdownItem = styled.div<{ $isSelected?: boolean }>`
@@ -73,13 +79,15 @@ const DropdownItem = styled.div<{ $isSelected?: boolean }>`
   line-height: 15.8px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${props => props.$isSelected ? 'var(--color-text-secondary)' : 'var(--color-text)'};
+  color: ${props => props.$isSelected ? 'var(--color-text)' : 'var(--color-text-secondary)'};
   background-color: ${props => props.$isSelected ? 'var(--color-accent-secondary)' : 'transparent'};
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   text-align: center;
+  white-space: nowrap;
 
   &:hover {
     background-color: var(--color-accent-secondary);
+    color: var(--color-text);
   }
 `;
 
@@ -158,43 +166,46 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
       setIsExpanded(!isExpanded);
     }
   };
-
   const handleOptionClick = (option: T) => {
-    props.onChange(option);
+    props.onChange(option as never);
     setIsExpanded(false);
   };
 
   return (
     <Container ref={containerRef}>
       <Label>{props.label}</Label>
-      <Button 
-        onClick={handleClick}
-        data-type={props.type}
-        $isActive={props.type === 'boolean' && props.value}
-        $isMulti={props.type === 'multi'}
-        $isExpanded={props.type === 'expandable' && isExpanded}
-      >
-        <Value 
+      <ButtonWrapper>
+        <Button 
+          onClick={handleClick}
+          data-type={props.type}
           $isActive={props.type === 'boolean' && props.value}
           $isMulti={props.type === 'multi'}
           $isExpanded={props.type === 'expandable' && isExpanded}
+          $isExpandable={props.type === 'expandable'}
         >
-          {props.type === 'boolean' ? (props.value ? 'ON' : 'OFF') : props.value}
-        </Value>
-      </Button>
-      {props.type === 'expandable' && (
-        <DropdownMenu ref={dropdownRef}>
-          {props.options.map((option) => (
-            <DropdownItem
-              key={option}
-              onClick={() => handleOptionClick(option)}
-              $isSelected={option === props.value}
-            >
-              {option}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      )}
+          <Value 
+            $isActive={props.type === 'boolean' && props.value}
+            $isMulti={props.type === 'multi'}
+            $isExpanded={props.type === 'expandable' && isExpanded}
+            $isExpandable={props.type === 'expandable'}
+          >
+            {props.type === 'boolean' ? (props.value ? 'ON' : 'OFF') : props.value}
+          </Value>
+        </Button>
+        {props.type === 'expandable' && (
+          <DropdownMenu ref={dropdownRef}>
+            {props.options.filter(option => option !== props.value).map((option) => (
+              <DropdownItem
+                key={option}
+                onClick={() => handleOptionClick(option)}
+                $isSelected={option === props.value}
+              >
+                {option}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        )}
+      </ButtonWrapper>
     </Container>
   );
 }
