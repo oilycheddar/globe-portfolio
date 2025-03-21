@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { ThemeColorManager } from '../components/ThemeColorManager';
 import { themes } from '../styles/themes';
+import StyledComponentsRegistry from './registry';
 
 // Use the default theme from our theme store (default is 'slime')
 const initialTheme = themes.slime;
@@ -34,7 +35,9 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeColorManager />
-        {children}
+        <StyledComponentsRegistry>
+          {children}
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

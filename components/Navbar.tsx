@@ -112,7 +112,10 @@ interface NavbarProps {
 
 export interface NavbarRef {
   container: HTMLDivElement | null;
-  theme: HTMLDivElement | null;
+  themeTop: HTMLDivElement | null;
+  themeLeft: HTMLDivElement | null;
+  themeRight: HTMLDivElement | null;
+  themeBottom: HTMLDivElement | null;
   grid: HTMLDivElement | null;
   noise: HTMLDivElement | null;
   dvd: HTMLDivElement | null;
@@ -136,7 +139,10 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   
   // Create refs for each toggle button container
   const toggleRefs = {
-    theme: useRef<HTMLDivElement>(null),
+    themeTop: useRef<HTMLDivElement>(null),
+    themeLeft: useRef<HTMLDivElement>(null),
+    themeRight: useRef<HTMLDivElement>(null),
+    themeBottom: useRef<HTMLDivElement>(null),
     grid: useRef<HTMLDivElement>(null),
     noise: useRef<HTMLDivElement>(null),
     dvd: useRef<HTMLDivElement>(null),
@@ -168,7 +174,10 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   // Expose toggle refs to parent component
   useImperativeHandle(ref, () => ({
     container: containerRef.current,
-    theme: toggleRefs.theme.current,
+    themeTop: toggleRefs.themeTop.current,
+    themeLeft: toggleRefs.themeLeft.current,
+    themeRight: toggleRefs.themeRight.current,
+    themeBottom: toggleRefs.themeBottom.current,
     grid: toggleRefs.grid.current,
     noise: toggleRefs.noise.current,
     dvd: toggleRefs.dvd.current,
@@ -189,7 +198,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     <>
       <NavContainer ref={containerRef} className={className}>
         <ToggleGroup>
-          <div ref={toggleRefs.theme}>
+          <div ref={toggleRefs.themeTop}>
             <ToggleButton
               type="multi"
               label="theme"
@@ -237,7 +246,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
       <LeftNavContainer>
         <ToggleGroup>
           <StyledLink href="https://www.strava.com/athletes/42678770" target="_blank" rel="noopener noreferrer">
-            <div ref={toggleRefs.theme}>
+            <div ref={toggleRefs.themeLeft}>
               <ToggleButton
                 type="multi"
                 label="2025 running distance"
@@ -252,7 +261,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
       <RightNavContainer>
         <ToggleGroup>
           <StyledLink href="https://www.ramp.com" target="_blank" rel="noopener noreferrer">
-            <div ref={toggleRefs.theme}>
+            <div ref={toggleRefs.themeRight}>
               <ToggleButton
                 type="multi"
                 label="employer"
@@ -266,7 +275,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
       </RightNavContainer>
       <BottomNavContainer>
         <ToggleGroup>
-          <div ref={toggleRefs.theme}>
+          <div ref={toggleRefs.themeBottom}>
             <ToggleButton
               type="expandable"
               label="STATION"

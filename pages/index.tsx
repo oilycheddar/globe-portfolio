@@ -76,6 +76,13 @@ const StyledContent = styled.div`
   }
 `;
 
+const BlurWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.4s ease;
+`;
+
 interface NavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
@@ -85,7 +92,7 @@ interface NavbarProps {
 }
 
 export default function Home() {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
   const helloTextRef = useRef<HTMLHeadingElement>(null);
@@ -95,7 +102,6 @@ export default function Home() {
   const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const [noiseEnabled, setNoiseEnabled] = useState(true);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -110,20 +116,21 @@ export default function Home() {
       // Initial state for navbar and toggle buttons
       const navbar = navbarRef.current;
       if (navbar?.container) {
-        // Hide navbar container
+        // Make navbar container immediately visible
         gsap.set(navbar.container, {
-          opacity: 0,
-          y: -20,
-          visibility: 'visible' // Make visible before animation
+          opacity: 1,
+          y: 0,
+          visibility: 'visible'
         });
 
         // Hide only top and bottom toggle buttons
         const toggleButtons = [
-          navbar.theme,
+          navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
           navbar.dvd,
-          navbar.speed
+          navbar.speed,
+          navbar.themeBottom   // STATION (bottom)
         ];
 
         toggleButtons.forEach(button => {
@@ -152,35 +159,28 @@ export default function Home() {
         }
       });
 
-      // Animate navbar container
-      if (navbar?.container) {
-        tl.to(navbar.container, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: "power2.out",
-          clearProps: "all"
-        }, "+=0.2");
-
-        // Combined staggered animation for top and bottom toggle buttons
+      // Combined staggered animation for toggle buttons
+      if (navbar) {
         const navToggleButtons = [
-          navbar.theme, // Top theme
-          navbar.grid,  // Top grid
-          navbar.noise, // Top noise
-          navbar.dvd,   // Top dvd
-          navbar.theme  // Bottom station
+          navbar.themeTop,  // Theme SLIME (top)
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.speed,
+          navbar.themeBottom   // Theme (bottom)
         ];
 
-        // Use GSAP's stagger feature instead of forEach
+        // Animate toggle buttons with stagger
         tl.to(navToggleButtons, {
           opacity: 1,
           y: 0,
+          delay: 0.2,
           filter: 'blur(0px)',
           duration: 0.6,
           ease: "power2.out",
-          stagger: 0.1,
+          stagger: 0.15,
           clearProps: "all"
-        }, "-=0.45"); // Slightly more overlap for smoother sequence
+        });
       }
 
       // Animate content container
@@ -301,12 +301,11 @@ export default function Home() {
 
   // Test handlers for navbar
   const handleGridToggle = (value: boolean) => {
-    console.log('Grid toggled:', value);
+    // Implement grid toggle functionality
   };
 
   const handleNoiseToggle = (value: boolean) => {
     setNoiseEnabled(value);
-    console.log('Noise toggled:', value);
   };
 
   const handleDvdToggle = (value: boolean) => {
@@ -335,38 +334,41 @@ export default function Home() {
             initialNoiseState={noiseEnabled}
           />
         ) : null}
-        <Navbar
-          ref={navbarRef}
-          onGridToggle={handleGridToggle}
-          onNoiseToggle={handleNoiseToggle}
-          onDvdToggle={handleDvdToggle}
-          onSpeedToggle={handleSpeedToggle}
-          onThemeChange={cycleTheme}
-          initialNoiseState={noiseEnabled}
-        />
-        <StyledContent 
-          ref={contentRef}
-          className={`${jetbrainsMono.className}`}
-          style={isMobile && isNavExpanded ? {
-            filter: 'blur(8px)'
-          } : undefined}
-        >
-          <h1 
-            ref={topTextRef}
-            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+        <BlurWrapper style={isMobile && isNavExpanded ? {
+          filter: 'blur(8px)'
+        } : undefined}>
+          <Navbar
+            ref={navbarRef}
+            onGridToggle={handleGridToggle}
+            onNoiseToggle={handleNoiseToggle}
+            onDvdToggle={handleDvdToggle}
+            onSpeedToggle={handleSpeedToggle}
+            onThemeChange={cycleTheme}
+            initialNoiseState={noiseEnabled}
+          />
+          <StyledContent 
+            ref={contentRef}
+            className={`${jetbrainsMono.className}`}
           >
-            product designer
-          </h1>
-          <div className="w-[50vw] aspect-[2/1]">
-            <Logo />
-          </div>
-          <p 
-            ref={bottomTextRef}
-            className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
-          >
-            no code developer
-          </p>
-        </StyledContent>
+            <h1 
+              ref={topTextRef}
+              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+              style={{ backgroundColor: 'transparent' }}
+            >
+              product designer
+            </h1>
+            <div className="w-[50vw] aspect-[2/1]">
+              <Logo />
+            </div>
+            <p 
+              ref={bottomTextRef}
+              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
+              style={{ backgroundColor: 'transparent' }}
+            >
+              no code developer
+            </p>
+          </StyledContent>
+        </BlurWrapper>
       </ContentWrapper>
     </PageWrapper>
   );

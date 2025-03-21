@@ -67,6 +67,9 @@ const StyledContent = styled.div`
   transition: filter 0.4s ease;
   /* Add padding to prevent content from overlapping with navs */
   padding: 0 var(--space-xl);
+  /* Initial state to prevent FOUC */
+  opacity: 0;
+  transform: translateY(20px);
   /* Responsive adjustments */
   @media (max-width: 440px) {
     gap: var(--space-md);
@@ -97,14 +100,13 @@ const AboutText = styled.p`
 `;
 
 export default function About() {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
   const aboutTextRef = useRef<HTMLParagraphElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const [noiseEnabled, setNoiseEnabled] = useState(true);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -114,36 +116,30 @@ export default function About() {
       // Initial state setup for main content
       if (navbarRef.current?.container) {
         gsap.set(navbarRef.current.container, {
-          opacity: 0,
-          y: -20,
-          filter: 'blur(10px)'
+          opacity: 1,
+          y: 0,
+          visibility: 'visible'
         });
       }
-
-      // Set initial state for ContentWrapper
-      gsap.set(contentRef.current, {
-        opacity: 0,
-        y: 20,
-        visibility: 'visible' // Make visible before animation
-      });
 
       // Initial state for navbar and toggle buttons
       const navbar = navbarRef.current;
       if (navbar?.container) {
-        // Hide navbar container
+        // Make navbar container immediately visible
         gsap.set(navbar.container, {
-          opacity: 0,
-          y: -20,
-          visibility: 'visible' // Make visible before animation
+          opacity: 1,
+          y: 0,
+          visibility: 'visible'
         });
 
         // Hide only top and bottom toggle buttons
         const toggleButtons = [
-          navbar.theme,
+          navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
           navbar.dvd,
-          navbar.speed
+          navbar.speed,
+          navbar.themeBottom   // STATION (bottom)
         ];
 
         toggleButtons.forEach(button => {
@@ -157,54 +153,74 @@ export default function About() {
         });
       }
 
+      // Set initial state for content
+      gsap.set(contentRef.current, {
+        opacity: 1,
+        visibility: 'visible'
+      });
+
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: .75,
+        delay: 0.75,
         defaults: {
           ease: "sine.out",
         }
       });
 
-      // Animate navbar container
-      if (navbar?.container) {
-        tl.to(navbar.container, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: "power2.out",
-          clearProps: "all"
-        }, "+=0.2");
-
-        // Combined staggered animation for top and bottom toggle buttons
+      // Combined staggered animation for toggle buttons
+      if (navbar) {
         const navToggleButtons = [
-          navbar.theme, // Top theme
-          navbar.grid,  // Top grid
-          navbar.noise, // Top noise
-          navbar.dvd,   // Top dvd
-          navbar.theme  // Bottom station
+          navbar.themeTop,  // Theme SLIME (top)
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.speed,
+          navbar.themeBottom   // STATION (bottom)
         ];
 
-        navToggleButtons.forEach((button, index) => {
-          if (button) {
-            tl.to(button, {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              duration: 0.6,
-              ease: "power2.out",
-              stagger: 0.1,
-              clearProps: "all"
-            }, `-=0.45`); // Slightly more overlap for smoother sequence
-          }
+        // Animate toggle buttons with stagger
+        tl.to(navToggleButtons, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.6,
+          ease: "power2.out",
+          stagger: 0.15,
+          clearProps: "all"
         });
-      }
 
-      // Animate content container
-      tl.to(contentRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-      }, "+=0.2");
+        // Animate image with scale after toggle buttons
+        tl.fromTo(".profile-image-wrapper", {
+          scale: 0.92,
+          opacity: 0,
+        }, {
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out"
+        }, ">");  // ">" means "after previous animation completes"
+
+        // Split text into words and animate each word after image
+        if (aboutTextRef.current) {
+          // First, wrap each word in a span
+          const text = aboutTextRef.current.textContent || "";
+          const words = text.split(" ").filter(word => word.length > 0);
+          aboutTextRef.current.innerHTML = words
+            .map(word => `<span class="word" style="display: inline-block; filter: blur(12px); opacity: 0;">${word}</span>`)
+            .join(" ");
+
+          // Then animate each word after image scales
+          tl.to(".word", {
+            filter: "blur(0px)",
+            opacity: 1,
+            duration: 0.3,
+            stagger: {
+              amount: 0.4,
+              ease: "sine.inOut"
+            }
+          }, ">");
+        }
+      }
     }, contentRef);
 
     return ctx;
@@ -283,9 +299,10 @@ export default function About() {
             filter: 'blur(8px)'
           } : undefined}
         >
-          <ImageWrapper>
+          <ImageWrapper className="profile-image-wrapper">
             <ProfileImage
-              src="/Profile_Photo.webp"
+              className="profile-image"
+              src={noiseEnabled ? "/Profile_Photo.webp" : "/Profile_Photo_noiseless.webp"}
               alt="Profile photo"
               fill
               sizes="(max-width: 440px) 100vw, 300px"
