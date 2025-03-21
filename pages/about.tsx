@@ -203,9 +203,8 @@ export default function About() {
       tl.to(contentRef.current, {
         opacity: 1,
         y: 0,
-        duration: 0.2,
-        ease: "power2.out",
-      }, "+=0.1");
+        duration: 0.5,
+      }, "+=0.2");
     }, contentRef);
 
     return ctx;
