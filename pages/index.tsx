@@ -56,7 +56,6 @@ const StyledContent = styled.div`
   --space-lg: 24px;
   --space-xl: 40px;
   --navbar-height: 64px;
-  position: absolute;
   top: var(--navbar-height);
   bottom: var(--navbar-height);
   left: 0;
