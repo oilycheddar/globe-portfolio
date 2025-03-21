@@ -108,6 +108,7 @@ interface NavbarProps {
   onThemeChange?: () => void;
   className?: string;
   initialNoiseState?: boolean;
+  hideSideNavs?: boolean;
 }
 
 export interface NavbarRef {
@@ -129,7 +130,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onSpeedToggle,
   onThemeChange,
   className = '',
-  initialNoiseState = true
+  initialNoiseState = true,
+  hideSideNavs = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -243,36 +245,40 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
           )}
         </ToggleGroup>
       </NavContainer>
-      <LeftNavContainer>
-        <ToggleGroup>
-          <StyledLink href="https://www.strava.com/athletes/42678770" target="_blank" rel="noopener noreferrer">
-            <div ref={toggleRefs.themeLeft}>
-              <ToggleButton
-                type="multi"
-                label="2025 running distance"
-                value="349km"
-                options={["349km"]}
-                onChange={() => {}}
-              />
-            </div>
-          </StyledLink>
-        </ToggleGroup>
-      </LeftNavContainer>
-      <RightNavContainer>
-        <ToggleGroup>
-          <StyledLink href="https://www.ramp.com" target="_blank" rel="noopener noreferrer">
-            <div ref={toggleRefs.themeRight}>
-              <ToggleButton
-                type="multi"
-                label="employer"
-                value="Ramp"
-                options={["Ramp"]}
-                onChange={() => {}}
-              />
-            </div>
-          </StyledLink>
-        </ToggleGroup>
-      </RightNavContainer>
+      {!hideSideNavs && (
+        <>
+          <LeftNavContainer>
+            <ToggleGroup>
+              <StyledLink href="https://www.strava.com/athletes/42678770" target="_blank" rel="noopener noreferrer">
+                <div ref={toggleRefs.themeLeft}>
+                  <ToggleButton
+                    type="multi"
+                    label="2025 running distance"
+                    value="349km"
+                    options={["349km"]}
+                    onChange={() => {}}
+                  />
+                </div>
+              </StyledLink>
+            </ToggleGroup>
+          </LeftNavContainer>
+          <RightNavContainer>
+            <ToggleGroup>
+              <StyledLink href="https://www.ramp.com" target="_blank" rel="noopener noreferrer">
+                <div ref={toggleRefs.themeRight}>
+                  <ToggleButton
+                    type="multi"
+                    label="employer"
+                    value="Ramp"
+                    options={["Ramp"]}
+                    onChange={() => {}}
+                  />
+                </div>
+              </StyledLink>
+            </ToggleGroup>
+          </RightNavContainer>
+        </>
+      )}
       <BottomNavContainer>
         <ToggleGroup>
           <div ref={toggleRefs.themeBottom}>
