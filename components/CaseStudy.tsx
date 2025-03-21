@@ -255,9 +255,9 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
       <ImageWrapper 
         className="work-sample-image-wrapper"
         onClick={handleVideoClick}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: data.videoUrl !== 'none' ? 'pointer' : 'default' }}
       >
-        {!isVideoPlaying && <PlayButton />}
+        {!isVideoPlaying && data.videoUrl !== 'none' && <PlayButton />}
         <WorkSampleVideo
           ref={videoRef}
           className="work-sample-video"
