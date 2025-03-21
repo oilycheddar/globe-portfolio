@@ -224,12 +224,18 @@ export default function About() {
 
         // Split text into words and animate each word after image
         if (aboutTextRef.current) {
-          // First, wrap each word in a span
+          // First, wrap each word in a span, preserving multiple spaces
           const text = aboutTextRef.current.textContent || "";
-          const words = text.split(" ").filter(word => word.length > 0);
-          aboutTextRef.current.innerHTML = words
-            .map(word => `<span class="word" style="display: inline-block; filter: blur(12px); opacity: 0;">${word}</span>`)
-            .join(" ");
+          const segments = text.split(/(\s+)/).filter(segment => segment.length > 0);
+          aboutTextRef.current.innerHTML = segments
+            .map(segment => {
+              if (segment.trim() === '') {
+                // Replace spaces with non-breaking spaces to preserve multiple spaces
+                return segment.replace(/ /g, '&nbsp;');
+              }
+              return `<span class="word" style="display: inline-block; filter: blur(12px); opacity: 0;">${segment}</span>`;
+            })
+            .join('');
 
           // Then animate each word after image scales
           tl.to(".word", {
@@ -336,7 +342,7 @@ export default function About() {
             ref={aboutTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            I ENJOY    SOME OF THE   OLD, AND I ENJOY SOME    OF THE NEW. I'M IN LOVE. RUNNING GETS  MY HEART  RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY   OWN WAY. HONOURING MY INTUITION   TOOK   MANY   YEARS. MY    NEXT JOB   WILL BE     OPENING   A HI-FI BAR.
+            I ENJOY    SOME OF THE   OLD, AND I ENJOY   SOME   OF THE NEW.    I'M IN LOVE. RUNNING GETS MY   HEART RATE   UP,  MUSIC SLOWS   IT DOWN. I SEEK MY OWN    WAY. HONOURING     MY INTUITION   TOOK   MANY   YEARS. MY    NEXT JOB   WILL BE   OPENING     A HI-FI BAR.
           </AboutText>
         </StyledContent>
       </ContentWrapper>

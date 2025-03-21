@@ -19,22 +19,32 @@ const NavContainer = styled.div<{ $isExpanded: boolean }>`
   left: 0;
   right: 0;
   margin: 0 auto;
-  width: ${props => props.$isExpanded ? '100%' : '44px'};
-  max-width: ${props => props.$isExpanded ? '100%' : '44px'};
-  height: ${props => props.$isExpanded ? 'auto' : '32px'};
-  max-height: ${props => props.$isExpanded ? '280px' : '32px'};
+  width: 44px;
+  max-width: 44px;
+  height: 32px;
+  max-height: 32px;
   background-color: var(--color-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 30;
-  border-radius: ${props => props.$isExpanded ? '20px' : '0'};
+  z-index: 31;
+  border-radius: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   overflow: hidden;
-  transition: width 0.2s ease-out, max-width 0.2s ease-out, height 0.2s ease-out, max-height 0.2s ease-out;
+  transform-origin: top center;
+`;
+
+const Overlay = styled.div<{ $isVisible: boolean }>`
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 30;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  visibility: ${props => props.$isVisible ? 'visible' : 'hidden'};
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
 `;
 
 const IconWrapper = styled.div`
@@ -141,47 +151,77 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     const tl = gsap.timeline({
       paused: true,
       defaults: {
-        duration: 0.2,
-        ease: "power2.out"
+        duration: 0.3,
+        ease: "power2.inOut"
       }
     });
 
     if (isExpanded) {
-      // Set initial state
+      // Set initial states
+      gsap.set(containerRef.current, {
+        width: "44px",
+        maxWidth: "44px",
+        height: "32px",
+        maxHeight: "32px",
+        scale: 1,
+        borderRadius: "0 0 8px 8px"
+      });
+      
       gsap.set([contentRef.current, applyButtonRef.current], {
         visibility: 'visible',
         opacity: 0,
         y: -10,
-        scale: 0.98
+        scale: 0.95
       });
 
       // Expand animation
       tl.to(containerRef.current, {
+        height: "auto",
+        maxHeight: "280px",
+        duration: 0.2,
+        ease: "back.out(1.2)"
+      })
+      .to(containerRef.current, {
+        scale: 1,
         width: "100%",
         maxWidth: "100%",
-        duration: 0.2
-      })
+        borderRadius: "0 0 20px 20px",
+        duration: 0.3,
+        ease: "back.out(1.2)"
+      }, "-=0.1")
       .to([contentRef.current, applyButtonRef.current], {
         opacity: 1,
         y: 0,
         scale: 1,
         duration: 0.2,
-        stagger: 0.05
-      }, "-=0.1");
+        stagger: 0.05,
+        ease: "back.out(1.2)"
+      }, "-=0.15");
     } else {
       // Collapse animation
       tl.to([contentRef.current, applyButtonRef.current], {
         opacity: 0,
         y: -10,
-        scale: 0.98,
+        scale: 1,
         duration: 0.15,
-        stagger: 0.05
+        stagger: 0.03,
+        ease: "power2.in"
       })
+      .to(containerRef.current, {
+        height: "32px",
+        maxHeight: "32px",
+        duration: 0.2,
+        ease: "back.out(1.2)"
+      }, "-=0.15")
       .to(containerRef.current, {
         width: "44px",
         maxWidth: "44px",
-        duration: 0.2
+        scale: 1,
+        borderRadius: "0 0 8px 8px",
+        duration: 0.3,
+        ease: "back.out(1.2)"
       }, "-=0.1")
+
       .set([contentRef.current, applyButtonRef.current], {
         visibility: 'hidden'
       });
@@ -216,57 +256,75 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     onNoiseToggle(value);
   };
 
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      handleClose();
+    }
+  }, [handleClose]);
+
+  useEffect(() => {
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExpanded, handleClickOutside]);
+
   return (
-    <NavContainer 
-      ref={containerRef}
-      $isExpanded={isExpanded}
-      className={className}
-    >
-      <IconWrapper onClick={handleToggle}>
-        <MenuIcon />
-      </IconWrapper>
-      
-      <ToggleButtonsGrid ref={contentRef} className={jetbrainsMono.className}>
-        <ToggleButton
-          type="multi"
-          label="theme"
-          value={theme}
-          options={themeKeys}
-          onChange={setTheme}
-        />
-        <ToggleButton
-          type="boolean"
-          label="grid"
-          value={false}
-          onChange={onGridToggle}
-        />
-        <ToggleButton
-          type="boolean"
-          label="noise"
-          value={isNoiseActive}
-          onChange={handleNoiseToggle}
-        />
-        <ToggleButton
-          type="boolean"
-          label="dvd"
-          value={isDvdActive}
-          onChange={handleDvdToggle}
-        />
-        {isDvdActive && (
+    <>
+      <Overlay $isVisible={isExpanded} />
+      <NavContainer 
+        ref={containerRef}
+        $isExpanded={isExpanded}
+        className={className}
+      >
+        <IconWrapper onClick={handleToggle}>
+          <MenuIcon />
+        </IconWrapper>
+        
+        <ToggleButtonsGrid ref={contentRef} className={jetbrainsMono.className}>
+          <ToggleButton
+            type="multi"
+            label="theme"
+            value={theme}
+            options={themeKeys}
+            onChange={setTheme}
+          />
           <ToggleButton
             type="boolean"
-            label="speed"
+            label="grid"
             value={false}
-            onChange={onSpeedToggle}
+            onChange={onGridToggle}
           />
-        )}
-      </ToggleButtonsGrid>
-      <ApplyButton 
-        ref={applyButtonRef}
-        onClick={handleClose}
-      >
-        CLOSE
-      </ApplyButton>
-    </NavContainer>
+          <ToggleButton
+            type="boolean"
+            label="noise"
+            value={isNoiseActive}
+            onChange={handleNoiseToggle}
+          />
+          <ToggleButton
+            type="boolean"
+            label="dvd"
+            value={isDvdActive}
+            onChange={handleDvdToggle}
+          />
+          {isDvdActive && (
+            <ToggleButton
+              type="boolean"
+              label="speed"
+              value={false}
+              onChange={onSpeedToggle}
+            />
+          )}
+        </ToggleButtonsGrid>
+        <ApplyButton 
+          ref={applyButtonRef}
+          onClick={handleClose}
+        >
+          CLOSE
+        </ApplyButton>
+      </NavContainer>
+    </>
   );
 }); 
