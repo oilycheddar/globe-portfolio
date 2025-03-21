@@ -84,9 +84,10 @@ const StyledContent = styled.div`
 
 const ProfileImage = styled(Image)`
   width: 100%;
-  height: auto;
+  height: 100%;
   border-radius: 12px;
   mix-blend-mode: hard-light;
+  object-fit: cover;
 `;
 
 const ImageWrapper = styled.div`
@@ -97,6 +98,10 @@ const ImageWrapper = styled.div`
   
   @media (max-width: 440px) {
     width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
