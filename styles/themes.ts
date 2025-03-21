@@ -7,6 +7,7 @@ export const spacing = {
   md: '16px',
   lg: '24px',
   xl: '40px',
+  xxl: '80px'
 } as const;
 
 export const themes = {

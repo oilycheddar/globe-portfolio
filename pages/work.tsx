@@ -11,7 +11,8 @@ import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
-import Image from 'next/image';
+import { CaseStudy } from "../components/CaseStudy";
+import { caseStudies } from "../data/caseStudies";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -47,73 +48,24 @@ const ContentWrapper = styled.div`
   }
 `;
 
-const CaseStudy = styled.div`
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-  --navbar-height: 64px;
-  position: absolute;
-  top: var(--space-xl);
-  bottom: var(--navbar-height);
-  left: 0;
-  right: 0;
+const CaseStudiesList = styled.div`
+  width: calc(100% - var(--navbar-width));
+  margin-left: var(--navbar-width);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: var(--space-xl);
-  transition: filter 0.4s ease;
-  /* Add padding to prevent content from overlapping with navs */
   padding: var(--space-xl) var(--space-lg);
-  /* Initial state to prevent FOUC */
-  opacity: 0;
-  overflow: visible;
-  /* Responsive adjustments */
+  overflow-y: auto;
+  height: calc(100vh - var(--navbar-height));
+  margin-top: var(--navbar-height);
+  
   @media (max-width: 440px) {
-    --mobile-navbar-height: 24px;
-    position: relative;
-    top: var(--mobile-navbar-height);
-    bottom: auto;
-    justify-content: flex-start;
+    width: 100%;
+    margin-left: 0;
     padding: var(--space-xl) var(--space-md);
-    gap: var(--space-md);
-  }
-`;
-
-const StyledContent = styled.div`
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-  --navbar-height: 64px;
-  position: absolute;
-  top: var(--space-xl);
-  bottom: var(--navbar-height);
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xl);
-  transition: filter 0.4s ease;
-  /* Add padding to prevent content from overlapping with navs */
-  padding: var(--space-xl) var(--space-lg);
-  /* Initial state to prevent FOUC */
-  opacity: 0;
-  overflow: visible;
-  /* Responsive adjustments */
-  @media (max-width: 440px) {
-    --mobile-navbar-height: 24px;
-    position: relative;
-    top: var(--mobile-navbar-height);
-    bottom: auto;
-    justify-content: flex-start;
-    padding: var(--space-xl) var(--space-md);
-    gap: var(--space-md);
+    gap: var(--space-lg);
+    height: calc(100vh - var(--mobile-navbar-height));
+    margin-top: var(--mobile-navbar-height);
   }
 `;
 
@@ -300,31 +252,14 @@ const WorkSampleText = styled.div`
   }
 `;
 
-const CaseStudiesList = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl) var(--space-lg);
-  overflow-y: auto;
-  height: 100%;
-  
-  @media (max-width: 440px) {
-    padding: var(--space-xl) var(--space-md);
-    gap: var(--space-lg);
-  }
-`;
-
 export default function Work() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
-  const workDescriptionRef = useRef<HTMLParagraphElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [currentCaseStudyIndex, setCurrentCaseStudyIndex] = useState(0);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -371,11 +306,15 @@ export default function Work() {
         });
       }
 
-      // Set initial state for content
-      gsap.set(contentRef.current, {
-        opacity: 0,
-        y: 20,
-        visibility: 'visible'
+      // Set initial state for all case studies
+      const caseStudies = document.querySelectorAll('.case-study');
+      caseStudies.forEach((study) => {
+        gsap.set(study, {
+          opacity: 0,
+          y: 20,
+          visibility: 'visible',
+          display: 'flex'
+        });
       });
 
       // Create main timeline with a delay to wait for innerShape animation
@@ -386,12 +325,14 @@ export default function Work() {
         }
       });
 
-      // Animate content first
-      tl.to(contentRef.current, {
+      // Animate all case studies with stagger
+      tl.to(caseStudies, {
         opacity: 1,
         y: 0,
         duration: 0.8,
-        ease: "power2.out"
+        stagger: 0.2,
+        ease: "power2.out",
+        clearProps: "all"
       });
 
       // Animate all nav elements together
@@ -463,24 +404,6 @@ export default function Work() {
     setIsNavExpanded(value);
   };
 
-  const handleVideoClick = () => {
-    if (videoRef.current) {
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsVideoPlaying(!isVideoPlaying);
-    }
-  };
-
-  const handleVideoEnded = () => {
-    setIsVideoPlaying(false);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-    }
-  };
-
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
@@ -506,72 +429,17 @@ export default function Work() {
           hideSideNavs={true}
         />
         <CaseStudiesList>
-          <CaseStudy 
-            ref={contentRef}
-            className={`${jetbrainsMono.className}`}
-            style={isMobile && isNavExpanded ? {
-              filter: 'blur(8px)'
-            } : undefined}
-          >
-            <ImageWrapper 
-              className="work-sample-image-wrapper"
-              onClick={handleVideoClick}
-              style={{ cursor: 'pointer' }}
-            >
-              {!isVideoPlaying && <PlayButton />}
-              <WorkSampleVideo
-                ref={videoRef}
-                className="work-sample-video"
-                src="/TreasuryDemoReel.mp4"
-                poster="/RBA_Intelligence_Asset_Dark.png"
-                muted
-                playsInline
-                onEnded={handleVideoEnded}
-              />
-            </ImageWrapper>
-            <WorkSampleText>
-              <WorkSampleCopyContainer>
-                <WorkTitleLink 
-                  href="https://www.ramp.com/treasury"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <WorkSampleTitle className={`${textStyles.caption} text-[var(--color-text)]`}>
-                    RAMP TREASURY
-                  </WorkSampleTitle>
-                  <img src="/link-external.svg" alt="External link" />
-                </WorkTitleLink>
-                <WorkSampleDescription 
-                  ref={workDescriptionRef}
-                  className={`${textStyles.caption} text-[var(--color-text)]`}
-                >
-                  I LED THE ZERO-TO-ONE DESIGN FOR RAMP'S BUSINESS & INVESTMENT ACCOUNTS. {'\n'}CREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.
-                </WorkSampleDescription>
-              </WorkSampleCopyContainer>
-              <WorkSampleTeamContainer>
-                <CollaboratorRole 
-                  className={`${textStyles.caption} text-[var(--color-text)]`}
-                >
-                  FRONT END:{'\n'}
-                  BACK END:{'\n'}
-                  PRODUCT:{'\n'}
-                  DATA:{'\n'}
-                  MARKETING:{'\n'}
-                  BRAND:
-                </CollaboratorRole>
-                <CollaboratorNames 
-                  className={`${textStyles.caption} text-[var(--color-text)]`}
-                >
-                  FARDEEM, MARK{'\n'}
-                  ARNAB, ERIC, DANIELLE{'\n'}
-                  WILLIAM, KARL{'\n'}
-                  JAMES{'\n'}
-                  BECKY, CHRISTY{'\n'}
-                  EMILY, SHIVANI{'\n'}
-                </CollaboratorNames>
-              </WorkSampleTeamContainer>
-            </WorkSampleText>
-          </CaseStudy>
+          {caseStudies.map((study, index) => (
+            <CaseStudy
+              key={study.id}
+              data={study}
+              ref={index === 0 ? contentRef : undefined}
+              className={`${jetbrainsMono.className} case-study`}
+              style={isMobile && isNavExpanded ? {
+                filter: 'blur(8px)'
+              } : undefined}
+            />
+          ))}
         </CaseStudiesList>
       </ContentWrapper>
     </PageWrapper>

@@ -11,6 +11,7 @@ const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
 }))`
   width: 100%;
   height: 64px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,6 +22,7 @@ const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   text-transform: uppercase;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 
   @media (max-width: 440px) {
     display: none; /* Hide the top nav on mobile */

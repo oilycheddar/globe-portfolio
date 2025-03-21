@@ -11,6 +11,7 @@ const GlobalStyle = createGlobalStyle<{ theme: any }>`
     --space-md: 16px;
     --space-lg: 24px;
     --space-xl: 40px;
+    --space-xxl: 80px;
     /* Reset noise-related properties to avoid leftover values */
     --bg-noise: none;
     --page-noise: none;
