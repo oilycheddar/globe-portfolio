@@ -109,6 +109,7 @@ interface MobileNavbarProps {
   onExpandedChange?: (expanded: boolean) => void;
   className?: string;
   initialNoiseState?: boolean;
+  hideInactiveToggles?: boolean;
 }
 
 export interface MobileNavbarRef {
@@ -122,7 +123,8 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onSpeedToggle,
   onExpandedChange,
   className = '',
-  initialNoiseState = true
+  initialNoiseState = true,
+  hideInactiveToggles = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -291,25 +293,29 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             options={themeKeys}
             onChange={setTheme}
           />
-          <ToggleButton
-            type="boolean"
-            label="grid"
-            value={false}
-            onChange={onGridToggle}
-          />
+          {!hideInactiveToggles && (
+            <ToggleButton
+              type="boolean"
+              label="grid"
+              value={false}
+              onChange={onGridToggle}
+            />
+          )}
           <ToggleButton
             type="boolean"
             label="noise"
             value={isNoiseActive}
             onChange={handleNoiseToggle}
           />
-          <ToggleButton
-            type="boolean"
-            label="dvd"
-            value={isDvdActive}
-            onChange={handleDvdToggle}
-          />
-          {isDvdActive && (
+          {!hideInactiveToggles && (
+            <ToggleButton
+              type="boolean"
+              label="dvd"
+              value={isDvdActive}
+              onChange={handleDvdToggle}
+            />
+          )}
+          {isDvdActive && !hideInactiveToggles && (
             <ToggleButton
               type="boolean"
               label="speed"

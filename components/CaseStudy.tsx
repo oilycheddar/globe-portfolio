@@ -17,15 +17,11 @@ const CaseStudyWrapper = styled.div`
   align-items: center;
   justify-content: flex-start;
   gap: var(--space-xl);
-  transition: filter 0.4s ease, transform 0.2s ease;
+  transition: filter 0.4s ease;
   width: 100%;
   height: fit-content;
   cursor: pointer;
   visibility: visible;
-  
-  &:hover {
-    transform: translateY(-4px);
-  }
   
   @media (max-width: 440px) {
     --mobile-navbar-height: 24px;

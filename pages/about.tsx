@@ -317,6 +317,7 @@ export default function About() {
             onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
+            hideInactiveToggles={true}
           />
         ) : null}
         <Navbar
@@ -327,6 +328,7 @@ export default function About() {
           onSpeedToggle={handleSpeedToggle}
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
+          hideInactiveToggles={true}
         />
         <StyledContent 
           ref={contentRef}

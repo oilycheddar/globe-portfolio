@@ -67,12 +67,16 @@ const StyledContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: var(--space-md);
   transition: filter 0.4s ease;
+
+
   /* Add padding to prevent content from overlapping with navs */
   padding: 0 var(--space-xl);
+
+
   /* Responsive adjustments */
   @media (max-width: 440px) {
     gap: var(--space-sm);
@@ -89,6 +93,10 @@ const BlurWrapper = styled.div`
   width: 100%;
   height: 100%;
   transition: filter 0.4s ease;
+    flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 interface NavbarProps {
@@ -337,6 +345,7 @@ export default function Home() {
             onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
+            hideInactiveToggles={true}
           />
         ) : null}
         <BlurWrapper style={isMobile && isNavExpanded ? {
@@ -350,6 +359,7 @@ export default function Home() {
             onSpeedToggle={handleSpeedToggle}
             onThemeChange={cycleTheme}
             initialNoiseState={noiseEnabled}
+            hideInactiveToggles={true}
           />
           <StyledContent 
             ref={contentRef}

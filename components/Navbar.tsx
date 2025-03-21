@@ -20,7 +20,6 @@ const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   line-height: 15.8px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  position: relative;
   z-index: 10;
   flex-shrink: 0;
 
@@ -107,6 +106,7 @@ interface NavbarProps {
   className?: string;
   initialNoiseState?: boolean;
   hideSideNavs?: boolean;
+  hideInactiveToggles?: boolean;
 }
 
 export interface NavbarRef {
@@ -129,7 +129,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onThemeChange,
   className = '',
   initialNoiseState = true,
-  hideSideNavs = false
+  hideSideNavs = false,
+  hideInactiveToggles = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -207,14 +208,16 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
               onChange={handleThemeChange}
             />
           </div>
-          <div ref={toggleRefs.grid}>
-            <ToggleButton
-              type="boolean"
-              label="grid"
-              value={false}
-              onChange={onGridToggle}
-            />
-          </div>
+          {!hideInactiveToggles && (
+            <div ref={toggleRefs.grid}>
+              <ToggleButton
+                type="boolean"
+                label="grid"
+                value={false}
+                onChange={onGridToggle}
+              />
+            </div>
+          )}
           <div ref={toggleRefs.noise}>
             <ToggleButton
               type="boolean"
@@ -223,15 +226,17 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
               onChange={onNoiseToggle}
             />
           </div>
-          <div ref={toggleRefs.dvd}>
-            <ToggleButton
-              type="boolean"
-              label="dvd"
-              value={isDvdActive}
-              onChange={handleDvdToggle}
-            />
-          </div>
-          {isDvdActive && (
+          {!hideInactiveToggles && (
+            <div ref={toggleRefs.dvd}>
+              <ToggleButton
+                type="boolean"
+                label="dvd"
+                value={isDvdActive}
+                onChange={handleDvdToggle}
+              />
+            </div>
+          )}
+          {isDvdActive && !hideInactiveToggles && (
             <div ref={toggleRefs.speed}>
               <ToggleButton
                 type="boolean"
