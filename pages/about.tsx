@@ -154,19 +154,21 @@ export default function About() {
           visibility: 'visible'
         });
 
-        // Hide only top and bottom toggle buttons
-        const toggleButtons = [
+        // Hide all nav elements initially
+        const allNavElements = [
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
           navbar.dvd,
           navbar.speed,
-          navbar.themeBottom   // STATION (bottom)
+          navbar.themeBottom,   // STATION (bottom)
+          navbar.themeLeft,     // Left nav
+          navbar.themeRight     // Right nav
         ];
 
-        toggleButtons.forEach(button => {
-          if (button) {
-            gsap.set(button, {
+        allNavElements.forEach(element => {
+          if (element) {
+            gsap.set(element, {
               opacity: 0,
               y: -10,
               filter: 'blur(20px)'
@@ -183,71 +185,72 @@ export default function About() {
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: 0.75,
+        delay: 1.2,
         defaults: {
           ease: "sine.out",
         }
       });
 
-      // Combined staggered animation for toggle buttons
+      // Animate image with scale first
+      tl.fromTo(".profile-image-wrapper", {
+        scale: 0.92,
+        opacity: 0,
+      }, {
+        scale: 1,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+
+      // Split text into words and animate each word after image
+      if (aboutTextRef.current) {
+        // First, wrap each word in a span, preserving multiple spaces
+        const text = aboutTextRef.current.textContent || "";
+        const segments = text.split(/(\s+)/).filter(segment => segment.length > 0);
+        aboutTextRef.current.innerHTML = segments
+          .map(segment => {
+            if (segment.trim() === '') {
+              // Replace spaces with non-breaking spaces to preserve multiple spaces
+              return segment.replace(/ /g, '&nbsp;');
+            }
+            return `<span class="word" style="display: inline-block; filter: blur(12px); opacity: 0;">${segment}</span>`;
+          })
+          .join('');
+
+        // Then animate each word after image scales
+        tl.to(".word", {
+          filter: "blur(0px)",
+          opacity: 1,
+          duration: 0.3,
+          stagger: {
+            amount: 0.4,
+            ease: "sine.inOut"
+          }
+        }, "-=0.25");
+      }
+
+      // Animate all nav elements together
       if (navbar) {
-        const navToggleButtons = [
+        const allNavElements = [
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
           navbar.dvd,
           navbar.speed,
-          navbar.themeBottom   // STATION (bottom)
+          navbar.themeBottom,   // STATION (bottom)
+          navbar.themeLeft,     // Left nav
+          navbar.themeRight     // Right nav
         ];
 
-        // Animate toggle buttons with stagger
-        tl.to(navToggleButtons, {
+        // Animate all nav elements together
+        tl.to(allNavElements, {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.6,
+          duration: 0.7,
           ease: "power2.out",
-          stagger: 0.15,
           clearProps: "all"
-        });
-
-        // Animate image with scale after toggle buttons
-        tl.fromTo(".profile-image-wrapper", {
-          scale: 0.92,
-          opacity: 0,
-        }, {
-          scale: 1,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power2.out"
-        }, ">");  // ">" means "after previous animation completes"
-
-        // Split text into words and animate each word after image
-        if (aboutTextRef.current) {
-          // First, wrap each word in a span, preserving multiple spaces
-          const text = aboutTextRef.current.textContent || "";
-          const segments = text.split(/(\s+)/).filter(segment => segment.length > 0);
-          aboutTextRef.current.innerHTML = segments
-            .map(segment => {
-              if (segment.trim() === '') {
-                // Replace spaces with non-breaking spaces to preserve multiple spaces
-                return segment.replace(/ /g, '&nbsp;');
-              }
-              return `<span class="word" style="display: inline-block; filter: blur(12px); opacity: 0;">${segment}</span>`;
-            })
-            .join('');
-
-          // Then animate each word after image scales
-          tl.to(".word", {
-            filter: "blur(0px)",
-            opacity: 1,
-            duration: 0.3,
-            stagger: {
-              amount: 0.4,
-              ease: "sine.inOut"
-            }
-          }, ">");
-        }
+        }, "+=0.45");
       }
     }, contentRef);
 
@@ -342,7 +345,7 @@ export default function About() {
             ref={aboutTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            I ENJOY    SOME OF THE   OLD, AND I ENJOY   SOME   OF THE NEW.    I'M IN LOVE. RUNNING GETS MY   HEART RATE   UP,  MUSIC SLOWS   IT DOWN. I SEEK MY OWN    WAY. HONOURING     MY INTUITION   TOOK   MANY   YEARS. MY    NEXT JOB   WILL BE   OPENING     A HI-FI BAR.
+            I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <a href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'inherit' }}>HI-FI BAR</a>.
           </AboutText>
         </StyledContent>
       </ContentWrapper>

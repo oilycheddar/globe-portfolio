@@ -108,11 +108,6 @@ export default function Home() {
     gsap.registerPlugin(ScrambleTextPlugin);
     
     const ctx = gsap.context(() => {
-      // Initial state setup for main content
-      gsap.set([topTextRef.current, bottomTextRef.current], {
-        opacity: 0,
-      });
-
       // Initial state for navbar and toggle buttons
       const navbar = navbarRef.current;
       if (navbar?.container) {
@@ -123,19 +118,21 @@ export default function Home() {
           visibility: 'visible'
         });
 
-        // Hide only top and bottom toggle buttons
-        const toggleButtons = [
+        // Hide all nav elements initially
+        const allNavElements = [
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
           navbar.dvd,
           navbar.speed,
-          navbar.themeBottom   // STATION (bottom)
+          navbar.themeBottom,   // STATION (bottom)
+          navbar.themeLeft,     // Left nav
+          navbar.themeRight     // Right nav
         ];
 
-        toggleButtons.forEach(button => {
-          if (button) {
-            gsap.set(button, {
+        allNavElements.forEach(element => {
+          if (element) {
+            gsap.set(element, {
               opacity: 0,
               y: -10,
               filter: 'blur(20px)'
@@ -153,37 +150,13 @@ export default function Home() {
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: 0.75,
+        delay: 1.2,
         defaults: {
           ease: "sine.out",
         }
       });
 
-      // Combined staggered animation for toggle buttons
-      if (navbar) {
-        const navToggleButtons = [
-          navbar.themeTop,  // Theme SLIME (top)
-          navbar.grid,
-          navbar.noise,
-          navbar.dvd,
-          navbar.speed,
-          navbar.themeBottom   // Theme (bottom)
-        ];
-
-        // Animate toggle buttons with stagger
-        tl.to(navToggleButtons, {
-          opacity: 1,
-          y: 0,
-          delay: 0.2,
-          filter: 'blur(0px)',
-          duration: 0.6,
-          ease: "power2.out",
-          stagger: 0.15,
-          clearProps: "all"
-        });
-      }
-
-      // Animate content container
+      // Animate content container first
       tl.to(contentRef.current,
         {
           opacity: 1,
@@ -217,6 +190,30 @@ export default function Home() {
           delimiter: ""
         }
       }, "+=0.2");
+
+      // Animate all nav elements together
+      if (navbar) {
+        const allNavElements = [
+          navbar.themeTop,  // Theme SLIME (top)
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.speed,
+          navbar.themeBottom,   // STATION (bottom)
+          navbar.themeLeft,     // Left nav
+          navbar.themeRight     // Right nav
+        ];
+
+        // Animate all nav elements together
+        tl.to(allNavElements, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.7,
+          ease: "power2.out",
+          clearProps: "all"
+        }, "+=0.45");
+      }
     }, contentRef);
 
     return ctx;

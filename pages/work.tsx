@@ -47,6 +47,41 @@ const ContentWrapper = styled.div`
   }
 `;
 
+const CaseStudy = styled.div`
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --navbar-height: 64px;
+  position: absolute;
+  top: var(--space-xl);
+  bottom: var(--navbar-height);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xl);
+  transition: filter 0.4s ease;
+  /* Add padding to prevent content from overlapping with navs */
+  padding: var(--space-xl) var(--space-lg);
+  /* Initial state to prevent FOUC */
+  opacity: 0;
+  overflow: visible;
+  /* Responsive adjustments */
+  @media (max-width: 440px) {
+    --mobile-navbar-height: 24px;
+    position: relative;
+    top: var(--mobile-navbar-height);
+    bottom: auto;
+    justify-content: flex-start;
+    padding: var(--space-xl) var(--space-md);
+    gap: var(--space-md);
+  }
+`;
+
 const StyledContent = styled.div`
   --space-xs: 8px;
   --space-sm: 12px;
@@ -265,6 +300,21 @@ const WorkSampleText = styled.div`
   }
 `;
 
+const CaseStudiesList = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl) var(--space-lg);
+  overflow-y: auto;
+  height: 100%;
+  
+  @media (max-width: 440px) {
+    padding: var(--space-xl) var(--space-md);
+    gap: var(--space-lg);
+  }
+`;
+
 export default function Work() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -323,21 +373,30 @@ export default function Work() {
 
       // Set initial state for content
       gsap.set(contentRef.current, {
-        opacity: 1,
+        opacity: 0,
+        y: 20,
         visibility: 'visible'
       });
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: 0.75,
+        delay: 1.2,
         defaults: {
           ease: "sine.out",
         }
       });
 
-      // Combined staggered animation for toggle buttons
+      // Animate content first
+      tl.to(contentRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+
+      // Animate all nav elements together
       if (navbar) {
-        const navToggleButtons = [
+        const allNavElements = [
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
@@ -346,16 +405,15 @@ export default function Work() {
           navbar.themeBottom   // STATION (bottom)
         ];
 
-        // Animate toggle buttons with stagger
-        tl.to(navToggleButtons, {
+        // Animate all nav elements together
+        tl.to(allNavElements, {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.6,
+          duration: 0.7,
           ease: "power2.out",
-          stagger: 0.15,
           clearProps: "all"
-        });
+        }, "-=0.45"); // Start slightly before content animation ends
       }
     }, contentRef);
 
@@ -447,72 +505,74 @@ export default function Work() {
           initialNoiseState={noiseEnabled}
           hideSideNavs={true}
         />
-        <StyledContent 
-          ref={contentRef}
-          className={`${jetbrainsMono.className}`}
-          style={isMobile && isNavExpanded ? {
-            filter: 'blur(8px)'
-          } : undefined}
-        >
-          <ImageWrapper 
-            className="work-sample-image-wrapper"
-            onClick={handleVideoClick}
-            style={{ cursor: 'pointer' }}
+        <CaseStudiesList>
+          <CaseStudy 
+            ref={contentRef}
+            className={`${jetbrainsMono.className}`}
+            style={isMobile && isNavExpanded ? {
+              filter: 'blur(8px)'
+            } : undefined}
           >
-            {!isVideoPlaying && <PlayButton />}
-            <WorkSampleVideo
-              ref={videoRef}
-              className="work-sample-video"
-              src="/TreasuryDemoReel.mp4"
-              poster="/Users/gvisan/Documents/GitHub/globe-portfolio/public/RBA_Intelligence_Asset_Dark.png"
-              muted
-              playsInline
-              onEnded={handleVideoEnded}
-            />
-          </ImageWrapper>
-          <WorkSampleText>
-            <WorkSampleCopyContainer>
-              <WorkTitleLink 
-                href="https://www.ramp.com/treasury"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <WorkSampleTitle className={`${textStyles.caption} text-[var(--color-text)]`}>
-                  RAMP TREASURY
-                </WorkSampleTitle>
-                <img src="/link-external.svg" alt="External link" />
-              </WorkTitleLink>
-              <WorkSampleDescription 
-                ref={workDescriptionRef}
-                className={`${textStyles.caption} text-[var(--color-text)]`}
-              >
-              I LED THE ZERO-TO-ONE DESIGN FOR RAMP'S BUSINESS & INVESTMENT ACCOUNTS. {'\n'}CREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.               </WorkSampleDescription>
-            </WorkSampleCopyContainer>
-            <WorkSampleTeamContainer>
-              <CollaboratorRole 
-                className={`${textStyles.caption} text-[var(--color-text)]`}
-              >
-                FRONT END:{'\n'}
-                BACK END:{'\n'}
-                PRODUCT:{'\n'}
-                DATA:{'\n'}
-                MARKETING:{'\n'}
-                BRAND:
-              </CollaboratorRole>
-              <CollaboratorNames 
-                className={`${textStyles.caption} text-[var(--color-text)]`}
-              >
-                FARDEEM, MARK{'\n'}
-                ARNAB, ERIC, DANIELLE{'\n'}
-                WILLIAM, KARL{'\n'}
-                JAMES{'\n'}
-                BECKY, CHRISTY{'\n'}
-                EMILY, SHIVANI{'\n'}
-
-              </CollaboratorNames>
-            </WorkSampleTeamContainer>
-          </WorkSampleText>
-        </StyledContent>
+            <ImageWrapper 
+              className="work-sample-image-wrapper"
+              onClick={handleVideoClick}
+              style={{ cursor: 'pointer' }}
+            >
+              {!isVideoPlaying && <PlayButton />}
+              <WorkSampleVideo
+                ref={videoRef}
+                className="work-sample-video"
+                src="/TreasuryDemoReel.mp4"
+                poster="/RBA_Intelligence_Asset_Dark.png"
+                muted
+                playsInline
+                onEnded={handleVideoEnded}
+              />
+            </ImageWrapper>
+            <WorkSampleText>
+              <WorkSampleCopyContainer>
+                <WorkTitleLink 
+                  href="https://www.ramp.com/treasury"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <WorkSampleTitle className={`${textStyles.caption} text-[var(--color-text)]`}>
+                    RAMP TREASURY
+                  </WorkSampleTitle>
+                  <img src="/link-external.svg" alt="External link" />
+                </WorkTitleLink>
+                <WorkSampleDescription 
+                  ref={workDescriptionRef}
+                  className={`${textStyles.caption} text-[var(--color-text)]`}
+                >
+                  I LED THE ZERO-TO-ONE DESIGN FOR RAMP'S BUSINESS & INVESTMENT ACCOUNTS. {'\n'}CREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.
+                </WorkSampleDescription>
+              </WorkSampleCopyContainer>
+              <WorkSampleTeamContainer>
+                <CollaboratorRole 
+                  className={`${textStyles.caption} text-[var(--color-text)]`}
+                >
+                  FRONT END:{'\n'}
+                  BACK END:{'\n'}
+                  PRODUCT:{'\n'}
+                  DATA:{'\n'}
+                  MARKETING:{'\n'}
+                  BRAND:
+                </CollaboratorRole>
+                <CollaboratorNames 
+                  className={`${textStyles.caption} text-[var(--color-text)]`}
+                >
+                  FARDEEM, MARK{'\n'}
+                  ARNAB, ERIC, DANIELLE{'\n'}
+                  WILLIAM, KARL{'\n'}
+                  JAMES{'\n'}
+                  BECKY, CHRISTY{'\n'}
+                  EMILY, SHIVANI{'\n'}
+                </CollaboratorNames>
+              </WorkSampleTeamContainer>
+            </WorkSampleText>
+          </CaseStudy>
+        </CaseStudiesList>
       </ContentWrapper>
     </PageWrapper>
   );
