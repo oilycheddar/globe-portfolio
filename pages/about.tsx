@@ -72,10 +72,13 @@ const StyledContent = styled.div`
   transform: translateY(20px);
   /* Responsive adjustments */
   @media (max-width: 440px) {
-    gap: var(--space-md);
-    padding: 0 var(--space-md);
+    --mobile-navbar-height: 24px;
+    position: relative;
+    top: var(--mobile-navbar-height);
+    bottom: auto;
     justify-content: flex-start;
-    padding-top: var(--space-xl);
+    padding: 0 var(--space-md);
+    gap: var(--space-md);
   }
 `;
 
@@ -91,6 +94,10 @@ const ImageWrapper = styled.div`
   max-width: 100%;
   position: relative;
   aspect-ratio: 1064/1331;
+  
+  @media (max-width: 440px) {
+    width: 100%;
+  }
 `;
 
 const AboutText = styled.p`
@@ -99,6 +106,11 @@ const AboutText = styled.p`
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
+  
+  @media (max-width: 440px) {
+    width: 100%;
+    max-width: none;
+  }
 `;
 
 export default function About() {
@@ -316,7 +328,7 @@ export default function About() {
             ref={aboutTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            I ENJOY SOME OF THE   OLD, AND I ENJOY SOME OF THE NEW. I'M IN LOVE. RUNNING GETS  MY HEART  RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY   OWN WAY. HONOURING MY INTUITION   TOOK   MANY   YEARS. MY NEXT JOB  WILL BE OPENING   A HI-FI BAR.
+            I ENJOY    SOME OF THE   OLD, AND I ENJOY SOME    OF THE NEW. I'M IN LOVE. RUNNING GETS  MY HEART  RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY   OWN WAY. HONOURING MY INTUITION   TOOK   MANY   YEARS. MY    NEXT JOB   WILL BE     OPENING   A HI-FI BAR.
           </AboutText>
         </StyledContent>
       </ContentWrapper>

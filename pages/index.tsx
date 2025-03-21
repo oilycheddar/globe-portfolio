@@ -56,6 +56,7 @@ const StyledContent = styled.div`
   --space-lg: 24px;
   --space-xl: 40px;
   --navbar-height: 64px;
+  position: absolute;
   top: var(--navbar-height);
   bottom: var(--navbar-height);
   left: 0;
@@ -67,7 +68,7 @@ const StyledContent = styled.div`
   gap: var(--space-md);
   transition: filter 0.4s ease;
   /* Add padding to prevent content from overlapping with navs */
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-xl);
   /* Responsive adjustments */
   @media (max-width: 440px) {
     gap: var(--space-sm);
