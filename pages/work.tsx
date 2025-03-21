@@ -464,7 +464,7 @@ export default function Work() {
               ref={videoRef}
               className="work-sample-video"
               src="/TreasuryDemoReel.mp4"
-              poster="/RBA_Intelligence_Asset_Dark.png"
+              poster="/Users/gvisan/Documents/GitHub/globe-portfolio/public/RBA_Intelligence_Asset_Dark.png"
               muted
               playsInline
               onEnded={handleVideoEnded}
