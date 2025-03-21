@@ -92,7 +92,7 @@ export default function Home() {
   const topTextRef = useRef<HTMLHeadingElement>(null);
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
-  const navbarRef = useRef<HTMLDivElement>(null);
+  const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [noiseEnabled, setNoiseEnabled] = useState(true);
@@ -108,7 +108,7 @@ export default function Home() {
       });
 
       // Initial state for navbar and toggle buttons
-      const navbar = (navbarRef.current as unknown) as NavbarRef;
+      const navbar = navbarRef.current;
       if (navbar?.container) {
         // Hide navbar container
         gsap.set(navbar.container, {
@@ -117,7 +117,7 @@ export default function Home() {
           visibility: 'visible' // Make visible before animation
         });
 
-        // Hide all toggle buttons
+        // Hide only top and bottom toggle buttons
         const toggleButtons = [
           navbar.theme,
           navbar.grid,
@@ -146,11 +146,42 @@ export default function Home() {
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: 1.25,
+        delay: 0.75,
         defaults: {
           ease: "sine.out",
         }
       });
+
+      // Animate navbar container
+      if (navbar?.container) {
+        tl.to(navbar.container, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          clearProps: "all"
+        }, "+=0.2");
+
+        // Combined staggered animation for top and bottom toggle buttons
+        const navToggleButtons = [
+          navbar.theme, // Top theme
+          navbar.grid,  // Top grid
+          navbar.noise, // Top noise
+          navbar.dvd,   // Top dvd
+          navbar.theme  // Bottom station
+        ];
+
+        // Use GSAP's stagger feature instead of forEach
+        tl.to(navToggleButtons, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.6,
+          ease: "power2.out",
+          stagger: 0.1,
+          clearProps: "all"
+        }, "-=0.45"); // Slightly more overlap for smoother sequence
+      }
 
       // Animate content container
       tl.to(contentRef.current,
@@ -186,39 +217,6 @@ export default function Home() {
           delimiter: ""
         }
       }, "+=0.2");
-
-      // Animate navbar container
-      if (navbar?.container) {
-        tl.to(navbar.container, {
-          opacity: 1,
-          y: 0,
-          duration: 0.4,
-          ease: "power2.out",
-          clearProps: "all"
-        }, "+=0.2");
-
-        // Staggered animation for toggle buttons
-        const toggleButtons = [
-          navbar.theme,
-          navbar.grid,
-          navbar.noise,
-          navbar.dvd
-        ];
-
-        toggleButtons.forEach((button, index) => {
-          if (button) {
-            tl.to(button, {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              duration: 0.6,
-              ease: "power2.out",
-              stagger: 0.1,
-              clearProps: "all"
-            }, `-=0.45`); // Slightly more overlap for smoother sequence
-          }
-        });
-      }
     }, contentRef);
 
     return ctx;
@@ -338,6 +336,7 @@ export default function Home() {
           />
         ) : null}
         <Navbar
+          ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
           onDvdToggle={handleDvdToggle}

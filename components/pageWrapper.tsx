@@ -16,11 +16,29 @@ export default function PageWrapper({ children, noiseEnabled = true }: PageWrapp
       const mediaQuery = window.matchMedia('(max-width: 440px)');
       const topValue = mediaQuery.matches ? 'max(16px, env(safe-area-inset-top))' : '16px';
 
-      // Set the final position immediately with opacity 0
-      gsap.set(innerShapeRef.current, { top: topValue, right: '16px', bottom: '16px', left: '16px', opacity: 0 });
+      // Set initial state - bigger size and opacity 0
+      gsap.set(innerShapeRef.current, { 
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+        opacity: 0,
+        scale: 1.1, // Start 10% bigger
+        transformOrigin: 'center center'
+      });
 
-      // Animate opacity from 0% to 100%
-      gsap.to(innerShapeRef.current, { opacity: 1, duration: 1, delay: 0.5, ease: "power1.out" });
+      // Animate to final position with scale down
+      gsap.to(innerShapeRef.current, { 
+        top: topValue,
+        right: '16px',
+        bottom: '16px',
+        left: '16px',
+        opacity: 1,
+        scale: 1,
+        duration: 1.35,
+        delay: 0.3,
+        ease: "power2.out"
+      });
 
       // Listen for media query changes to update the top offset accordingly
       const updateTop = (e: MediaQueryListEvent | MediaQueryList) => {
@@ -29,7 +47,6 @@ export default function PageWrapper({ children, noiseEnabled = true }: PageWrapp
       };
 
       mediaQuery.addEventListener('change', updateTop);
-
       return () => mediaQuery.removeEventListener('change', updateTop);
     }
   }, []);

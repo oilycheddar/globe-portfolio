@@ -6,6 +6,7 @@ import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
 import { JetBrains_Mono } from 'next/font/google';
 import { gsap } from '../utils/gsap';
+import { useRouter } from 'next/router';
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -120,6 +121,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const applyButtonRef = useRef<HTMLButtonElement>(null);
+  const router = useRouter();
   
   const [isDvdActive, setIsDvdActive] = useState(false);
   const [isNoiseActive, setIsNoiseActive] = useState(initialNoiseState);
@@ -216,6 +218,28 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     onNoiseToggle(value);
   };
 
+  // Get current page value based on route
+  const getCurrentPageValue = () => {
+    const path = router.pathname;
+    switch (path) {
+      case '/':
+        return 'HOME';
+      case '/about':
+        return 'ABOUT';
+      case '/work':
+        return 'WORK';
+      default:
+        return 'HOME';
+    }
+  };
+
+  // Navigation paths mapping
+  const navigationPaths = {
+    'HOME': '/',
+    'WORK': '/work',
+    'ABOUT': '/about'
+  };
+
   return (
     <NavContainer 
       ref={containerRef}
@@ -260,6 +284,15 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             onChange={onSpeedToggle}
           />
         )}
+        <ToggleButton
+          type="expandable"
+          label="STATION"
+          value={getCurrentPageValue()}
+          options={["HOME", "WORK", "ABOUT"]}
+          onChange={() => {}}
+          isNavigation
+          paths={navigationPaths}
+        />
       </ToggleButtonsGrid>
       <ApplyButton 
         ref={applyButtonRef}

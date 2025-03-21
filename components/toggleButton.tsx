@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../utils/gsap';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Container = styled.div`
   display: flex;
@@ -113,6 +115,8 @@ type ExpandableToggleProps<T extends string> = BaseToggleProps & {
   value: T;
   options: T[];
   onChange: (value: T) => void;
+  isNavigation?: boolean;
+  paths?: Record<T, string>;
 };
 
 type ToggleButtonProps<T extends string> = BooleanToggleProps | MultiToggleProps<T> | ExpandableToggleProps<T>;
@@ -121,6 +125,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -166,8 +171,16 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
       setIsExpanded(!isExpanded);
     }
   };
+
   const handleOptionClick = (option: T) => {
-    props.onChange(option as never);
+    if (props.type === 'expandable' && props.isNavigation && props.paths) {
+      const path = props.paths[option];
+      if (path) {
+        router.push(path);
+      }
+    } else {
+      props.onChange(option as never);
+    }
     setIsExpanded(false);
   };
 

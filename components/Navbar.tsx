@@ -4,6 +4,7 @@ import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
 import { useState, forwardRef, useRef, useImperativeHandle } from 'react';
 import { textStyles } from '../styles/text';
+import { useRouter } from 'next/router';
 
 const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   className: props.className || ''
@@ -131,6 +132,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   const themeKeys = Object.keys(themes);
   const [isDvdActive, setIsDvdActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   
   // Create refs for each toggle button container
   const toggleRefs = {
@@ -139,6 +141,28 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     noise: useRef<HTMLDivElement>(null),
     dvd: useRef<HTMLDivElement>(null),
     speed: useRef<HTMLDivElement>(null)
+  };
+
+  // Get current page value based on route
+  const getCurrentPageValue = () => {
+    const path = router.pathname;
+    switch (path) {
+      case '/':
+        return 'HOME';
+      case '/about':
+        return 'ABOUT';
+      case '/work':
+        return 'WORK';
+      default:
+        return 'HOME';
+    }
+  };
+
+  // Navigation paths mapping
+  const navigationPaths = {
+    'HOME': '/',
+    'WORK': '/work',
+    'ABOUT': '/about'
   };
 
   // Expose toggle refs to parent component
@@ -246,9 +270,11 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
             <ToggleButton
               type="expandable"
               label="STATION"
-              value="HOME"
-              options={["HOME", "Work", "About"]}
+              value={getCurrentPageValue()}
+              options={["HOME", "WORK", "ABOUT"]}
               onChange={() => {}}
+              isNavigation
+              paths={navigationPaths}
             />
           </div>
         </ToggleGroup>
