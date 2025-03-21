@@ -48,7 +48,7 @@ const Overlay = styled.div<{ $isVisible: boolean }>`
 `;
 
 const IconWrapper = styled.div`
-  padding: 0 10px 4px 10px;
+  padding: 0;
   cursor: pointer;
   position: relative;
   z-index: 2;

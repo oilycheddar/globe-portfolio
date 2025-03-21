@@ -29,8 +29,9 @@ const CaseStudyWrapper = styled.div`
   
   @media (max-width: 440px) {
     --mobile-navbar-height: 24px;
-    padding: var(--space-xl) var(--space-md);
+    padding: var(--space-md) 0;
     gap: var(--space-md);
+    width: auto;
   }
 `;
 

@@ -68,12 +68,8 @@ const RightNavContainer = styled(NavContainer)`
 `;
 
 const BottomNavContainer = styled(NavContainer)`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  display: flex; /* Always visible */
+  order: 3;
+  display: flex;
 
   @media (max-width: 440px) {
     display: flex; /* Ensure bottom nav is visible on mobile */

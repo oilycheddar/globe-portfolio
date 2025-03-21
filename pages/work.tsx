@@ -46,26 +46,45 @@ const ContentWrapper = styled.div`
     right: 0;
     z-index: 30;
   }
+
+  @media (max-width: 440px) {
+    position: fixed;
+    width: 100%;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
 `;
 
 const CaseStudiesList = styled.div`
-  width: calc(100% - var(--navbar-width));
+  width: 100%;
   margin-left: var(--navbar-width);
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-xxl);
   padding: var(--space-xl) var(--space-lg);
   overflow-y: auto;
-  height: calc(100vh - var(--navbar-height));
+  height: calc(100vh - var(--space-xl) *2);
   margin-top: var(--navbar-height);
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  box-sizing: border-box;
   
+  /* First handle tablet/medium sizes */
+  @media (max-width: 768px) {
+    width: calc(100% - var(--navbar-width));
+    padding: var(--space-lg) var(--space-lg);
+    gap: var(--space-lg);
+  }
+  
+  /* Then handle mobile */
   @media (max-width: 440px) {
     width: 100%;
     margin-left: 0;
-    padding: var(--space-xl) var(--space-md);
+    padding: var(--space-lg) var(--space-md);
     gap: var(--space-lg);
-    height: calc(100vh - var(--mobile-navbar-height));
-    margin-top: var(--mobile-navbar-height);
+    height: calc(100% - var(--mobile-navbar-height) - var(--navbar-height));
+    margin-top: 0;
+    grid-row: 2;
   }
 `;
 

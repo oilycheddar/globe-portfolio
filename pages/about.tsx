@@ -45,6 +45,14 @@ const ContentWrapper = styled.div`
     right: 0;
     z-index: 30;
   }
+
+  @media (max-width: 440px) {
+    position: fixed;
+    width: 100%;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
 `;
 
 const StyledContent = styled.div`
@@ -54,11 +62,7 @@ const StyledContent = styled.div`
   --space-lg: 24px;
   --space-xl: 40px;
   --navbar-height: 64px;
-  position: absolute;
-  top: var(--navbar-height);
-  bottom: var(--navbar-height);
-  left: 0;
-  right: 0;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,11 +78,12 @@ const StyledContent = styled.div`
   @media (max-width: 440px) {
     --mobile-navbar-height: 24px;
     position: relative;
-    top: var(--mobile-navbar-height);
-    bottom: auto;
+    top: 0;
+    height: calc(100% - var(--mobile-navbar-height) - var(--navbar-height));
     justify-content: flex-start;
     padding: 0 var(--space-md);
     gap: var(--space-md);
+    grid-row: 2;
   }
 `;
 
