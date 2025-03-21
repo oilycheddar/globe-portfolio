@@ -74,6 +74,8 @@ const StyledContent = styled.div`
   @media (max-width: 440px) {
     gap: var(--space-md);
     padding: 0 var(--space-md);
+    justify-content: flex-start;
+    padding-top: var(--space-xl);
   }
 `;
 
