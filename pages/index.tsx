@@ -68,7 +68,7 @@ const StyledContent = styled.div`
   gap: var(--space-md);
   transition: filter 0.4s ease;
   /* Add padding to prevent content from overlapping with navs */
-  padding: 0 var(--space-xl);
+  padding: 0 var(--space-md);
   /* Responsive adjustments */
   @media (max-width: 440px) {
     gap: var(--space-sm);
