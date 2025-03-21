@@ -416,6 +416,13 @@ export default function Work() {
     }
   };
 
+  const handleVideoEnded = () => {
+    setIsVideoPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+    }
+  };
+
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
@@ -459,8 +466,8 @@ export default function Work() {
               src="/TreasuryDemoReel.mp4"
               poster="/RBA_Intelligence_Asset_Dark.png"
               muted
-              loop
               playsInline
+              onEnded={handleVideoEnded}
             />
           </ImageWrapper>
           <WorkSampleText>
