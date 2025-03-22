@@ -37,7 +37,7 @@ export const caseStudies: CaseStudy[] = [
     link: 'none',
     description: 'A single place to manage your company\'s cash. Choose how many weeks of runway you need and Ramp will do the rest.',
     videoUrl: 'none',
-    posterUrl: '/Runway_Drawer_Dark.png',
+    posterUrl: '/Runway_drawer_dark.png',
     team: [
         { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
         { role: 'BACK END', names: ['ARNAB'] },
