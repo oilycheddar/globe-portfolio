@@ -11,6 +11,7 @@ export interface CaseStudy {
   videoUrl: string;
   posterUrl: string;
   team: TeamMember[];
+  hideTeam?: boolean;
 }
 
 export const caseStudies: CaseStudy[] = [
@@ -34,15 +35,16 @@ export const caseStudies: CaseStudy[] = [
     id: 'Runway',
     title: 'Runway',
     link: 'none',
-    description: 'Finally, a single place to manage your cash.\nDefine how many weeks of runway you want and Ramp will do the rest.',
+    description: 'Finally, a single place to manage your cash. Define how many weeks of runway you want and Ramp will do the rest.',
     videoUrl: 'none',
-    posterUrl: '/runway_asset_dark.png',
+    posterUrl: '/Runway_Drawer_Dark.png',
     team: [
       { role: 'FRONT END', names: ['ALEX', 'SARAH'] },
       { role: 'BACK END', names: ['MICHAEL', 'LISA'] },
       { role: 'PRODUCT', names: ['DAVID', 'RACHEL'] },
       { role: 'DESIGN', names: ['JENNIFER', 'TOM'] },
       { role: 'MARKETING', names: ['CHRIS', 'AMANDA'] }
-    ]
+    ],
+    hideTeam: true
   }
 ]; 

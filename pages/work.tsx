@@ -51,7 +51,8 @@ const ContentWrapper = styled.div`
     position: fixed;
     width: 100%;
     overflow-x: hidden;
-    display: grid;
+    display: flex;
+    flex-direction: column;
   }
 `;
 
@@ -78,13 +79,15 @@ const CaseStudiesList = styled.div`
   /* Then handle mobile */
   @media (max-width: 440px) {
     --space-mobile-xxl: 80px; /* Add larger space for mobile */
+    --mobile-navbar-height: 32px;
     width: 100%;
     margin-left: 0;
+    flex: 1;
     padding: var(--space-xl) var(--space-md);
     gap: var(--space-mobile-xxl);
-    height: calc(100% - var(--mobile-navbar-height) - var(--navbar-height));
-    margin-top: 0;
-    grid-row: 0;
+    height: auto;
+    margin-top: var(--mobile-navbar-height);
+    padding-bottom: calc(var(--navbar-height) + var(--space-xl));
   }
 `;
 

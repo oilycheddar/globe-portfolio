@@ -52,7 +52,25 @@ const ContentWrapper = styled.div`
     position: fixed;
     width: 100%;
     overflow-x: hidden;
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+`;
+
+const BlurWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.4s ease;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 440px) {
+    --mobile-navbar-height: 32px;
+    margin-top: var(--mobile-navbar-height);
   }
 `;
 
@@ -71,34 +89,15 @@ const StyledContent = styled.div`
   gap: var(--space-md);
   transition: filter 0.4s ease;
 
-
   /* Add padding to prevent content from overlapping with navs */
-  padding: 0 var(--space-xl);
-
 
   /* Responsive adjustments */
   @media (max-width: 440px) {
     gap: var(--space-sm);
-    padding: 0 var(--space-md);
-    display: flex;
-    flex-direction: column;
-    flex:1;
-    align-items: center;
+    padding-top: 32px;
+    height: 100%;
     justify-content: center;
-    top: 0;
-    grid-row: 0;
   }
-`;
-
-const BlurWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: filter 0.4s ease;
-    flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `;
 
 interface NavbarProps {

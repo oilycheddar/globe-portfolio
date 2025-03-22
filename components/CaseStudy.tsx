@@ -34,19 +34,15 @@ const CaseStudyWrapper = styled.div`
 const ImageWrapper = styled.div`
   width: 100%;
   position: relative;
-  aspect-ratio: 16/9;
+  aspect-ratio: auto;
   margin: 0 calc(-1 * var(--space-lg));
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 0px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  max-height: 70vh;
-  
+  justify-content: center;  
   @media (max-width: 440px) {
     margin: 0 calc(-1 * var(--space-md));
-    aspect-ratio: 16/9;
-    max-height: 60vh;
   }
 `;
 
@@ -90,10 +86,9 @@ const PlayButton = styled.div`
 
 const WorkSampleVideo = styled.video`
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
-  max-height: 100%;
-  max-width: 100%;
+  display: block;
 `;
 
 const WorkSampleTitle = styled.h2`
@@ -146,7 +141,7 @@ const WorkSampleCopyContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   width: fit-content;
   overflow: visible;
   
@@ -284,14 +279,16 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
             {data.description}
           </WorkSampleDescription>
         </WorkSampleCopyContainer>
-        <WorkSampleTeamContainer>
-          <CollaboratorRole className={`${textStyles.caption} text-[var(--color-text)]`}>
-            {data.team.map(member => member.role).join('\n')}
-          </CollaboratorRole>
-          <CollaboratorNames className={`${textStyles.caption} text-[var(--color-text)]`}>
-            {data.team.map(member => member.names.join(', ')).join('\n')}
-          </CollaboratorNames>
-        </WorkSampleTeamContainer>
+        {!data.hideTeam && (
+          <WorkSampleTeamContainer>
+            <CollaboratorRole className={`${textStyles.caption} text-[var(--color-text)]`}>
+              {data.team.map(member => member.role).join('\n')}
+            </CollaboratorRole>
+            <CollaboratorNames className={`${textStyles.caption} text-[var(--color-text)]`}>
+              {data.team.map(member => member.names.join(', ')).join('\n')}
+            </CollaboratorNames>
+          </WorkSampleTeamContainer>
+        )}
       </WorkSampleText>
     </CaseStudyWrapper>
   );
