@@ -5,7 +5,7 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import { Ref, useEffect, useRef, useState } from "react";
-import { gsap, ScrambleTextPlugin } from "../utils/gsap";
+import { gsap, ScrambleTextPlugin, SplitText } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
@@ -126,6 +126,19 @@ const AboutText = styled.p`
   }
 `;
 
+const StyledLink = styled.a`
+  text-decoration: underline;
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  display: inline-block;
+  text-decoration-skip-ink: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 export default function About() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -137,7 +150,7 @@ export default function About() {
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
-    gsap.registerPlugin(ScrambleTextPlugin);
+    gsap.registerPlugin(ScrambleTextPlugin, SplitText);
     
     const ctx = gsap.context(() => {
       // Initial state setup for main content
@@ -207,23 +220,18 @@ export default function About() {
         ease: "power2.out"
       });
 
-      // Split text into words and animate each word after image
+      // Split text and animate each word after image
       if (aboutTextRef.current) {
-        // First, wrap each word in a span, preserving multiple spaces
-        const text = aboutTextRef.current.textContent || "";
-        const segments = text.split(/(\s+)/).filter(segment => segment.length > 0);
-        aboutTextRef.current.innerHTML = segments
-          .map(segment => {
-            if (segment.trim() === '') {
-              // Replace spaces with non-breaking spaces to preserve multiple spaces
-              return segment.replace(/ /g, '&nbsp;');
-            }
-            return `<span class="word" style="display: inline-block; filter: blur(12px); opacity: 0;">${segment}</span>`;
-          })
-          .join('');
+        const split = new SplitText(aboutTextRef.current, { type: "words,chars" });
+        
+        // Set initial state for split text
+        gsap.set(split.words, {
+          filter: "blur(12px)",
+          opacity: 0
+        });
 
-        // Then animate each word after image scales
-        tl.to(".word", {
+        // Animate each word
+        tl.to(split.words, {
           filter: "blur(0px)",
           opacity: 1,
           duration: 0.3,
@@ -352,7 +360,11 @@ export default function About() {
             ref={aboutTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <a href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'inherit' }}>HI-FI BAR</a>.
+            
+              I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">HI-FI</StyledLink><StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer"> BAR</StyledLink>. <br /><br />
+
+              I built this site with Cursor, Typescript, GSAP and three.js to push my skills as a designer and see what's possible. The code is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open source</StyledLink>.
+            
           </AboutText>
         </StyledContent>
       </ContentWrapper>
