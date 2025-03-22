@@ -243,6 +243,7 @@ interface CaseStudyProps {
 export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ data, className, style, onClick }, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleVideoClick = () => {
     if (videoRef.current) {
@@ -260,6 +261,10 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
     }
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
   };
 
   return (
@@ -289,6 +294,8 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
           <WorkSampleImage
             src={data.posterUrl}
             alt={data.title}
+            onLoad={handleImageLoad}
+            style={{ opacity: imageLoaded ? 1 : 0 }}
           />
         )}
       </ImageWrapper>
