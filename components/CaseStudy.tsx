@@ -41,7 +41,8 @@ const ImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: 70vh;  
+  max-height: 70vh;
+  
   @media (max-width: 440px) {
     margin: 0 calc(-1 * var(--space-md));
     max-height: none;
@@ -95,6 +96,24 @@ const WorkSampleVideo = styled.video`
   
   @media (max-width: 440px) {
     max-height: none;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+`;
+
+const WorkSampleImage = styled.img`
+  max-height: 70vh;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  
+  @media (max-width: 440px) {
+    max-height: none;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
   }
 `;
 
@@ -256,15 +275,22 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
         style={{ cursor: data.videoUrl !== 'none' ? 'pointer' : 'default' }}
       >
         {!isVideoPlaying && data.videoUrl !== 'none' && <PlayButton />}
-        <WorkSampleVideo
-          ref={videoRef}
-          className="work-sample-video"
-          src={data.videoUrl}
-          poster={data.posterUrl}
-          muted
-          playsInline
-          onEnded={handleVideoEnded}
-        />
+        {data.videoUrl !== 'none' ? (
+          <WorkSampleVideo
+            ref={videoRef}
+            className="work-sample-video"
+            src={data.videoUrl}
+            poster={data.posterUrl}
+            muted
+            playsInline
+            onEnded={handleVideoEnded}
+          />
+        ) : (
+          <WorkSampleImage
+            src={data.posterUrl}
+            alt={data.title}
+          />
+        )}
       </ImageWrapper>
       <WorkSampleText>
         <WorkSampleCopyContainer>
