@@ -52,7 +52,6 @@ const ContentWrapper = styled.div`
     width: 100%;
     overflow-x: hidden;
     display: grid;
-    grid-template-rows: auto 1fr;
   }
 `;
 
@@ -78,13 +77,14 @@ const CaseStudiesList = styled.div`
   
   /* Then handle mobile */
   @media (max-width: 440px) {
+    --space-mobile-xxl: 80px; /* Add larger space for mobile */
     width: 100%;
     margin-left: 0;
-    padding: var(--space-lg) var(--space-md);
-    gap: var(--space-lg);
+    padding: var(--space-xl) var(--space-md);
+    gap: var(--space-mobile-xxl);
     height: calc(100% - var(--mobile-navbar-height) - var(--navbar-height));
     margin-top: 0;
-    grid-row: 2;
+    grid-row: 0;
   }
 `;
 

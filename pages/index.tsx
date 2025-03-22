@@ -53,7 +53,6 @@ const ContentWrapper = styled.div`
     width: 100%;
     overflow-x: hidden;
     display: grid;
-    grid-template-rows: auto 1fr;
   }
 `;
 
@@ -81,10 +80,13 @@ const StyledContent = styled.div`
   @media (max-width: 440px) {
     gap: var(--space-sm);
     padding: 0 var(--space-md);
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex:1;
+    align-items: center;
+    justify-content: center;
     top: 0;
-    height: calc(100% - var(--mobile-navbar-height) - var(--navbar-height));
-    grid-row: 2;
+    grid-row: 0;
   }
 `;
 

@@ -43,15 +43,15 @@ const ContentWrapper = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    z-index: 30;
   }
-
+  
   @media (max-width: 440px) {
     position: fixed;
     width: 100%;
     overflow-x: hidden;
-    display: grid;
-    grid-template-rows: auto 1fr;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 `;
 
@@ -69,21 +69,21 @@ const StyledContent = styled.div`
   justify-content: center;
   gap: var(--space-lg);
   transition: filter 0.4s ease;
+
   /* Add padding to prevent content from overlapping with navs */
   padding: 0 var(--space-xl);
+
   /* Initial state to prevent FOUC */
   opacity: 0;
   transform: translateY(20px);
+  
   /* Responsive adjustments */
   @media (max-width: 440px) {
-    --mobile-navbar-height: 24px;
-    position: relative;
-    top: 0;
-    height: calc(100% - var(--mobile-navbar-height) - var(--navbar-height));
-    justify-content: flex-start;
+    --mobile-navbar-height: 32px;
     padding: 0 var(--space-md);
     gap: var(--space-md);
-    grid-row: 2;
+    min-height: 0;
+    height: 100%;
   }
 `;
 
