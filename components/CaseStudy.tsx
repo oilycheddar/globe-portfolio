@@ -40,9 +40,11 @@ const ImageWrapper = styled.div`
   border-radius: 0px;
   display: flex;
   align-items: center;
-  justify-content: center;  
+  justify-content: center;
+  max-height: 70vh;  
   @media (max-width: 440px) {
     margin: 0 calc(-1 * var(--space-md));
+    max-height: none;
   }
 `;
 
@@ -85,10 +87,15 @@ const PlayButton = styled.div`
 `;
 
 const WorkSampleVideo = styled.video`
+  max-height: 70vh;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
   display: block;
+  
+  @media (max-width: 440px) {
+    max-height: none;
+  }
 `;
 
 const WorkSampleTitle = styled.h2`
@@ -128,12 +135,14 @@ const WorkSampleDescription = styled.p`
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  text-align: right;
+  text-align: left;
   overflow: visible;
-  width: fit-content;
+  width: 650px;
+  max-width: 650px;
   
   @media (max-width: 440px) {
     width: 100%;
+    max-width: none;
   }
 `;
 
@@ -141,7 +150,7 @@ const WorkSampleCopyContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   width: fit-content;
   overflow: visible;
   
@@ -161,30 +170,24 @@ const WorkSampleTeamContainer = styled(WorkSampleCopyContainer)`
   gap: var(--space-lg);
   width: fit-content;
 
-  ${WorkSampleTitle}, ${WorkSampleDescription} {
-    text-align: right;
-  }
-
   @media (max-width: 440px) {
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
     gap: var(--space-md);
     width: 100%;
-
-    ${WorkSampleTitle}, ${WorkSampleDescription} {
-      text-align: left;
-    }
   }
 `;
 
 const CollaboratorRole = styled(WorkSampleTitle)`
   white-space: pre-line;
+  text-align: left;
 `;
 
 const CollaboratorNames = styled(WorkSampleDescription)`
   white-space: pre-line;
   width: fit-content;
+  text-align: left;
   
   @media (max-width: 440px) {
     min-width: unset;

@@ -21,7 +21,7 @@ export const caseStudies: CaseStudy[] = [
     link: 'https://www.ramp.com/treasury',
     description: 'I LED THE ZERO-TO-ONE DESIGN FOR RAMP\'S BUSINESS & INVESTMENT ACCOUNTS.\nCREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.',
     videoUrl: '/TreasuryDemoReel.mp4',
-    posterUrl: '/RBA_Intelligence_Asset_Dark.png',
+    posterUrl: '/Investment_Landing_Asset_Dark.png',
     team: [
       { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
       { role: 'BACK END', names: ['ARNAB', 'ERIC', 'DANIELLE'] },
@@ -35,16 +35,15 @@ export const caseStudies: CaseStudy[] = [
     id: 'Runway',
     title: 'Runway',
     link: 'none',
-    description: 'Finally, a single place to manage your cash. Define how many weeks of runway you want and Ramp will do the rest.',
+    description: 'A single place to manage your company\'s cash. Choose how many weeks of runway you need and Ramp will do the rest.',
     videoUrl: 'none',
     posterUrl: '/Runway_Drawer_Dark.png',
     team: [
-      { role: 'FRONT END', names: ['ALEX', 'SARAH'] },
-      { role: 'BACK END', names: ['MICHAEL', 'LISA'] },
-      { role: 'PRODUCT', names: ['DAVID', 'RACHEL'] },
-      { role: 'DESIGN', names: ['JENNIFER', 'TOM'] },
-      { role: 'MARKETING', names: ['CHRIS', 'AMANDA'] }
+        { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
+        { role: 'BACK END', names: ['ARNAB'] },
+        { role: 'PRODUCT', names: ['KARL'] },
+        { role: 'DATA', names: ['JAMES'] },
     ],
-    hideTeam: true
+    hideTeam: false
   }
 ]; 
