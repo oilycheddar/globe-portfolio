@@ -147,6 +147,7 @@ const OrbitalContainer = styled.div`
     
     @media (max-width: 440px) {
       width: 85vw;
+      margin: 40vh 0 0;
       height: 90vw;
     }
   }
@@ -167,12 +168,26 @@ export default function Photos() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const [radius, setRadius] = useState(200); // Default desktop radius
   const [config, setConfig] = useState<OrbitalConfig>({
-    radius: 150, // 150vw to match container size
+    radius: 150,
     rotationSpeed: 40,
     yDisplacement: 4,
     animationDuration: 0.8
   });
+
+  // Handle mobile responsiveness and radius
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileView = window.innerWidth <= 440;
+      setIsMobile(isMobileView);
+      setRadius(isMobileView ? 200 : 200); // Smaller radius for mobile
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -181,7 +196,6 @@ export default function Photos() {
 
       const medias = document.querySelectorAll<HTMLElement>(".mwg_effect023 .inner-media");
       const mediasTotal = medias.length;
-      const radius = 200; // Adjust this value to control the circle size
 
       // Distribute images evenly in a circle
       medias.forEach((media, index) => {
@@ -295,17 +309,6 @@ export default function Photos() {
     const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
   }, [theme]);
-
-  // Handle mobile responsiveness
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 440);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const handleGridToggle = (value: boolean) => {
     // Implement grid toggle functionality
