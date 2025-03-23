@@ -241,7 +241,7 @@ export default function Photos() {
       let incr = 0;
       const handleScroll = (e: WheelEvent) => {
         const deltaY = e.deltaY;
-        incr -= deltaY / 40;
+        incr -= deltaY / 20;
         rotTo(incr);
 
         const val = -Math.abs(deltaY / 4) - 50;
@@ -269,7 +269,7 @@ export default function Photos() {
         const deltaY = touchY - lastTouchY;
         
         // Update rotation based on vertical movement (like wheel event)
-        incr -= deltaY / 40;
+        incr -= deltaY / 20;
         rotTo(incr);
 
         // Update vertical position based on vertical movement
