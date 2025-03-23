@@ -269,7 +269,7 @@ export default function Photos() {
         const deltaY = touchY - lastTouchY;
         
         // Update rotation based on vertical movement (like wheel event)
-        incr -= deltaY / 14;
+        incr -= deltaY / 10;
         rotTo(incr);
 
         // Update vertical position based on vertical movement
