@@ -138,9 +138,9 @@ const OrbitalContainer = styled.div`
   }
 
   .media {
-    width: 45vw;
-    height: 50vw;
-    margin: 75vh 0 0;
+    width: 40vw;
+    height: 40vw;
+    margin: 40vh 0 0;
     transform: translate(0, -50%);
     object-fit: contain;
     object-position: 50% 100%;
@@ -172,7 +172,7 @@ export default function Photos() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [radius, setRadius] = useState(200); // Default desktop radius
   const [config, setConfig] = useState<OrbitalConfig>({
-    radius: 150,
+    radius: 200,
     rotationSpeed: 40,
     yDisplacement: 4,
     animationDuration: 0.8

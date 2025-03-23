@@ -61,48 +61,72 @@ const photos: Photo[] = [
     "alt": "Photography 14"
   },
   {
-    "src": "/photography/_LOU5142-instagram.jpg",
+    "src": "/photography/L1000707.jpg",
     "alt": "Photography 15"
   },
   {
-    "src": "/photography/_LOU5208-instagram.jpg",
+    "src": "/photography/L1003048-instagram.jpg",
     "alt": "Photography 16"
   },
   {
-    "src": "/photography/_LOU5212-instagram.jpg",
+    "src": "/photography/L1003692-instagram.jpg",
     "alt": "Photography 17"
   },
   {
-    "src": "/photography/_LOU5218-instagram.jpg",
+    "src": "/photography/_LOU5142-instagram.jpg",
     "alt": "Photography 18"
   },
   {
-    "src": "/photography/ben double exposure.jpg",
+    "src": "/photography/_LOU5208-instagram.jpg",
     "alt": "Photography 19"
   },
   {
-    "src": "/photography/cloudy trees.jpg",
+    "src": "/photography/_LOU5212-instagram.jpg",
     "alt": "Photography 20"
   },
   {
-    "src": "/photography/fall-chester-lake01.png",
+    "src": "/photography/_LOU5218-instagram.jpg",
     "alt": "Photography 21"
   },
   {
-    "src": "/photography/fall-chester-lake03.png",
+    "src": "/photography/ben double exposure.jpg",
     "alt": "Photography 22"
   },
   {
-    "src": "/photography/have mercy (18 of 25).jpg",
+    "src": "/photography/cloudy trees.jpg",
     "alt": "Photography 23"
   },
   {
-    "src": "/photography/invermere-film01.png",
+    "src": "/photography/fall-chester-lake01.png",
     "alt": "Photography 24"
   },
   {
-    "src": "/photography/train_station.png",
+    "src": "/photography/fall-chester-lake03.png",
     "alt": "Photography 25"
+  },
+  {
+    "src": "/photography/have mercy (18 of 25).jpg",
+    "alt": "Photography 26"
+  },
+  {
+    "src": "/photography/invermere-film01.png",
+    "alt": "Photography 27"
+  },
+  {
+    "src": "/photography/train_station.png",
+    "alt": "Photography 28"
+  },
+  {
+    "src": "/photography/turkeyromaniatrip-114.jpg",
+    "alt": "Photography 29"
+  },
+  {
+    "src": "/photography/turkeyromaniatrip-78.jpg",
+    "alt": "Photography 30"
+  },
+  {
+    "src": "/photography/turkeyromaniatrip-83.jpg",
+    "alt": "Photography 31"
   }
 ];
 
