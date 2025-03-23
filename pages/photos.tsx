@@ -300,15 +300,15 @@ export default function Photos() {
         });
       });
 
-      // Create quickTo instances for smooth animations
+      // Create quickTo instances with different configurations for mobile/desktop
       const rotTo = gsap.quickTo(".mwg_effect023 .container", "rotation", {
-        duration: 1.25,
-        ease: "ease.inOut2",
+        duration: isMobile ? 0.2 : 1.25, // Faster duration for mobile
+        ease: isMobile ? "none" : "ease.inOut2", // Linear easing for mobile
       });
 
       const yTo = gsap.quickTo(".mwg_effect023 .media", "yPercent", {
-        duration: 1,
-        ease: "power3",
+        duration: isMobile ? 0.2 : 1, // Faster duration for mobile
+        ease: isMobile ? "none" : "power3", // Linear easing for mobile
       });
 
       const handleScroll = (e: WheelEvent) => {
@@ -322,16 +322,19 @@ export default function Photos() {
 
       window.addEventListener("wheel", handleScroll, { passive: true });
 
-      // Add touch event handling
+      // Add touch event handling with mobile-specific behavior
       let touchStartX = 0;
       let lastTouchX = 0;
+      let isTouching = false;
 
       const handleTouchStart = (e: TouchEvent) => {
         touchStartX = e.touches[0].clientX;
         lastTouchX = touchStartX;
+        isTouching = true;
       };
 
       const handleTouchMove = (e: TouchEvent) => {
+        if (!isTouching) return;
         e.preventDefault();
         const touchX = e.touches[0].clientX;
         
@@ -345,10 +348,21 @@ export default function Photos() {
         lastTouchX = touchX;
       };
 
+      const handleTouchEnd = () => {
+        isTouching = false;
+        // Kill any ongoing animations on touch end for mobile
+        if (isMobile) {
+          gsap.killTweensOf(".mwg_effect023 .container");
+          gsap.killTweensOf(".mwg_effect023 .media");
+        }
+      };
+
       const container = containerRef.current;
       if (container) {
         container.addEventListener('touchstart', handleTouchStart, { passive: true });
         container.addEventListener('touchmove', handleTouchMove, { passive: false });
+        container.addEventListener('touchend', handleTouchEnd);
+        container.addEventListener('touchcancel', handleTouchEnd);
       }
 
       return () => {
@@ -356,12 +370,14 @@ export default function Photos() {
         if (container) {
           container.removeEventListener('touchstart', handleTouchStart);
           container.removeEventListener('touchmove', handleTouchMove);
+          container.removeEventListener('touchend', handleTouchEnd);
+          container.removeEventListener('touchcancel', handleTouchEnd);
         }
       };
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]); // Add isMobile to dependencies
 
   useEffect(() => {
     setConfig(prev => ({
