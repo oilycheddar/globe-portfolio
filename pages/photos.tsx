@@ -148,9 +148,77 @@ const OrbitalContainer = styled.div`
     border-radius: 0px;
     
     @media (max-width: 440px) {
-      width: 85vw;
+      width: 80vw;
       margin: 40vh 0 0;
-      height: 90vw;
+      height: 100vw;
+    }
+  }
+`;
+
+const Lightbox = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: ${props => props.isOpen ? 'flex' : 'none'};
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: ${props => props.isOpen ? 1 : 0};
+  transition: opacity 0.3s ease;
+
+  .lightbox-content {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .lightbox-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+  }
+
+  .nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 20px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.prev {
+      left: 20px;
+    }
+
+    &.next {
+      right: 20px;
     }
   }
 `;
@@ -172,18 +240,20 @@ export default function Photos() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [radius, setRadius] = useState(200); // Default desktop radius
   const [config, setConfig] = useState<OrbitalConfig>({
-    radius: 200,
+    radius: 300,
     rotationSpeed: 40,
     yDisplacement: 4,
     animationDuration: 0.8
   });
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Handle mobile responsiveness and radius
   useEffect(() => {
     const checkMobile = () => {
       const isMobileView = window.innerWidth <= 440;
       setIsMobile(isMobileView);
-      setRadius(isMobileView ? 200 : 200); // Smaller radius for mobile
+      setRadius(isMobileView ? 400 : 200); // Different values for mobile/desktop
     };
 
     checkMobile();
@@ -195,6 +265,8 @@ export default function Photos() {
     const ctx = gsap.context(() => {
       // Set initial state for orbital images
       gsap.set(".mwg_effect023 .media", { yPercent: -50 });
+
+      let incr = Math.random() * 360; // Initialize with random rotation
 
       const medias = document.querySelectorAll<HTMLElement>(".mwg_effect023 .inner-media");
       const mediasTotal = medias.length;
@@ -219,9 +291,14 @@ export default function Photos() {
 
       // Create quickTo instances for smooth animations
       const rotTo = gsap.quickTo(".mwg_effect023 .container", "rotation", {
-        duration: 0.8,
-        ease: "power4",
+        duration: 1.25,
+        ease: "ease.inOut2",
       });
+
+      // Apply initial random rotation with delay
+      setTimeout(() => {
+        rotTo(incr);
+      }, 1000); // 1 second delay to match PageWrapper animation
 
       const yTo1 = gsap.quickTo(".mwg_effect023 .media-1 .media", "yPercent", {
         duration: 1,
@@ -238,7 +315,6 @@ export default function Photos() {
         ease: "power3",
       });
 
-      let incr = 0;
       const handleScroll = (e: WheelEvent) => {
         const deltaY = e.deltaY;
         incr -= deltaY / 14;
@@ -253,32 +329,26 @@ export default function Photos() {
       window.addEventListener("wheel", handleScroll, { passive: true });
 
       // Add touch event handling
-      let touchStartY = 0;
-      let lastTouchY = 0;
+      let touchStartX = 0;
+      let lastTouchX = 0;
 
       const handleTouchStart = (e: TouchEvent) => {
-        touchStartY = e.touches[0].clientY;
-        lastTouchY = touchStartY;
+        touchStartX = e.touches[0].clientX;
+        lastTouchX = touchStartX;
       };
 
       const handleTouchMove = (e: TouchEvent) => {
         e.preventDefault();
-        const touchY = e.touches[0].clientY;
+        const touchX = e.touches[0].clientX;
         
         // Calculate delta movement
-        const deltaY = touchY - lastTouchY;
+        const deltaX = touchX - lastTouchX;
         
-        // Update rotation based on vertical movement (like wheel event)
-        incr -= deltaY / 10;
+        // Update rotation based on horizontal movement
+        incr -= deltaX / 10;
         rotTo(incr);
 
-        // Update vertical position based on vertical movement
-        const val = -Math.abs(deltaY / 4) - 50;
-        yTo1(val);
-        yTo2(val);
-        yTo3(val);
-
-        lastTouchY = touchY;
+        lastTouchX = touchX;
       };
 
       const container = containerRef.current;
@@ -298,6 +368,13 @@ export default function Photos() {
 
     return () => ctx.revert();
   }, []);
+
+  useEffect(() => {
+    setConfig(prev => ({
+      ...prev,
+      radius: radius // This will update whenever radius changes
+    }));
+  }, [radius]);
 
   // Set initial theme-color
   useEffect(() => {
@@ -328,6 +405,23 @@ export default function Photos() {
 
   const handleNavExpandedChange = (value: boolean) => {
     setIsNavExpanded(value);
+  };
+
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const handleCloseLightbox = () => {
+    setIsLightboxOpen(false);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % photos.length);
   };
 
   return (
@@ -366,12 +460,36 @@ export default function Photos() {
                   width={300}
                   height={400}
                   quality={100}
+                  onClick={() => handleImageClick(i)}
+                  style={{ cursor: 'pointer' }}
                 />
               </div>
             ))}
           </div>
         </OrbitalContainer>
       </ContentWrapper>
+
+      <Lightbox isOpen={isLightboxOpen}>
+        <div className="lightbox-content">
+          <button className="close-button" onClick={handleCloseLightbox}>
+            ×
+          </button>
+          <button className="nav-button prev" onClick={handlePrevImage}>
+            ‹
+          </button>
+          <Image
+            className="lightbox-image"
+            src={noiseEnabled ? photos[currentImageIndex].src : photos[currentImageIndex].src.replace('.webp', '_noiseless.webp')}
+            alt={photos[currentImageIndex].alt}
+            width={1200}
+            height={1600}
+            quality={100}
+          />
+          <button className="nav-button next" onClick={handleNextImage}>
+            ›
+          </button>
+        </div>
+      </Lightbox>
     </PageWrapper>
   );
 }
