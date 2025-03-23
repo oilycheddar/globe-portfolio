@@ -300,15 +300,15 @@ export default function Photos() {
         });
       });
 
-      // Create quickTo instances with different configurations for mobile/desktop
+      // Create quickTo instances for smooth animations
       const rotTo = gsap.quickTo(".mwg_effect023 .container", "rotation", {
-        duration: isMobile ? 0.2 : 1.25, // Faster duration for mobile
-        ease: isMobile ? "none" : "ease.inOut2", // Linear easing for mobile
+        duration: 0.3,
+        ease: "none",
       });
 
       const yTo = gsap.quickTo(".mwg_effect023 .media", "yPercent", {
-        duration: isMobile ? 0.2 : 1, // Faster duration for mobile
-        ease: isMobile ? "none" : "power3", // Linear easing for mobile
+        duration: 0.3,
+        ease: "none",
       });
 
       const handleScroll = (e: WheelEvent) => {
@@ -322,19 +322,19 @@ export default function Photos() {
 
       window.addEventListener("wheel", handleScroll, { passive: true });
 
-      // Add touch event handling with mobile-specific behavior
+      // Add touch event handling
       let touchStartX = 0;
       let lastTouchX = 0;
-      let isTouching = false;
 
       const handleTouchStart = (e: TouchEvent) => {
         touchStartX = e.touches[0].clientX;
         lastTouchX = touchStartX;
-        isTouching = true;
+        // Kill any existing animations when touch starts
+        gsap.killTweensOf(".mwg_effect023 .container");
+        gsap.killTweensOf(".mwg_effect023 .media");
       };
 
       const handleTouchMove = (e: TouchEvent) => {
-        if (!isTouching) return;
         e.preventDefault();
         const touchX = e.touches[0].clientX;
         
@@ -349,12 +349,9 @@ export default function Photos() {
       };
 
       const handleTouchEnd = () => {
-        isTouching = false;
-        // Kill any ongoing animations on touch end for mobile
-        if (isMobile) {
-          gsap.killTweensOf(".mwg_effect023 .container");
-          gsap.killTweensOf(".mwg_effect023 .media");
-        }
+        // Kill any remaining animations when touch ends
+        gsap.killTweensOf(".mwg_effect023 .container");
+        gsap.killTweensOf(".mwg_effect023 .media");
       };
 
       const container = containerRef.current;
@@ -377,7 +374,7 @@ export default function Photos() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [isMobile]); // Add isMobile to dependencies
+  }, []);
 
   useEffect(() => {
     setConfig(prev => ({
