@@ -247,6 +247,18 @@ export default function Photos() {
   });
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const startingRotation = 170; // Set this value to control starting position (0-360)
+
+  // Configuration for touch and scroll behavior
+  const touchConfig = {
+    sensitivity: 4, // Higher number = less sensitive
+    direction: 1, // 1 for clockwise, -1 for counter-clockwise
+  };
+
+  const scrollConfig = {
+    sensitivity: 25, // Higher number = less sensitive
+    direction: -1, // 1 for clockwise, -1 for counter-clockwise
+  };
 
   // Handle mobile responsiveness and radius
   useEffect(() => {
@@ -265,16 +277,15 @@ export default function Photos() {
     const ctx = gsap.context(() => {
       // Set initial state for orbital images
       gsap.set(".mwg_effect023 .media", { yPercent: -50 });
+      gsap.set(".mwg_effect023 .container", { rotation: startingRotation });
 
-      let incr = Math.random() * 360; // Initialize with random rotation
+      let incr = startingRotation; // Use the startingRotation value
 
       const medias = document.querySelectorAll<HTMLElement>(".mwg_effect023 .inner-media");
       const mediasTotal = medias.length;
 
       // Distribute images evenly in a circle
       medias.forEach((media, index) => {
-        const randomClass = `media-${Math.floor(Math.random() * 3) + 1}`;
-        media.classList.add(randomClass);
         const angle = (360 / mediasTotal) * index;
         const radian = (angle * Math.PI) / 180;
         
@@ -295,35 +306,18 @@ export default function Photos() {
         ease: "ease.inOut2",
       });
 
-      // Apply initial random rotation with delay
-      setTimeout(() => {
-        rotTo(incr);
-      }, 1000); // 1 second delay to match PageWrapper animation
-
-      const yTo1 = gsap.quickTo(".mwg_effect023 .media-1 .media", "yPercent", {
+      const yTo = gsap.quickTo(".mwg_effect023 .media", "yPercent", {
         duration: 1,
-        ease: "power3",
-      });
-
-      const yTo2 = gsap.quickTo(".mwg_effect023 .media-2 .media", "yPercent", {
-        duration: 2,
-        ease: "power3",
-      });
-
-      const yTo3 = gsap.quickTo(".mwg_effect023 .media-3 .media", "yPercent", {
-        duration: 3,
         ease: "power3",
       });
 
       const handleScroll = (e: WheelEvent) => {
         const deltaY = e.deltaY;
-        incr -= deltaY / 14;
+        incr += (deltaY / scrollConfig.sensitivity) * scrollConfig.direction;
         rotTo(incr);
 
         const val = -Math.abs(deltaY / 4) - 50;
-        yTo1(val);
-        yTo2(val);
-        yTo3(val);
+        yTo(val);
       };
 
       window.addEventListener("wheel", handleScroll, { passive: true });
@@ -345,7 +339,7 @@ export default function Photos() {
         const deltaX = touchX - lastTouchX;
         
         // Update rotation based on horizontal movement
-        incr -= deltaX / 10;
+        incr += (deltaX / touchConfig.sensitivity) * touchConfig.direction;
         rotTo(incr);
 
         lastTouchX = touchX;

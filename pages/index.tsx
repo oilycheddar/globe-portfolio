@@ -5,7 +5,7 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import Logo from "../components/Logo";
-import { Ref, useEffect, useRef, useState } from "react";
+import { Ref, useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
@@ -119,6 +119,12 @@ export default function Home() {
   const navbarRef = useRef<NavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const [isDvdActive, setIsDvdActive] = useState(false);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<gsap.core.Timeline | null>(null);
+  const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
+  const [logoDirection, setLogoDirection] = useState({ x: 1, y: 1 });
+  const [logoSpeed, setLogoSpeed] = useState(2);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -322,9 +328,117 @@ export default function Home() {
     setNoiseEnabled(value);
   };
 
-  const handleDvdToggle = (value: boolean) => {
-    console.log('DVD toggled:', value);
-  };
+  // Function to handle DVD animation
+  const startDvdAnimation = useCallback(() => {
+    if (!logoRef.current || !contentRef.current || !navbarRef.current) return;
+
+    // Fade out text and nav bars
+    gsap.to([topTextRef.current, bottomTextRef.current], {
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut"
+    });
+
+    // Fade out nav bars
+    const navbar = navbarRef.current;
+    if (navbar.container) {
+      gsap.to(navbar.container, {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.inOut"
+      });
+    }
+
+    // Get container dimensions
+    const container = contentRef.current;
+    const logo = logoRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const logoRect = logo.getBoundingClientRect();
+
+    // Set initial position to center
+    const centerX = (containerRect.width - logoRect.width) / 2;
+    const centerY = (containerRect.height - logoRect.height) / 2;
+    setLogoPosition({ x: centerX, y: centerY });
+
+    // Set initial random direction
+    const angle = Math.random() * Math.PI * 2;
+    setLogoDirection({
+      x: Math.cos(angle),
+      y: Math.sin(angle)
+    });
+
+    // Create animation timeline
+    const tl = gsap.timeline({
+      repeat: -1,
+      onUpdate: () => {
+        const newX = logoPosition.x + logoDirection.x * logoSpeed;
+        const newY = logoPosition.y + logoDirection.y * logoSpeed;
+
+        // Check for collisions
+        let newDirection = { ...logoDirection };
+        
+        if (newX <= 0 || newX + logoRect.width >= containerRect.width) {
+          newDirection.x *= -1;
+        }
+        if (newY <= 0 || newY + logoRect.height >= containerRect.height) {
+          newDirection.y *= -1;
+        }
+
+        // Update position and direction
+        setLogoPosition({ x: newX, y: newY });
+        setLogoDirection(newDirection);
+
+        // Apply position to logo
+        gsap.set(logo, {
+          x: newX,
+          y: newY
+        });
+      }
+    });
+
+    animationRef.current = tl;
+  }, [logoPosition, logoDirection, logoSpeed]);
+
+  // Function to stop DVD animation
+  const stopDvdAnimation = useCallback(() => {
+    if (animationRef.current) {
+      animationRef.current.kill();
+      animationRef.current = null;
+    }
+
+    // Fade in text and nav bars
+    gsap.to([topTextRef.current, bottomTextRef.current], {
+      opacity: 1,
+      duration: 0.5,
+      ease: "power2.inOut"
+    });
+
+    // Fade in nav bars
+    if (navbarRef.current?.container) {
+      gsap.to(navbarRef.current.container, {
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.inOut"
+      });
+    }
+  }, []);
+
+  // Handle DVD toggle
+  const handleDvdToggle = useCallback((value: boolean) => {
+    setIsDvdActive(value);
+    if (value) {
+      startDvdAnimation();
+    } else {
+      stopDvdAnimation();
+    }
+  }, [startDvdAnimation, stopDvdAnimation]);
+
+  // Handle click to stop animation
+  const handleClick = useCallback(() => {
+    if (isDvdActive) {
+      handleDvdToggle(false);
+    }
+  }, [isDvdActive, handleDvdToggle]);
 
   const handleSpeedToggle = (value: boolean) => {
     console.log('Speed toggled:', value);
@@ -336,7 +450,7 @@ export default function Home() {
 
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
-      <ContentWrapper>
+      <ContentWrapper onClick={handleClick}>
         {isMobile ? (
           <MobileNavbar
             className="mobile-navbar"
@@ -360,7 +474,7 @@ export default function Home() {
             onSpeedToggle={handleSpeedToggle}
             onThemeChange={cycleTheme}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
+            hideInactiveToggles={false}
           />
           <StyledContent 
             ref={contentRef}
@@ -373,7 +487,16 @@ export default function Home() {
             >
               product designer
             </h1>
-            <div className="w-[50vw] aspect-[2/1]">
+            <div 
+              ref={logoRef}
+              className="w-[50vw] aspect-[2/1]"
+              style={{
+                position: isDvdActive ? 'absolute' : 'relative',
+                transform: `translate(${logoPosition.x}px, ${logoPosition.y}px)`,
+                transition: isDvdActive ? 'none' : 'transform 0.3s ease',
+                willChange: 'transform'
+              }}
+            >
               <Logo />
             </div>
             <p 

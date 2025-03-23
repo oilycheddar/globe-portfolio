@@ -2,16 +2,18 @@ import { useThemeStore } from '../hooks/useThemeStore';
 
 interface LogoProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export default function Logo({ className = '' }: LogoProps) {
+export default function Logo({ className = '', style }: LogoProps) {
   const { theme, noiseEnabled } = useThemeStore();
   
   return (
     <div 
       className={`relative w-full h-full ${className}`}
       style={{ 
-        filter: `drop-shadow(var(--${theme}_shadow))`
+        filter: `drop-shadow(var(--${theme}_shadow))`,
+        ...style
       }}
     >
       <svg 
