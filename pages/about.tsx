@@ -133,6 +133,8 @@ const StyledLink = styled.a`
   text-underline-offset: 2px;
   display: inline-block;
   text-decoration-skip-ink: none;
+  position: relative;
+  z-index: 1;
   
   &:hover {
     text-decoration: underline;
@@ -220,18 +222,51 @@ export default function About() {
         ease: "power2.out"
       });
 
-      // Split text and animate each word after image
+      // Animate text after image
       if (aboutTextRef.current) {
-        const split = new SplitText(aboutTextRef.current, { type: "words,chars" });
+        // Create spans around words while preserving links
+        const wrapWordsInSpans = (node: Node) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            const words = node.textContent?.split(/\s+/) || [];
+            const fragment = document.createDocumentFragment();
+            words.forEach((word, i) => {
+              if (word) {
+                const span = document.createElement('span');
+                span.textContent = word;
+                span.style.display = 'inline-block';
+                fragment.appendChild(span);
+                if (i < words.length - 1) {
+                  fragment.appendChild(document.createTextNode(' '));
+                }
+              }
+            });
+            node.parentNode?.replaceChild(fragment, node);
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.nodeName === 'A') {
+              // For links, wrap the entire link in a span
+              const span = document.createElement('span');
+              span.style.display = 'inline-block';
+              node.parentNode?.insertBefore(span, node);
+              span.appendChild(node);
+            } else {
+              Array.from(node.childNodes).forEach(wrapWordsInSpans);
+            }
+          }
+        };
+
+        wrapWordsInSpans(aboutTextRef.current);
+
+        // Get all word spans and link wrapper spans
+        const allSpans = aboutTextRef.current.querySelectorAll('span');
         
-        // Set initial state for split text
-        gsap.set(split.words, {
+        // Set initial state for all spans
+        gsap.set(allSpans, {
           filter: "blur(12px)",
           opacity: 0
         });
 
-        // Animate each word
-        tl.to(split.words, {
+        // Animate each span with stagger
+        tl.to(allSpans, {
           filter: "blur(0px)",
           opacity: 1,
           duration: 0.3,
@@ -361,9 +396,9 @@ export default function About() {
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
             
-              I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">HI-FI</StyledLink><StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer"> BAR</StyledLink>. <br /><br />
+              I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">HI-FI </StyledLink><StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">BAR</StyledLink>. <br /><br />
 
-              I built this site with Cursor, Typescript, GSAP and three.js to push my skills as a designer and see what's possible. The code is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open source</StyledLink>.
+              I built this site with Cursor, Typescript, GSAP and three.js to push my skills as a designer and see what's possible. The code is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open </StyledLink><StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer"> source</StyledLink>.
             
           </AboutText>
         </StyledContent>
