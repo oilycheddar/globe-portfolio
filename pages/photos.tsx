@@ -110,6 +110,7 @@ const OrbitalContainer = styled.div`
   height: 100vh;
   position: relative;
   overflow: hidden;
+  -webkit-overflow-scrolling: touch;
 
   .container {
     position: absolute;
@@ -117,6 +118,7 @@ const OrbitalContainer = styled.div`
     height: 500vw;
     left: -210vw;
     will-change: transform;
+    touch-action: pan-y;
 
     @media (max-width: 440px) {
       width: 1000vw;
@@ -251,38 +253,31 @@ export default function Photos() {
       window.addEventListener("wheel", handleScroll, { passive: true });
 
       // Add touch event handling
-      let touchStartX = 0;
       let touchStartY = 0;
-      let lastTouchX = 0;
       let lastTouchY = 0;
 
       const handleTouchStart = (e: TouchEvent) => {
-        touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
-        lastTouchX = touchStartX;
         lastTouchY = touchStartY;
       };
 
       const handleTouchMove = (e: TouchEvent) => {
         e.preventDefault();
-        const touchX = e.touches[0].clientX;
         const touchY = e.touches[0].clientY;
         
         // Calculate delta movement
-        const deltaX = touchX - lastTouchX;
         const deltaY = touchY - lastTouchY;
         
-        // Update rotation based on horizontal movement
-        incr -= deltaX * 0.5;
+        // Update rotation based on vertical movement (like wheel event)
+        incr -= deltaY / 40;
         rotTo(incr);
 
         // Update vertical position based on vertical movement
-        const val = -Math.abs(deltaY * 0.5) - 50;
+        const val = -Math.abs(deltaY / 4) - 50;
         yTo1(val);
         yTo2(val);
         yTo3(val);
 
-        lastTouchX = touchX;
         lastTouchY = touchY;
       };
 

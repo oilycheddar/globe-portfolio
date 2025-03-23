@@ -398,7 +398,7 @@ export default function About() {
             
               I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">HI-FI </StyledLink><StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">BAR</StyledLink>. <br /><br />
 
-              I built this site with Cursor, Typescript, GSAP and three.js to push my skills as a designer and see what's possible. The code is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open </StyledLink><StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer"> source</StyledLink>.
+              I built this site with Cursor, Typescript, GSAP and three.js to push my skills as a designer and see what's possible. The code is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open</StyledLink><StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer"> source</StyledLink>.
             
           </AboutText>
         </StyledContent>
