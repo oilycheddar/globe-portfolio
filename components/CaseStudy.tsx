@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { textStyles } from '../styles/text';
 import { CaseStudy as CaseStudyType } from '../data/caseStudies';
 import React from 'react';
+import Image from 'next/image';
 
 const CaseStudyWrapper = styled.div`
   --space-xs: 8px;
@@ -102,7 +103,22 @@ const WorkSampleVideo = styled.video`
   }
 `;
 
-const WorkSampleImage = styled.img`
+const VideoPosterImage = styled(Image)`
+  max-height: 70vh;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  
+  @media (max-width: 440px) {
+    max-height: none;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+`;
+
+const WorkSampleImage = styled(Image)`
   max-height: 70vh;
   width: 100%;
   height: auto;
@@ -179,6 +195,7 @@ const WorkSampleCopyContainer = styled.div`
   
   @media (max-width: 440px) {
     width: 100%;
+    gap: var(--space-sm);
   }
 `;
 
@@ -238,12 +255,21 @@ interface CaseStudyProps {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
+  autoplay?: boolean;
 }
 
-export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ data, className, style, onClick }, ref) => {
+export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ data, className, style, onClick, autoplay = false }, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(autoplay);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    if (autoplay && videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.error('Autoplay failed:', error);
+      });
+    }
+  }, [autoplay]);
 
   const handleVideoClick = () => {
     if (videoRef.current) {
@@ -267,6 +293,11 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     setImageLoaded(true);
   };
 
+  const handleImageError = () => {
+    console.error(`Failed to load image: ${data.posterUrl}`);
+    setImageLoaded(true); // Still show the broken image rather than nothing
+  };
+
   return (
     <CaseStudyWrapper 
       ref={ref} 
@@ -281,21 +312,41 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
       >
         {!isVideoPlaying && data.videoUrl !== 'none' && <PlayButton />}
         {data.videoUrl !== 'none' ? (
-          <WorkSampleVideo
-            ref={videoRef}
-            className="work-sample-video"
-            src={data.videoUrl}
-            poster={data.posterUrl}
-            muted
-            playsInline
-            onEnded={handleVideoEnded}
-          />
+          <>
+            {data.posterUrl !== 'none' && (
+              <VideoPosterImage
+                src={data.posterUrl}
+                alt={data.title}
+                width={1920}
+                height={1080}
+                priority
+                quality={100}
+                style={{ display: isVideoPlaying ? 'none' : 'block' }}
+              />
+            )}
+            <WorkSampleVideo
+              ref={videoRef}
+              className="work-sample-video"
+              src={data.videoUrl}
+              muted
+              playsInline
+              autoPlay={autoplay}
+              loop={data.videoUrl.includes('loom')}
+              onEnded={handleVideoEnded}
+              style={{ display: isVideoPlaying ? 'block' : 'none' }}
+            />
+          </>
         ) : (
           <WorkSampleImage
             src={data.posterUrl}
             alt={data.title}
             onLoad={handleImageLoad}
+            onError={handleImageError}
             style={{ opacity: imageLoaded ? 1 : 0 }}
+            width={1920}
+            height={1080}
+            priority
+            quality={100}
           />
         )}
       </ImageWrapper>

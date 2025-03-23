@@ -64,7 +64,8 @@ const DropdownMenu = styled.div`
   right: 0;
   background-color: var(--color-accent-primary);
   border-radius: 20px;
-  padding: 8px;
+  padding: 8px 12px;
+  align-items: center;
   display: flex;
   flex-direction: column;
   gap: 4px;

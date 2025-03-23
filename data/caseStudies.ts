@@ -17,7 +17,7 @@ export interface CaseStudy {
 export const caseStudies: CaseStudy[] = [
   {
     id: 'ramp-treasury',
-    title: 'RAMP TREASURY',
+    title: 'Treasury @ Ramp',
     link: 'https://www.ramp.com/treasury',
     description: 'I LED THE ZERO-TO-ONE DESIGN FOR RAMP\'S BUSINESS & INVESTMENT ACCOUNTS.\nCREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.',
     videoUrl: '/TreasuryDemoReel.mp4',
@@ -33,9 +33,9 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     id: 'Runway',
-    title: 'Runway',
+    title: 'Runway @ Ramp',
     link: 'none',
-    description: 'A single place to manage your company\'s cash. Choose how many weeks of runway you need and Ramp will do the rest.',
+    description: 'I led the research, product spec, and design for Ramp\'s breakthrough cash management feature. Finance teams can set their ideal bank balance, and Ramp will do the rest.',
     videoUrl: 'none',
     posterUrl: '/Runway_drawer_dark.png',
     team: [
@@ -44,6 +44,23 @@ export const caseStudies: CaseStudy[] = [
         { role: 'PRODUCT', names: ['KARL'] },
         { role: 'DATA', names: ['JAMES'] },
     ],
-    hideTeam: false
+    hideTeam: true
+  },
+  {
+    id: 'affirmations',
+    title: 'Affirmations @ Loom',
+    link: 'https://www.loom.com',
+    description: 'Designed loom\'s affirmations feature, which writes you a short, positive message after every recording.',
+    videoUrl: 'loom_affirmations.mp4',
+    posterUrl: 'none',
+    team: [
+      { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
+      { role: 'BACK END', names: ['ARNAB', 'ERIC'] },
+      { role: 'PRODUCT', names: ['WILLIAM', 'KARL'] },
+      { role: 'DATA', names: ['JAMES'] },
+      { role: 'MARKETING', names: ['BECKY', 'CHRISTY'] },
+      { role: 'BRAND', names: ['EMILY', 'SHIVANI'] }
+    ],
+    hideTeam: true
   }
 ]; 

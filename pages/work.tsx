@@ -214,6 +214,8 @@ const WorkSampleCopyContainer = styled.div`
   
   @media (max-width: 440px) {
     width: 100%;
+      gap: var(--space-sm);
+
   }
 `;
 
@@ -232,7 +234,7 @@ const WorkSampleTeamContainer = styled(WorkSampleCopyContainer)`
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     width: 100%;
 
     ${WorkSampleTitle}, ${WorkSampleDescription} {
@@ -462,6 +464,7 @@ export default function Work() {
               style={isMobile && isNavExpanded ? {
                 filter: 'blur(8px)'
               } : undefined}
+              autoplay={study.id === 'affirmations'}
             />
           ))}
         </CaseStudiesList>

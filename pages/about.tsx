@@ -67,7 +67,7 @@ const StyledContent = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   transition: filter 0.4s ease;
 
   /* Add padding to prevent content from overlapping with navs */
