@@ -384,10 +384,6 @@ export default function Photos() {
     setNoiseEnabled(value);
   };
 
-  const handleSpeedToggle = (value: boolean) => {
-    // Implement speed toggle functionality
-  };
-
   const handleNavExpandedChange = (value: boolean) => {
     setIsNavExpanded(value);
   };
@@ -417,7 +413,6 @@ export default function Photos() {
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
-            onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={true}
@@ -427,9 +422,9 @@ export default function Photos() {
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onSpeedToggle={handleSpeedToggle}
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
+          hideSideNavs={true}
           hideInactiveToggles={true}
         />
         <OrbitalContainer className="mwg_effect023" ref={containerRef}>

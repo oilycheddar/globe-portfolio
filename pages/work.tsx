@@ -314,7 +314,6 @@ export default function Work() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
-          navbar.speed,
           navbar.themeBottom   // STATION (bottom)
         ];
 
@@ -364,7 +363,6 @@ export default function Work() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
-          navbar.speed,
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
           navbar.themeRight     // Right nav
@@ -416,10 +414,6 @@ export default function Work() {
     setNoiseEnabled(value);
   };
 
-  const handleSpeedToggle = (value: boolean) => {
-    // Implement speed toggle functionality
-  };
-
   const handleNavExpandedChange = (value: boolean) => {
     setIsNavExpanded(value);
   };
@@ -432,7 +426,6 @@ export default function Work() {
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
-            onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={true}
@@ -442,7 +435,6 @@ export default function Work() {
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onSpeedToggle={handleSpeedToggle}
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
           hideSideNavs={true}

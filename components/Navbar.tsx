@@ -100,7 +100,6 @@ const StyledLink = styled.a`
 interface NavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
-  onSpeedToggle: (value: boolean) => void;
   onThemeChange?: () => void;
   className?: string;
   initialNoiseState?: boolean;
@@ -116,13 +115,11 @@ export interface NavbarRef {
   themeBottom: HTMLDivElement | null;
   grid: HTMLDivElement | null;
   noise: HTMLDivElement | null;
-  speed: HTMLDivElement | null;
 }
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
   onGridToggle, 
-  onNoiseToggle, 
-  onSpeedToggle,
+  onNoiseToggle,
   onThemeChange,
   className = '',
   initialNoiseState = true,
@@ -141,8 +138,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeRight: useRef<HTMLDivElement>(null),
     themeBottom: useRef<HTMLDivElement>(null),
     grid: useRef<HTMLDivElement>(null),
-    noise: useRef<HTMLDivElement>(null),
-    speed: useRef<HTMLDivElement>(null)
+    noise: useRef<HTMLDivElement>(null)
   };
 
   // Get current page value based on route
@@ -178,8 +174,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeRight: toggleRefs.themeRight.current,
     themeBottom: toggleRefs.themeBottom.current,
     grid: toggleRefs.grid.current,
-    noise: toggleRefs.noise.current,
-    speed: toggleRefs.speed.current
+    noise: toggleRefs.noise.current
   }));
 
   const handleThemeChange = (newTheme: string) => {
@@ -201,32 +196,24 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
             />
           </div>
           {!hideInactiveToggles && (
-            <div ref={toggleRefs.grid}>
-              <ToggleButton
-                type="boolean"
-                label="grid"
-                value={false}
-                onChange={onGridToggle}
-              />
-            </div>
-          )}
-          <div ref={toggleRefs.noise}>
-            <ToggleButton
-              type="boolean"
-              label="noise"
-              value={initialNoiseState}
-              onChange={onNoiseToggle}
-            />
-          </div>
-          {!hideInactiveToggles && (
-            <div ref={toggleRefs.speed}>
-              <ToggleButton
-                type="boolean"
-                label="speed"
-                value={false}
-                onChange={onSpeedToggle}
-              />
-            </div>
+            <>
+              <div ref={toggleRefs.grid}>
+                <ToggleButton
+                  type="boolean"
+                  label="grid"
+                  value={false}
+                  onChange={onGridToggle}
+                />
+              </div>
+              <div ref={toggleRefs.noise}>
+                <ToggleButton
+                  type="boolean"
+                  label="noise"
+                  value={initialNoiseState}
+                  onChange={onNoiseToggle}
+                />
+              </div>
+            </>
           )}
         </ToggleGroup>
       </NavContainer>

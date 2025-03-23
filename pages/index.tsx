@@ -103,7 +103,6 @@ const StyledContent = styled.div`
 interface NavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
-  onSpeedToggle: (value: boolean) => void;
   onThemeChange?: () => void;
 }
 
@@ -140,7 +139,6 @@ export default function Home() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
-          navbar.speed,
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
           navbar.themeRight     // Right nav
@@ -213,7 +211,6 @@ export default function Home() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
-          navbar.speed,
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
           navbar.themeRight     // Right nav
@@ -320,10 +317,6 @@ export default function Home() {
     setNoiseEnabled(value);
   };
 
-  const handleSpeedToggle = (value: boolean) => {
-    console.log('Speed toggled:', value);
-  };
-
   const handleNavExpandedChange = (value: boolean) => {
     setIsNavExpanded(value);
   };
@@ -336,7 +329,6 @@ export default function Home() {
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
-            onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={true}
@@ -349,7 +341,6 @@ export default function Home() {
             ref={navbarRef}
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
-            onSpeedToggle={handleSpeedToggle}
             onThemeChange={cycleTheme}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}

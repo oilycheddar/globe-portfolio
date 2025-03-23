@@ -104,7 +104,6 @@ const MenuIcon = () => (
 interface MobileNavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
-  onSpeedToggle: (value: boolean) => void;
   onExpandedChange?: (expanded: boolean) => void;
   className?: string;
   initialNoiseState?: boolean;
@@ -118,7 +117,6 @@ export interface MobileNavbarRef {
 export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onGridToggle,
   onNoiseToggle,
-  onSpeedToggle,
   onExpandedChange,
   className = '',
   initialNoiseState = true,
@@ -299,14 +297,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             value={isNoiseActive}
             onChange={handleNoiseToggle}
           />
-          {!hideInactiveToggles && (
-            <ToggleButton
-              type="boolean"
-              label="speed"
-              value={false}
-              onChange={onSpeedToggle}
-            />
-          )}
         </ToggleButtonsGrid>
         <ApplyButton 
           ref={applyButtonRef}
