@@ -346,7 +346,6 @@ export default function About() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
           />
         ) : null}
         <Navbar
@@ -356,7 +355,6 @@ export default function About() {
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
           hideSideNavs={true}
-          hideInactiveToggles={true}
         />
         <StyledContent 
           ref={contentRef}

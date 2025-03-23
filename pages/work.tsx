@@ -428,7 +428,6 @@ export default function Work() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
           />
         ) : null}
         <Navbar
@@ -438,7 +437,6 @@ export default function Work() {
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
           hideSideNavs={true}
-          hideInactiveToggles={true}
         />
         <CaseStudiesList>
           {caseStudies.map((study, index) => (

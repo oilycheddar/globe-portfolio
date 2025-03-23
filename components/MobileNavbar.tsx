@@ -286,17 +286,11 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
           {!hideInactiveToggles && (
             <ToggleButton
               type="boolean"
-              label="grid"
-              value={false}
-              onChange={onGridToggle}
+              label="noise"
+              value={isNoiseActive}
+              onChange={handleNoiseToggle}
             />
           )}
-          <ToggleButton
-            type="boolean"
-            label="noise"
-            value={isNoiseActive}
-            onChange={handleNoiseToggle}
-          />
         </ToggleButtonsGrid>
         <ApplyButton 
           ref={applyButtonRef}

@@ -196,24 +196,14 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
             />
           </div>
           {!hideInactiveToggles && (
-            <>
-              <div ref={toggleRefs.grid}>
-                <ToggleButton
-                  type="boolean"
-                  label="grid"
-                  value={false}
-                  onChange={onGridToggle}
-                />
-              </div>
-              <div ref={toggleRefs.noise}>
-                <ToggleButton
-                  type="boolean"
-                  label="noise"
-                  value={initialNoiseState}
-                  onChange={onNoiseToggle}
-                />
-              </div>
-            </>
+            <div ref={toggleRefs.noise}>
+              <ToggleButton
+                type="boolean"
+                label="noise"
+                value={initialNoiseState}
+                onChange={onNoiseToggle}
+              />
+            </div>
           )}
         </ToggleGroup>
       </NavContainer>

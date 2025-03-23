@@ -415,7 +415,6 @@ export default function Photos() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
           />
         ) : null}
         <Navbar
@@ -425,7 +424,6 @@ export default function Photos() {
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
           hideSideNavs={true}
-          hideInactiveToggles={true}
         />
         <OrbitalContainer className="mwg_effect023" ref={containerRef}>
           <div className="container">
