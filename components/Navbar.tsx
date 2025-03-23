@@ -100,7 +100,6 @@ const StyledLink = styled.a`
 interface NavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
-  onDvdToggle: (value: boolean) => void;
   onSpeedToggle: (value: boolean) => void;
   onThemeChange?: () => void;
   className?: string;
@@ -117,14 +116,12 @@ export interface NavbarRef {
   themeBottom: HTMLDivElement | null;
   grid: HTMLDivElement | null;
   noise: HTMLDivElement | null;
-  dvd: HTMLDivElement | null;
   speed: HTMLDivElement | null;
 }
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
   onGridToggle, 
   onNoiseToggle, 
-  onDvdToggle, 
   onSpeedToggle,
   onThemeChange,
   className = '',
@@ -134,7 +131,6 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
-  const [isDvdActive, setIsDvdActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
@@ -146,7 +142,6 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeBottom: useRef<HTMLDivElement>(null),
     grid: useRef<HTMLDivElement>(null),
     noise: useRef<HTMLDivElement>(null),
-    dvd: useRef<HTMLDivElement>(null),
     speed: useRef<HTMLDivElement>(null)
   };
 
@@ -184,14 +179,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeBottom: toggleRefs.themeBottom.current,
     grid: toggleRefs.grid.current,
     noise: toggleRefs.noise.current,
-    dvd: toggleRefs.dvd.current,
     speed: toggleRefs.speed.current
   }));
-
-  const handleDvdToggle = (value: boolean) => {
-    setIsDvdActive(value);
-    onDvdToggle(value);
-  };
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -230,16 +219,6 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
             />
           </div>
           {!hideInactiveToggles && (
-            <div ref={toggleRefs.dvd}>
-              <ToggleButton
-                type="boolean"
-                label="dvd"
-                value={isDvdActive}
-                onChange={handleDvdToggle}
-              />
-            </div>
-          )}
-          {isDvdActive && !hideInactiveToggles && (
             <div ref={toggleRefs.speed}>
               <ToggleButton
                 type="boolean"

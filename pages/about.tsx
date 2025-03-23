@@ -179,7 +179,6 @@ export default function About() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
-          navbar.dvd,
           navbar.speed,
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
@@ -283,7 +282,6 @@ export default function About() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
-          navbar.dvd,
           navbar.speed,
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
@@ -336,10 +334,6 @@ export default function About() {
     setNoiseEnabled(value);
   };
 
-  const handleDvdToggle = (value: boolean) => {
-    // Implement DVD toggle functionality
-  };
-
   const handleSpeedToggle = (value: boolean) => {
     // Implement speed toggle functionality
   };
@@ -356,7 +350,6 @@ export default function About() {
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
-            onDvdToggle={handleDvdToggle}
             onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
@@ -367,7 +360,6 @@ export default function About() {
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onDvdToggle={handleDvdToggle}
           onSpeedToggle={handleSpeedToggle}
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}

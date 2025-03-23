@@ -104,7 +104,6 @@ const MenuIcon = () => (
 interface MobileNavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
-  onDvdToggle: (value: boolean) => void;
   onSpeedToggle: (value: boolean) => void;
   onExpandedChange?: (expanded: boolean) => void;
   className?: string;
@@ -119,7 +118,6 @@ export interface MobileNavbarRef {
 export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onGridToggle,
   onNoiseToggle,
-  onDvdToggle,
   onSpeedToggle,
   onExpandedChange,
   className = '',
@@ -133,7 +131,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   const contentRef = useRef<HTMLDivElement>(null);
   const applyButtonRef = useRef<HTMLButtonElement>(null);
   
-  const [isDvdActive, setIsDvdActive] = useState(false);
   const [isNoiseActive, setIsNoiseActive] = useState(initialNoiseState);
 
   useImperativeHandle(ref, () => ({
@@ -248,11 +245,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
     onExpandedChange?.(false);
   }, [onExpandedChange]);
 
-  const handleDvdToggle = (value: boolean) => {
-    setIsDvdActive(value);
-    onDvdToggle(value);
-  };
-
   const handleNoiseToggle = (value: boolean) => {
     setIsNoiseActive(value);
     onNoiseToggle(value);
@@ -308,14 +300,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             onChange={handleNoiseToggle}
           />
           {!hideInactiveToggles && (
-            <ToggleButton
-              type="boolean"
-              label="dvd"
-              value={isDvdActive}
-              onChange={handleDvdToggle}
-            />
-          )}
-          {isDvdActive && !hideInactiveToggles && (
             <ToggleButton
               type="boolean"
               label="speed"

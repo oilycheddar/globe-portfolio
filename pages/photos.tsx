@@ -302,13 +302,13 @@ export default function Photos() {
 
       // Create quickTo instances for smooth animations
       const rotTo = gsap.quickTo(".mwg_effect023 .container", "rotation", {
-        duration: 0.3,
-        ease: "none",
+        duration: 1.25,
+        ease: "ease.inOut2",
       });
 
       const yTo = gsap.quickTo(".mwg_effect023 .media", "yPercent", {
-        duration: 0.3,
-        ease: "none",
+        duration: 1,
+        ease: "power3",
       });
 
       const handleScroll = (e: WheelEvent) => {
@@ -329,9 +329,6 @@ export default function Photos() {
       const handleTouchStart = (e: TouchEvent) => {
         touchStartX = e.touches[0].clientX;
         lastTouchX = touchStartX;
-        // Kill any existing animations when touch starts
-        gsap.killTweensOf(".mwg_effect023 .container");
-        gsap.killTweensOf(".mwg_effect023 .media");
       };
 
       const handleTouchMove = (e: TouchEvent) => {
@@ -348,18 +345,10 @@ export default function Photos() {
         lastTouchX = touchX;
       };
 
-      const handleTouchEnd = () => {
-        // Kill any remaining animations when touch ends
-        gsap.killTweensOf(".mwg_effect023 .container");
-        gsap.killTweensOf(".mwg_effect023 .media");
-      };
-
       const container = containerRef.current;
       if (container) {
         container.addEventListener('touchstart', handleTouchStart, { passive: true });
         container.addEventListener('touchmove', handleTouchMove, { passive: false });
-        container.addEventListener('touchend', handleTouchEnd);
-        container.addEventListener('touchcancel', handleTouchEnd);
       }
 
       return () => {
@@ -367,8 +356,6 @@ export default function Photos() {
         if (container) {
           container.removeEventListener('touchstart', handleTouchStart);
           container.removeEventListener('touchmove', handleTouchMove);
-          container.removeEventListener('touchend', handleTouchEnd);
-          container.removeEventListener('touchcancel', handleTouchEnd);
         }
       };
     }, containerRef);
@@ -397,17 +384,8 @@ export default function Photos() {
     setNoiseEnabled(value);
   };
 
-  const handleDvdToggle = (value: boolean) => {
-    // Implement DVD toggle functionality
-  };
-
   const handleSpeedToggle = (value: boolean) => {
-    setConfig(prev => ({
-      ...prev,
-      rotationSpeed: value ? 20 : 40,
-      yDisplacement: value ? 2 : 4,
-      animationDuration: value ? 0.4 : 0.8
-    }));
+    // Implement speed toggle functionality
   };
 
   const handleNavExpandedChange = (value: boolean) => {
@@ -439,7 +417,6 @@ export default function Photos() {
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
-            onDvdToggle={handleDvdToggle}
             onSpeedToggle={handleSpeedToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
@@ -450,7 +427,6 @@ export default function Photos() {
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onDvdToggle={handleDvdToggle}
           onSpeedToggle={handleSpeedToggle}
           onThemeChange={() => {}}
           initialNoiseState={noiseEnabled}
