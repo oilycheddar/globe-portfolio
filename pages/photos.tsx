@@ -135,7 +135,7 @@ const OrbitalContainer = styled.div`
   .media {
     width: 45vw;
     height: 50vw;
-    margin: 40vh 0 0;
+    margin: 75vh 0 0;
     transform: translate(0, -50%);
     object-fit: contain;
     object-position: 50% 100%;
