@@ -21,27 +21,30 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const ContentWrapper = styled.div`
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
+  overflow: hidden;
   
   /* Position for mobile navbar */
   .mobile-navbar {
-    position: relative;
-    width: 100%;
-    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
   }
   
   @media (max-width: 440px) {
+    position: fixed;
     width: 100%;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
 `;
 
@@ -232,7 +235,56 @@ export default function Photos() {
       };
 
       window.addEventListener("wheel", handleScroll, { passive: true });
-      return () => window.removeEventListener("wheel", handleScroll);
+
+      // Add touch event handling
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let lastTouchX = 0;
+      let lastTouchY = 0;
+
+      const handleTouchStart = (e: TouchEvent) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        lastTouchX = touchStartX;
+        lastTouchY = touchStartY;
+      };
+
+      const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        
+        // Calculate delta movement
+        const deltaX = touchX - lastTouchX;
+        const deltaY = touchY - lastTouchY;
+        
+        // Update rotation based on horizontal movement
+        incr -= deltaX * 0.5;
+        rotTo(incr);
+
+        // Update vertical position based on vertical movement
+        const val = -Math.abs(deltaY * 0.5) - 50;
+        yTo1(val);
+        yTo2(val);
+        yTo3(val);
+
+        lastTouchX = touchX;
+        lastTouchY = touchY;
+      };
+
+      const container = containerRef.current;
+      if (container) {
+        container.addEventListener('touchstart', handleTouchStart, { passive: true });
+        container.addEventListener('touchmove', handleTouchMove, { passive: false });
+      }
+
+      return () => {
+        window.removeEventListener("wheel", handleScroll);
+        if (container) {
+          container.removeEventListener('touchstart', handleTouchStart);
+          container.removeEventListener('touchmove', handleTouchMove);
+        }
+      };
     }, containerRef);
 
     return () => ctx.revert();
