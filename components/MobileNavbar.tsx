@@ -104,6 +104,7 @@ const MenuIcon = () => (
 interface MobileNavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
+  onDvdToggle?: (value: boolean) => void;
   onExpandedChange?: (expanded: boolean) => void;
   className?: string;
   initialNoiseState?: boolean;
@@ -117,6 +118,7 @@ export interface MobileNavbarRef {
 export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onGridToggle,
   onNoiseToggle,
+  onDvdToggle = () => {},
   onExpandedChange,
   className = '',
   initialNoiseState = true,
@@ -284,12 +286,20 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             onChange={setTheme}
           />
           {!hideInactiveToggles && (
-            <ToggleButton
-              type="boolean"
-              label="noise"
-              value={isNoiseActive}
-              onChange={handleNoiseToggle}
-            />
+            <>
+              <ToggleButton
+                type="boolean"
+                label="noise"
+                value={isNoiseActive}
+                onChange={handleNoiseToggle}
+              />
+              <ToggleButton
+                type="boolean"
+                label="dvd"
+                value={false}
+                onChange={onDvdToggle}
+              />
+            </>
           )}
         </ToggleButtonsGrid>
         <ApplyButton 
