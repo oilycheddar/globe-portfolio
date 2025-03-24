@@ -8,7 +8,52 @@ import { defaultTheme } from '../styles/theme-init';
 // Use the default theme from our theme store (default is 'slime')
 const initialTheme = themes.slime;
 
-export const metadata: Metadata = {};
+export const metadata: Metadata = {
+  title: 'George Visan — Product Designer',
+  description: 'George is a product designer and no-code developer based in Calgary, Alberta.',
+  keywords: ['product design', 'no-code development', 'portfolio', 'creative developer', 'UX design', 'product designer', 'designer', 'developer', 'staff designer'],
+  authors: [{ name: 'Globe' }],
+  creator: 'George VIsan',
+  publisher: 'George Visan',
+  robots: 'index, follow',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://georgevisa.com',
+    siteName: 'George Visan — Product Designer',
+    title: 'George Visan — Product Designer',
+    description: 'George is a designer & no co-code developer based in Calgary, Alberta.',
+    images: [
+      {
+        url: '/og-image.jpg', // You'll need to create this image
+        width: 1200,
+        height: 630,
+        alt: 'George Visan — Product Designer',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'George Visan — Product Designer',
+    description: 'George is a product designer and no-code developer based in Calgary, Alberta.',
+    images: ['/og-image.jpg'], // Same image as OpenGraph
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/site.webmanifest',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+  },
+  themeColor: '#1A1A1A',
+};
 
 export const viewport = {
   width: 'device-width',
