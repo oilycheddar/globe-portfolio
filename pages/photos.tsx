@@ -240,7 +240,7 @@ export default function Photos() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [radius, setRadius] = useState(200); // Default desktop radius
   const [config, setConfig] = useState<OrbitalConfig>({
-    radius: 300,
+    radius: 200,
     rotationSpeed: 40,
     yDisplacement: 4,
     animationDuration: 0.8
