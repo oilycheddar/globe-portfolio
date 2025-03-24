@@ -600,8 +600,8 @@ export default function Home() {
             ref={dvdLogoRef}
             className="absolute w-[50vw] aspect-[2/1] pointer-events-none"
             style={{
-              visibility: isDvdActive ? 'visible' : 'hidden',
-              opacity: isDvdActive ? 1 : 0,
+              visibility: 'hidden', // Always hidden by default
+              opacity: 0,
               transform: `translate(${logoPosition.x}px, ${logoPosition.y}px)`,
               transition: 'none',
               zIndex: 40,
