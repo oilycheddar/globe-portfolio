@@ -331,7 +331,7 @@ export default function Home() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
+            hideInactiveToggles={false}
           />
         ) : null}
         <BlurWrapper style={isMobile && isNavExpanded ? {
