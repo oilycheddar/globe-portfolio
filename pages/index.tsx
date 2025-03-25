@@ -13,6 +13,7 @@ import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
+import type { MobileNavbarRef } from "../components/MobileNavbar";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -115,9 +116,24 @@ export default function Home() {
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
+  const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
+  const [isDvdActive, setIsDvdActive] = useState(false);
+  const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
+  const [logoVelocity, setLogoVelocity] = useState({ x: 5, y: 5 });
+  const currentPositionRef = useRef({ x: 0, y: 0 });
+  const currentVelocityRef = useRef({ x: 5, y: 5 });
+  const lastTimeRef = useRef<number>(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const FPS = 120;
+  const FRAME_TIME = 1000 / FPS;
+  const SPEED = 180; // pixels per second
+  const blurWrapperRef = useRef<HTMLDivElement>(null);
+  const dvdLogoRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -139,6 +155,7 @@ export default function Home() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
+          navbar.dvd,      // Add DVD toggle
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
           navbar.themeRight     // Right nav
@@ -211,6 +228,7 @@ export default function Home() {
           navbar.themeTop,  // Theme SLIME (top)
           navbar.grid,
           navbar.noise,
+          navbar.dvd,      // Add DVD toggle
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
           navbar.themeRight     // Right nav
@@ -321,33 +339,281 @@ export default function Home() {
     setIsNavExpanded(value);
   };
 
+  // Update refs when state changes
+  useEffect(() => {
+    currentPositionRef.current = logoPosition;
+  }, [logoPosition]);
+
+  useEffect(() => {
+    currentVelocityRef.current = logoVelocity;
+  }, [logoVelocity]);
+
+  // DVD animation logic
+  const startDvdAnimation = useCallback(() => {
+    if (!dvdLogoRef.current || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const logo = dvdLogoRef.current;
+    
+    // Use container's actual dimensions
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+    
+    // Calculate the center position
+    const centerX = (containerWidth - logo.offsetWidth) / 2;
+    const centerY = (containerHeight - logo.offsetHeight) / 2;
+    
+    // Set initial position to center
+    currentPositionRef.current = { x: centerX, y: centerY };
+
+    // Random direction: -1 or 1 for each axis
+    const randomDirection = () => Math.random() > 0.5 ? 1 : -1;
+
+    // Adjust speed based on screen size
+    const mobileSpeedAdjustment = isMobile ? 0.7 : 1; // Slow down on mobile
+    const adjustedSpeed = SPEED * mobileSpeedAdjustment;
+
+    currentVelocityRef.current = { 
+        x: (adjustedSpeed / FPS) * randomDirection(), 
+        y: (adjustedSpeed / FPS) * randomDirection() 
+    };
+    lastTimeRef.current = performance.now();
+
+    // Update logo position directly
+    if (logo) {
+      logo.style.transform = `translate(${centerX}px, ${centerY}px)`;
+    }
+
+    const animate = () => {
+      if (!dvdLogoRef.current || !containerRef.current) return;
+
+      const now = performance.now();
+      const deltaTime = now - lastTimeRef.current;
+      lastTimeRef.current = now;
+
+      const logo = dvdLogoRef.current;
+      const container = containerRef.current;
+      const speedPerFrame = (adjustedSpeed * deltaTime) / 1000;
+      
+      // Calculate new position first
+      const newX = currentPositionRef.current.x + (currentVelocityRef.current.x * speedPerFrame);
+      const newY = currentPositionRef.current.y + (currentVelocityRef.current.y * speedPerFrame);
+
+      // Use container boundaries directly
+      const maxX = container.offsetWidth - logo.offsetWidth;
+      const maxY = container.offsetHeight - logo.offsetHeight;
+      
+      // Check for collisions with new position
+      if (newX <= 0 || newX >= maxX) {
+        currentVelocityRef.current.x = -currentVelocityRef.current.x;
+      }
+      if (newY <= 0 || newY >= maxY) {
+        currentVelocityRef.current.y = -currentVelocityRef.current.y;
+      }
+
+      // Update position with boundary constraints
+      currentPositionRef.current = {
+        x: Math.max(0, Math.min(maxX, newX)),
+        y: Math.max(0, Math.min(maxY, newY))
+      };
+
+      // Update position directly in DOM
+      logo.style.transform = `translate(${currentPositionRef.current.x}px, ${currentPositionRef.current.y}px)`;
+    };
+
+    // Use setInterval for consistent timing even in background tabs
+    intervalRef.current = setInterval(animate, FRAME_TIME);
+  }, [isMobile]); // Add isMobile to dependencies
+
+  const stopDvdAnimation = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  // Handle DVD toggle
+  const handleDvdToggle = useCallback((value: boolean) => {
+    setIsDvdActive(value);
+    if (value) {
+      // Close mobile menu when DVD is activated
+      if (isMobile) {
+        setIsNavExpanded(false);
+      }
+      
+      // Stop any existing animation first
+      stopDvdAnimation();
+      
+      // Create a timeline for the exit animation
+      const tl = gsap.timeline({
+        onComplete: () => {
+          // Calculate center position before showing logo
+          if (dvdLogoRef.current && containerRef.current) {
+            const container = containerRef.current;
+            const logo = dvdLogoRef.current;
+            const centerX = (container.offsetWidth - logo.offsetWidth) / 2;
+            const centerY = (container.offsetHeight - logo.offsetHeight) / 2;
+            
+            // First set the position without making it visible
+            gsap.set(dvdLogoRef.current, {
+              x: centerX,
+              y: centerY,
+              zIndex: 40 // Ensure logo stays above other elements
+            });
+            
+            // Update refs and state after position is set
+            currentPositionRef.current = { x: centerX, y: centerY };
+            setLogoPosition({ x: centerX, y: centerY });
+            
+            // Then make it visible after a small delay
+            setTimeout(() => {
+              gsap.to(dvdLogoRef.current, {
+                visibility: 'visible',
+                opacity: 1,
+                duration: 0.4,
+                ease: "power2.out"
+              });
+              
+              // Start animation after another small delay
+              setTimeout(() => {
+                startDvdAnimation();
+              }, 200);
+            }, 650);
+          }
+        }
+      });
+
+      // Animate content out
+      tl.to(contentRef.current, {
+        opacity: 0,
+        y: -10,
+        filter: 'blur(20px)',
+        duration: 0.4,
+        ease: "power1.in"
+      });
+
+      // Animate nav elements out
+      const navbar = navbarRef.current;
+      if (navbar) {
+        const allNavElements = [
+          navbar.themeTop,
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.themeBottom,
+          navbar.themeLeft,
+          navbar.themeRight
+        ];
+
+        tl.to(allNavElements, {
+          opacity: 0,
+          y: -10,
+          filter: 'blur(20px)',
+          duration: 0.8,
+          ease: "power2.in",
+          pointerEvents: 'none'
+        }, "-=0.6");
+      }
+    } else {
+      stopDvdAnimation();
+      
+      // Create a timeline for the enter animation
+      const tl = gsap.timeline();
+      
+      // Hide the shadow logo first
+      if (dvdLogoRef.current) {
+        gsap.set(dvdLogoRef.current, {
+          visibility: 'hidden',
+          opacity: 0
+        });
+      }
+      
+      // Animate nav elements back in
+      const navbar = navbarRef.current;
+      if (navbar) {
+        const allNavElements = [
+          navbar.themeTop,
+          navbar.grid,
+          navbar.noise,
+          navbar.dvd,
+          navbar.themeBottom,
+          navbar.themeLeft,
+          navbar.themeRight
+        ];
+        
+        tl.to(allNavElements, {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.5,
+          ease: "power2.out",
+          pointerEvents: 'auto'
+        });
+      }
+      
+      // Animate content back in
+      tl.to(contentRef.current, {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)', // Explicitly remove blur
+        duration: 0.5,
+        ease: "sine.out"
+      }, "-=0.3");
+    }
+  }, [startDvdAnimation, stopDvdAnimation, isMobile]);
+
+  // Handle click to exit DVD mode
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (isDvdActive) {
+      handleDvdToggle(false);
+    }
+  }, [isDvdActive, handleDvdToggle]);
+
+  // Cleanup animation on unmount
+  useEffect(() => {
+    return () => {
+      stopDvdAnimation();
+    };
+  }, [stopDvdAnimation]);
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
-      <ContentWrapper>
+      <ContentWrapper ref={containerRef} onClick={handleClick}>
         {isMobile ? (
           <MobileNavbar
+            ref={mobileNavbarRef}
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
+            onDvdToggle={handleDvdToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}
+            showDvdToggle={true}
           />
         ) : null}
-        <BlurWrapper style={isMobile && isNavExpanded ? {
-          filter: 'blur(8px)'
-        } : undefined}>
+        <BlurWrapper 
+          ref={blurWrapperRef}
+          style={isMobile && isNavExpanded ? {
+            filter: 'blur(8px)'
+          } : undefined}
+        >
           <Navbar
             ref={navbarRef}
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
             onThemeChange={cycleTheme}
+            onDvdToggle={handleDvdToggle}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}
+            showDvdToggle={true}
           />
           <StyledContent 
             ref={contentRef}
             className={`${jetbrainsMono.className}`}
+            style={{
+              visibility: isDvdActive ? 'hidden' : 'visible',
+              transition: 'visibility 0.2s ease'
+            }}
           >
             <h1 
               ref={topTextRef}
@@ -371,6 +637,26 @@ export default function Home() {
             </p>
           </StyledContent>
         </BlurWrapper>
+        <div
+          ref={dvdLogoRef}
+          className="absolute w-[50vw] aspect-[2/1] pointer-events-none"
+          style={{
+            visibility: 'hidden',
+            opacity: 0,
+            transform: `translate(${logoPosition.x}px, ${logoPosition.y}px)`,
+            transition: 'none',
+            zIndex: 40,
+            height: 'auto',
+            maxWidth: isMobile ? 'calc(100vw - 32px)' : 'calc(100vw - 64px)',
+            maxHeight: isMobile ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
+            willChange: 'transform',
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+        >
+          <Logo />
+        </div>
       </ContentWrapper>
     </PageWrapper>
   );

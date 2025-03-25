@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
+import type { MobileNavbarRef } from "../components/MobileNavbar";
 import { CaseStudy } from "../components/CaseStudy";
 import { caseStudies } from "../data/caseStudies";
 
@@ -281,6 +282,7 @@ export default function Work() {
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
+  const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [currentCaseStudyIndex, setCurrentCaseStudyIndex] = useState(0);
@@ -418,25 +420,36 @@ export default function Work() {
     setIsNavExpanded(value);
   };
 
+  // Add cycleTheme function
+  const cycleTheme = () => {
+    const currentIndex = themeKeys.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themeKeys.length;
+    setTheme(themeKeys[nextIndex]);
+  };
+
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
         {isMobile ? (
           <MobileNavbar
+            ref={mobileNavbarRef}
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
+            hideInactiveToggles={false}
+            showDvdToggle={false}
           />
         ) : null}
         <Navbar
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onThemeChange={() => {}}
+          onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideSideNavs={true}
+          hideInactiveToggles={false}
+          showDvdToggle={false}
         />
         <CaseStudiesList>
           {caseStudies.map((study, index) => (

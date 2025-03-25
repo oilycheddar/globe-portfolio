@@ -101,10 +101,12 @@ interface NavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
   onThemeChange?: () => void;
+  onDvdToggle?: (value: boolean) => void;
   className?: string;
   initialNoiseState?: boolean;
   hideSideNavs?: boolean;
   hideInactiveToggles?: boolean;
+  showDvdToggle?: boolean;
 }
 
 export interface NavbarRef {
@@ -115,16 +117,19 @@ export interface NavbarRef {
   themeBottom: HTMLDivElement | null;
   grid: HTMLDivElement | null;
   noise: HTMLDivElement | null;
+  dvd: HTMLDivElement | null;
 }
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
   onGridToggle, 
   onNoiseToggle,
   onThemeChange,
+  onDvdToggle = () => {},
   className = '',
   initialNoiseState = true,
   hideSideNavs = false,
-  hideInactiveToggles = false
+  hideInactiveToggles = false,
+  showDvdToggle = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -138,7 +143,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeRight: useRef<HTMLDivElement>(null),
     themeBottom: useRef<HTMLDivElement>(null),
     grid: useRef<HTMLDivElement>(null),
-    noise: useRef<HTMLDivElement>(null)
+    noise: useRef<HTMLDivElement>(null),
+    dvd: useRef<HTMLDivElement>(null)
   };
 
   // Get current page value based on route
@@ -174,7 +180,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeRight: toggleRefs.themeRight.current,
     themeBottom: toggleRefs.themeBottom.current,
     grid: toggleRefs.grid.current,
-    noise: toggleRefs.noise.current
+    noise: toggleRefs.noise.current,
+    dvd: toggleRefs.dvd.current
   }));
 
   const handleThemeChange = (newTheme: string) => {
@@ -196,14 +203,26 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
             />
           </div>
           {!hideInactiveToggles && (
-            <div ref={toggleRefs.noise}>
-              <ToggleButton
-                type="boolean"
-                label="noise"
-                value={initialNoiseState}
-                onChange={onNoiseToggle}
-              />
-            </div>
+            <>
+              <div ref={toggleRefs.noise}>
+                <ToggleButton
+                  type="boolean"
+                  label="noise"
+                  value={initialNoiseState}
+                  onChange={onNoiseToggle}
+                />
+              </div>
+              {showDvdToggle && (
+                <div ref={toggleRefs.dvd}>
+                  <ToggleButton
+                    type="boolean"
+                    label="dvd"
+                    value={false}
+                    onChange={onDvdToggle}
+                  />
+                </div>
+              )}
+            </>
           )}
         </ToggleGroup>
       </NavContainer>
