@@ -13,6 +13,7 @@ import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
+import type { MobileNavbarRef } from "../components/MobileNavbar";
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -115,6 +116,7 @@ export default function Home() {
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
+  const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -348,9 +350,9 @@ export default function Home() {
 
   // DVD animation logic
   const startDvdAnimation = useCallback(() => {
-    if (!dvdLogoRef.current || !containerRef.current) return;
+    if (!dvdLogoRef.current || !blurWrapperRef.current) return;
 
-    const container = containerRef.current;
+    const container = blurWrapperRef.current;
     const logo = dvdLogoRef.current;
     
     // Use container's actual dimensions
@@ -367,9 +369,13 @@ export default function Home() {
     // Random direction: -1 or 1 for each axis
     const randomDirection = () => Math.random() > 0.5 ? 1 : -1;
 
+    // Adjust speed based on screen size
+    const mobileSpeedAdjustment = isMobile ? 0.7 : 1; // Slow down on mobile
+    const adjustedSpeed = SPEED * mobileSpeedAdjustment;
+
     currentVelocityRef.current = { 
-        x: (SPEED / FPS) * randomDirection(), 
-        y: (SPEED / FPS) * randomDirection() 
+        x: (adjustedSpeed / FPS) * randomDirection(), 
+        y: (adjustedSpeed / FPS) * randomDirection() 
     };
     lastTimeRef.current = performance.now();
 
@@ -379,36 +385,36 @@ export default function Home() {
     }
 
     const animate = () => {
-      if (!dvdLogoRef.current || !containerRef.current) return;
+      if (!dvdLogoRef.current || !blurWrapperRef.current) return;
 
       const now = performance.now();
       const deltaTime = now - lastTimeRef.current;
       lastTimeRef.current = now;
 
       const logo = dvdLogoRef.current;
-      const speedPerFrame = (SPEED * deltaTime) / 1000; // pixels to move this frame
+      const container = blurWrapperRef.current;
+      const speedPerFrame = (adjustedSpeed * deltaTime) / 1000;
       
       // Calculate new position first
       const newX = currentPositionRef.current.x + (currentVelocityRef.current.x * speedPerFrame);
       const newY = currentPositionRef.current.y + (currentVelocityRef.current.y * speedPerFrame);
 
-      // Calculate boundaries with padding
-      const padding = 0;
-      const maxX = containerWidth - logo.offsetWidth - padding;
-      const maxY = containerHeight - logo.offsetHeight - padding;
+      // Use container boundaries directly
+      const maxX = container.offsetWidth - logo.offsetWidth;
+      const maxY = container.offsetHeight - logo.offsetHeight;
       
       // Check for collisions with new position
-      if (newX <= padding || newX >= maxX) {
+      if (newX <= 0 || newX >= maxX) {
         currentVelocityRef.current.x = -currentVelocityRef.current.x;
       }
-      if (newY <= padding || newY >= maxY) {
+      if (newY <= 0 || newY >= maxY) {
         currentVelocityRef.current.y = -currentVelocityRef.current.y;
       }
 
-      // Update position
+      // Update position with boundary constraints
       currentPositionRef.current = {
-        x: Math.max(padding, Math.min(maxX, newX)),
-        y: Math.max(padding, Math.min(maxY, newY))
+        x: Math.max(0, Math.min(maxX, newX)),
+        y: Math.max(0, Math.min(maxY, newY))
       };
 
       // Update position directly in DOM
@@ -417,7 +423,7 @@ export default function Home() {
 
     // Use setInterval for consistent timing even in background tabs
     intervalRef.current = setInterval(animate, FRAME_TIME);
-  }, []); // Empty dependency array since we're using refs
+  }, [isMobile]); // Add isMobile to dependencies
 
   const stopDvdAnimation = useCallback(() => {
     if (intervalRef.current) {
@@ -430,6 +436,12 @@ export default function Home() {
   const handleDvdToggle = useCallback((value: boolean) => {
     setIsDvdActive(value);
     if (value) {
+      // Close mobile menu when DVD is activated
+      if (isMobile) {
+        setIsNavExpanded(false);
+        // The mobile menu will close automatically when isNavExpanded is set to false
+      }
+      
       // Stop any existing animation first
       stopDvdAnimation();
       
@@ -437,8 +449,8 @@ export default function Home() {
       const tl = gsap.timeline({
         onComplete: () => {
           // Calculate center position before showing logo
-          if (dvdLogoRef.current && containerRef.current) {
-            const container = containerRef.current;
+          if (dvdLogoRef.current && blurWrapperRef.current) {
+            const container = blurWrapperRef.current;
             const logo = dvdLogoRef.current;
             const centerX = (container.offsetWidth - logo.offsetWidth) / 2;
             const centerY = (container.offsetHeight - logo.offsetHeight) / 2;
@@ -548,7 +560,7 @@ export default function Home() {
         ease: "sine.out"
       }, "-=0.3");
     }
-  }, [startDvdAnimation, stopDvdAnimation]);
+  }, [startDvdAnimation, stopDvdAnimation, isMobile]);
 
   // Handle click to exit DVD mode
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -568,6 +580,7 @@ export default function Home() {
       <ContentWrapper ref={containerRef} onClick={handleClick}>
         {isMobile ? (
           <MobileNavbar
+            ref={mobileNavbarRef}
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
@@ -575,6 +588,7 @@ export default function Home() {
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}
+            showDvdToggle={true}
           />
         ) : null}
         <BlurWrapper 
@@ -591,6 +605,7 @@ export default function Home() {
             onDvdToggle={handleDvdToggle}
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}
+            showDvdToggle={true}
           />
           <StyledContent 
             ref={contentRef}
@@ -630,13 +645,12 @@ export default function Home() {
               transform: `translate(${logoPosition.x}px, ${logoPosition.y}px)`,
               transition: 'none',
               zIndex: 40,
-              width: '50vw',
               height: 'auto',
-              maxWidth: 'calc(100vw - 64px)',
-              maxHeight: 'calc(100vh - 64px)',
+              maxWidth: isMobile ? 'calc(100vw - 32px)' : 'calc(100vw - 64px)',
+              maxHeight: isMobile ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
               willChange: 'transform',
               position: 'absolute',
-              top: 0,
+              top: isMobile ? '32px' : 0, // Account for mobile navbar
               left: 0
             }}
           >

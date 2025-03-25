@@ -109,6 +109,7 @@ interface MobileNavbarProps {
   className?: string;
   initialNoiseState?: boolean;
   hideInactiveToggles?: boolean;
+  showDvdToggle?: boolean;
 }
 
 export interface MobileNavbarRef {
@@ -122,7 +123,8 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onExpandedChange,
   className = '',
   initialNoiseState = true,
-  hideInactiveToggles = false
+  hideInactiveToggles = false,
+  showDvdToggle = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -248,6 +250,17 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   const handleNoiseToggle = (value: boolean) => {
     setIsNoiseActive(value);
     onNoiseToggle(value);
+    handleClose();
+  };
+
+  const handleDvdToggle = (value: boolean) => {
+    onDvdToggle(value);
+    handleClose();
+  };
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    handleClose();
   };
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -283,7 +296,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             label="theme"
             value={theme}
             options={themeKeys}
-            onChange={setTheme}
+            onChange={handleThemeChange}
           />
           {!hideInactiveToggles && (
             <>
@@ -293,12 +306,14 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
                 value={isNoiseActive}
                 onChange={handleNoiseToggle}
               />
-              <ToggleButton
-                type="boolean"
-                label="dvd"
-                value={false}
-                onChange={onDvdToggle}
-              />
+              {showDvdToggle && (
+                <ToggleButton
+                  type="boolean"
+                  label="dvd"
+                  value={false}
+                  onChange={handleDvdToggle}
+                />
+              )}
             </>
           )}
         </ToggleButtonsGrid>

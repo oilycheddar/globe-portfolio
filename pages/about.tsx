@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
+import type { MobileNavbarRef } from "../components/MobileNavbar";
 import Image from 'next/image';
 
 const jetbrainsMono = JetBrains_Mono({ 
@@ -71,17 +72,19 @@ const StyledContent = styled.div`
   transition: filter 0.4s ease;
 
   /* Add padding to prevent content from overlapping with navs */
-  padding: 0 var(--space-xl);
+  padding: var(--space-md) var(--space-xl);
 
   /* Initial state to prevent FOUC */
   opacity: 0;
-  transform: translateY(20px);
   
   /* Responsive adjustments */
   @media (max-width: 440px) {
     --mobile-navbar-height: 32px;
-    padding: 0 var(--space-md);
+    padding: 44px var(--space-md);
+    display: flex;
+    flex-direction: column;
     gap: var(--space-md);
+    justify-content: start;
     min-height: 0;
     height: 100%;
   }
@@ -147,8 +150,16 @@ export default function About() {
   const contentRef = useRef<HTMLDivElement>(null);
   const aboutTextRef = useRef<HTMLParagraphElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
+  const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+
+  // Add cycleTheme function
+  const cycleTheme = () => {
+    const currentIndex = themeKeys.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themeKeys.length;
+    setTheme(themeKeys[nextIndex]);
+  };
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -341,20 +352,24 @@ export default function About() {
       <ContentWrapper>
         {isMobile ? (
           <MobileNavbar
+            ref={mobileNavbarRef}
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
+            hideInactiveToggles={false}
+            showDvdToggle={false}
           />
         ) : null}
         <Navbar
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onThemeChange={() => {}}
+          onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideSideNavs={true}
+          hideInactiveToggles={false}
+          showDvdToggle={false}
         />
         <StyledContent 
           ref={contentRef}

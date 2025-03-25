@@ -106,6 +106,7 @@ interface NavbarProps {
   initialNoiseState?: boolean;
   hideSideNavs?: boolean;
   hideInactiveToggles?: boolean;
+  showDvdToggle?: boolean;
 }
 
 export interface NavbarRef {
@@ -127,7 +128,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   className = '',
   initialNoiseState = true,
   hideSideNavs = false,
-  hideInactiveToggles = false
+  hideInactiveToggles = false,
+  showDvdToggle = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -210,14 +212,16 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                   onChange={onNoiseToggle}
                 />
               </div>
-              <div ref={toggleRefs.dvd}>
-                <ToggleButton
-                  type="boolean"
-                  label="dvd"
-                  value={false}
-                  onChange={onDvdToggle}
-                />
-              </div>
+              {showDvdToggle && (
+                <div ref={toggleRefs.dvd}>
+                  <ToggleButton
+                    type="boolean"
+                    label="dvd"
+                    value={false}
+                    onChange={onDvdToggle}
+                  />
+                </div>
+              )}
             </>
           )}
         </ToggleGroup>

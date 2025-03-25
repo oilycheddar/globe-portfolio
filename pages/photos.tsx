@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
+import type { MobileNavbarRef } from "../components/MobileNavbar";
 import Image from 'next/image';
 import photos, { Photo } from '../data/photos';
 
@@ -140,7 +141,7 @@ const OrbitalContainer = styled.div`
   .media {
     width: 40vw;
     height: 40vw;
-    margin: 40vh 0 0;
+    margin: 37vh 0 0;
     transform: translate(0, -50%);
     object-fit: contain;
     object-position: 50% 100%;
@@ -235,6 +236,7 @@ export default function Photos() {
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
+  const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
@@ -405,25 +407,36 @@ export default function Photos() {
     setCurrentImageIndex((prev) => (prev + 1) % photos.length);
   };
 
+  // Add cycleTheme function
+  const cycleTheme = () => {
+    const currentIndex = themeKeys.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themeKeys.length;
+    setTheme(themeKeys[nextIndex]);
+  };
+
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper>
         {isMobile ? (
           <MobileNavbar
+            ref={mobileNavbarRef}
             className="mobile-navbar"
             onGridToggle={handleGridToggle}
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
+            hideInactiveToggles={false}
+            showDvdToggle={false}
           />
         ) : null}
         <Navbar
           ref={navbarRef}
           onGridToggle={handleGridToggle}
           onNoiseToggle={handleNoiseToggle}
-          onThemeChange={() => {}}
+          onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideSideNavs={true}
+          hideInactiveToggles={false}
+          showDvdToggle={false}
         />
         <OrbitalContainer className="mwg_effect023" ref={containerRef}>
           <div className="container">
