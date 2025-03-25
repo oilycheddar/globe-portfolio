@@ -120,9 +120,14 @@ export default function Home() {
   const logoRef = useRef<HTMLDivElement>(null);
   const [isDvdActive, setIsDvdActive] = useState(false);
   const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
-  const [logoVelocity, setLogoVelocity] = useState({ x: 2, y: 2 });
+  const [logoVelocity, setLogoVelocity] = useState({ x: 5, y: 5 });
   const currentPositionRef = useRef({ x: 0, y: 0 });
-  const currentVelocityRef = useRef({ x: 2, y: 2 });
+  const currentVelocityRef = useRef({ x: 5, y: 5 });
+  const lastTimeRef = useRef<number>(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const FPS = 120;
+  const FRAME_TIME = 1000 / FPS;
+  const SPEED = 180; // pixels per second
   const blurWrapperRef = useRef<HTMLDivElement>(null);
   const dvdLogoRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
@@ -358,16 +363,34 @@ export default function Home() {
     
     // Set initial position to center
     currentPositionRef.current = { x: centerX, y: centerY };
-    setLogoPosition({ x: centerX, y: centerY });
+
+    // Random direction: -1 or 1 for each axis
+    const randomDirection = () => Math.random() > 0.5 ? 1 : -1;
+
+    currentVelocityRef.current = { 
+        x: (SPEED / FPS) * randomDirection(), 
+        y: (SPEED / FPS) * randomDirection() 
+    };
+    lastTimeRef.current = performance.now();
+
+    // Update logo position directly
+    if (logo) {
+      logo.style.transform = `translate(${centerX}px, ${centerY}px)`;
+    }
 
     const animate = () => {
       if (!dvdLogoRef.current || !containerRef.current) return;
 
+      const now = performance.now();
+      const deltaTime = now - lastTimeRef.current;
+      lastTimeRef.current = now;
+
       const logo = dvdLogoRef.current;
+      const speedPerFrame = (SPEED * deltaTime) / 1000; // pixels to move this frame
       
       // Calculate new position first
-      const newX = currentPositionRef.current.x + currentVelocityRef.current.x;
-      const newY = currentPositionRef.current.y + currentVelocityRef.current.y;
+      const newX = currentPositionRef.current.x + (currentVelocityRef.current.x * speedPerFrame);
+      const newY = currentPositionRef.current.y + (currentVelocityRef.current.y * speedPerFrame);
 
       // Calculate boundaries with padding
       const padding = 0;
@@ -376,37 +399,30 @@ export default function Home() {
       
       // Check for collisions with new position
       if (newX <= padding || newX >= maxX) {
-        currentVelocityRef.current = {
-          x: -currentVelocityRef.current.x * (0.95 + Math.random() * 0.1),
-          y: currentVelocityRef.current.y
-        };
+        currentVelocityRef.current.x = -currentVelocityRef.current.x;
       }
       if (newY <= padding || newY >= maxY) {
-        currentVelocityRef.current = {
-          x: currentVelocityRef.current.x,
-          y: -currentVelocityRef.current.y * (0.95 + Math.random() * 0.1)
-        };
+        currentVelocityRef.current.y = -currentVelocityRef.current.y;
       }
 
-      // Cap maximum speed
-      currentVelocityRef.current = {
-        x: Math.min(Math.max(currentVelocityRef.current.x, -4), 4),
-        y: Math.min(Math.max(currentVelocityRef.current.y, -4), 4)
+      // Update position
+      currentPositionRef.current = {
+        x: Math.max(padding, Math.min(maxX, newX)),
+        y: Math.max(padding, Math.min(maxY, newY))
       };
 
-      // Update position
-      currentPositionRef.current = { x: newX, y: newY };
-      setLogoPosition({ x: newX, y: newY });
-
-      animationFrameRef.current = requestAnimationFrame(animate);
+      // Update position directly in DOM
+      logo.style.transform = `translate(${currentPositionRef.current.x}px, ${currentPositionRef.current.y}px)`;
     };
 
-    animate();
+    // Use setInterval for consistent timing even in background tabs
+    intervalRef.current = setInterval(animate, FRAME_TIME);
   }, []); // Empty dependency array since we're using refs
 
   const stopDvdAnimation = useCallback(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   }, []);
 
@@ -427,23 +443,30 @@ export default function Home() {
             const centerX = (container.offsetWidth - logo.offsetWidth) / 2;
             const centerY = (container.offsetHeight - logo.offsetHeight) / 2;
             
-            // Set initial position via GSAP
+            // First set the position without making it visible
             gsap.set(dvdLogoRef.current, {
               x: centerX,
-              y: centerY,
-              visibility: 'visible',
-              opacity: 1,
-              delay: 0.5 // Wait for content to fade out
+              y: centerY
             });
             
             // Update refs and state after position is set
             currentPositionRef.current = { x: centerX, y: centerY };
             setLogoPosition({ x: centerX, y: centerY });
             
-            // Start animation after a delay
+            // Then make it visible after a small delay
             setTimeout(() => {
-              startDvdAnimation();
-            }, 500); // Match the delay with the fade out duration
+              gsap.to(dvdLogoRef.current, {
+                visibility: 'visible',
+                opacity: 1,
+                duration: 0.4,
+                ease: "power2.out"
+              });
+              
+              // Start animation after another small delay
+              setTimeout(() => {
+                startDvdAnimation();
+              }, 200);
+            }, 650);
           }
         }
       });
@@ -451,9 +474,10 @@ export default function Home() {
       // Animate content out
       tl.to(contentRef.current, {
         opacity: 0,
-        y: 20,
-        duration: 0.5,
-        ease: "sine.in"
+        y: -10,
+        filter: 'blur(20px)',
+        duration: 0.4,
+        ease: "power1.in"
       });
 
       // Animate nav elements out
@@ -473,16 +497,17 @@ export default function Home() {
           opacity: 0,
           y: -10,
           filter: 'blur(20px)',
-          duration: 0.5,
-          ease: "power2.in"
-        }, "-=0.3");
+          duration: 0.8,
+          ease: "power2.in",
+          pointerEvents: 'none'
+        }, "-=0.6");
       }
     } else {
       stopDvdAnimation();
       
       // Create a timeline for the enter animation
       const tl = gsap.timeline();
-
+      
       // Hide the shadow logo first
       if (dvdLogoRef.current) {
         gsap.set(dvdLogoRef.current, {
@@ -490,8 +515,8 @@ export default function Home() {
           opacity: 0
         });
       }
-
-      // Animate nav elements in
+      
+      // Animate nav elements back in
       const navbar = navbarRef.current;
       if (navbar) {
         const allNavElements = [
@@ -503,20 +528,22 @@ export default function Home() {
           navbar.themeLeft,
           navbar.themeRight
         ];
-
+        
         tl.to(allNavElements, {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
           duration: 0.5,
-          ease: "power2.out"
+          ease: "power2.out",
+          pointerEvents: 'auto'
         });
       }
-
-      // Animate content in
+      
+      // Animate content back in
       tl.to(contentRef.current, {
         opacity: 1,
         y: 0,
+        filter: 'blur(0px)', // Explicitly remove blur
         duration: 0.5,
         ease: "sine.out"
       }, "-=0.3");
@@ -536,7 +563,6 @@ export default function Home() {
       stopDvdAnimation();
     };
   }, [stopDvdAnimation]);
-
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper ref={containerRef} onClick={handleClick}>
@@ -584,7 +610,6 @@ export default function Home() {
             <div 
               ref={logoRef}
               className="w-[50vw] aspect-[2/1]"
-              style={{ visibility: isDvdActive ? 'hidden' : 'visible' }}
             >
               <Logo />
             </div>
