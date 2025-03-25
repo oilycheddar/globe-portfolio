@@ -350,9 +350,9 @@ export default function Home() {
 
   // DVD animation logic
   const startDvdAnimation = useCallback(() => {
-    if (!dvdLogoRef.current || !blurWrapperRef.current) return;
+    if (!dvdLogoRef.current || !containerRef.current) return;
 
-    const container = blurWrapperRef.current;
+    const container = containerRef.current;
     const logo = dvdLogoRef.current;
     
     // Use container's actual dimensions
@@ -385,14 +385,14 @@ export default function Home() {
     }
 
     const animate = () => {
-      if (!dvdLogoRef.current || !blurWrapperRef.current) return;
+      if (!dvdLogoRef.current || !containerRef.current) return;
 
       const now = performance.now();
       const deltaTime = now - lastTimeRef.current;
       lastTimeRef.current = now;
 
       const logo = dvdLogoRef.current;
-      const container = blurWrapperRef.current;
+      const container = containerRef.current;
       const speedPerFrame = (adjustedSpeed * deltaTime) / 1000;
       
       // Calculate new position first
@@ -439,7 +439,6 @@ export default function Home() {
       // Close mobile menu when DVD is activated
       if (isMobile) {
         setIsNavExpanded(false);
-        // The mobile menu will close automatically when isNavExpanded is set to false
       }
       
       // Stop any existing animation first
@@ -449,8 +448,8 @@ export default function Home() {
       const tl = gsap.timeline({
         onComplete: () => {
           // Calculate center position before showing logo
-          if (dvdLogoRef.current && blurWrapperRef.current) {
-            const container = blurWrapperRef.current;
+          if (dvdLogoRef.current && containerRef.current) {
+            const container = containerRef.current;
             const logo = dvdLogoRef.current;
             const centerX = (container.offsetWidth - logo.offsetWidth) / 2;
             const centerY = (container.offsetHeight - logo.offsetHeight) / 2;
@@ -458,7 +457,8 @@ export default function Home() {
             // First set the position without making it visible
             gsap.set(dvdLogoRef.current, {
               x: centerX,
-              y: centerY
+              y: centerY,
+              zIndex: 40 // Ensure logo stays above other elements
             });
             
             // Update refs and state after position is set
@@ -636,27 +636,27 @@ export default function Home() {
               no code developer
             </p>
           </StyledContent>
-          <div
-            ref={dvdLogoRef}
-            className="absolute w-[50vw] aspect-[2/1] pointer-events-none"
-            style={{
-              visibility: 'hidden', // Always hidden by default
-              opacity: 0,
-              transform: `translate(${logoPosition.x}px, ${logoPosition.y}px)`,
-              transition: 'none',
-              zIndex: 40,
-              height: 'auto',
-              maxWidth: isMobile ? 'calc(100vw - 32px)' : 'calc(100vw - 64px)',
-              maxHeight: isMobile ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
-              willChange: 'transform',
-              position: 'absolute',
-              top: isMobile ? '32px' : 0, // Account for mobile navbar
-              left: 0
-            }}
-          >
-            <Logo />
-          </div>
         </BlurWrapper>
+        <div
+          ref={dvdLogoRef}
+          className="absolute w-[50vw] aspect-[2/1] pointer-events-none"
+          style={{
+            visibility: 'hidden',
+            opacity: 0,
+            transform: `translate(${logoPosition.x}px, ${logoPosition.y}px)`,
+            transition: 'none',
+            zIndex: 40,
+            height: 'auto',
+            maxWidth: isMobile ? 'calc(100vw - 32px)' : 'calc(100vw - 64px)',
+            maxHeight: isMobile ? 'calc(100vh - 64px)' : 'calc(100vh - 64px)',
+            willChange: 'transform',
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+        >
+          <Logo />
+        </div>
       </ContentWrapper>
     </PageWrapper>
   );
