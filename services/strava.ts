@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getValidToken } from '../lib/auth/tokens';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = '42678770'; // From your Strava profile URL
@@ -60,9 +61,10 @@ const getBaseUrl = () => {
   return `http://localhost:${process.env.PORT ?? 3000}`;
 };
 
+const baseUrl = process.env.NODE_ENV === 'production' ? 'https://georgevisan.com' : '';
+
 export const getYTDRunningDistance = async (): Promise<string> => {
   try {
-    const baseUrl = getBaseUrl();
     const response = await axios.get(`${baseUrl}/api/strava-stats`);
     return response.data.distance;
   } catch (error) {
