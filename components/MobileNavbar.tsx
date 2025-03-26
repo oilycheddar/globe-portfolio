@@ -104,10 +104,12 @@ const MenuIcon = () => (
 interface MobileNavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
+  onDvdToggle?: (value: boolean) => void;
   onExpandedChange?: (expanded: boolean) => void;
   className?: string;
   initialNoiseState?: boolean;
   hideInactiveToggles?: boolean;
+  showDvdToggle?: boolean;
 }
 
 export interface MobileNavbarRef {
@@ -117,10 +119,12 @@ export interface MobileNavbarRef {
 export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   onGridToggle,
   onNoiseToggle,
+  onDvdToggle = () => {},
   onExpandedChange,
   className = '',
   initialNoiseState = true,
-  hideInactiveToggles = false
+  hideInactiveToggles = false,
+  showDvdToggle = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -246,6 +250,17 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   const handleNoiseToggle = (value: boolean) => {
     setIsNoiseActive(value);
     onNoiseToggle(value);
+    handleClose();
+  };
+
+  const handleDvdToggle = (value: boolean) => {
+    onDvdToggle(value);
+    handleClose();
+  };
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    handleClose();
   };
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -281,15 +296,25 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             label="theme"
             value={theme}
             options={themeKeys}
-            onChange={setTheme}
+            onChange={handleThemeChange}
           />
           {!hideInactiveToggles && (
-            <ToggleButton
-              type="boolean"
-              label="noise"
-              value={isNoiseActive}
-              onChange={handleNoiseToggle}
-            />
+            <>
+              <ToggleButton
+                type="boolean"
+                label="noise"
+                value={isNoiseActive}
+                onChange={handleNoiseToggle}
+              />
+              {showDvdToggle && (
+                <ToggleButton
+                  type="boolean"
+                  label="dvd"
+                  value={false}
+                  onChange={handleDvdToggle}
+                />
+              )}
+            </>
           )}
         </ToggleButtonsGrid>
         <ApplyButton 
