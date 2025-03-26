@@ -20,16 +20,38 @@ interface TokenResponse {
 }
 
 async function getAccessToken(): Promise<string> {
-  const response = await axios.post<TokenResponse>(
-    'https://www.strava.com/oauth/token',
-    {
-      client_id: process.env.STRAVA_CLIENT_ID,
-      client_secret: process.env.STRAVA_CLIENT_SECRET,
-      refresh_token: process.env.STRAVA_REFRESH_TOKEN,
-      grant_type: 'refresh_token'
+  // Validate environment variables
+  if (!process.env.STRAVA_CLIENT_ID) {
+    throw new Error('STRAVA_CLIENT_ID is not defined');
+  }
+  if (!process.env.STRAVA_CLIENT_SECRET) {
+    throw new Error('STRAVA_CLIENT_SECRET is not defined');
+  }
+  if (!process.env.STRAVA_REFRESH_TOKEN) {
+    throw new Error('STRAVA_REFRESH_TOKEN is not defined');
+  }
+
+  try {
+    const response = await axios.post<TokenResponse>(
+      'https://www.strava.com/oauth/token',
+      {
+        client_id: process.env.STRAVA_CLIENT_ID,
+        client_secret: process.env.STRAVA_CLIENT_SECRET,
+        refresh_token: process.env.STRAVA_REFRESH_TOKEN,
+        grant_type: 'refresh_token'
+      }
+    );
+    return response.data.access_token;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Strava token refresh error:', {
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw new Error(`Failed to refresh token: ${error.response?.data?.message || error.message}`);
     }
-  );
-  return response.data.access_token;
+    throw error;
+  }
 }
 
 export default async function handler(
@@ -69,6 +91,14 @@ export default async function handler(
     return res.status(200).json({ distance: `${distanceInKm}km` });
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
+    if (axios.isAxiosError(error)) {
+      return res.status(500).json({
+        message: 'Error fetching Strava stats',
+        error: error.response?.data?.message || error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+    }
     return res.status(500).json({ 
       message: 'Error fetching Strava stats',
       error: error instanceof Error ? error.message : 'Unknown error'

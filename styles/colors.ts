@@ -5,7 +5,7 @@ export const colors = {
         earth800: "rgba(101, 13, 27, 1)",
         earth700: "rgba(130, 50, 0, 1)",
         earth500: "rgba(155, 61, 18, 1)",
-        earth300: "rgba(174, 142, 27, 1)",
+        earth300: "rgba(105, 151, 22, 1)",
         earth100: "rgba(193, 223, 30, 1)",
         earth50: "rgba(240, 249, 191, 1)",
     },
