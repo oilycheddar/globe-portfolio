@@ -129,7 +129,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onThemeChange,
   onDvdToggle = () => {},
   className = '',
-  initialNoiseState = true
+  initialNoiseState = true,
+  showDvdToggle = false
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
