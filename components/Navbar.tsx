@@ -2,9 +2,10 @@ import { ToggleButton } from './toggleButton';
 import styled from 'styled-components';
 import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
-import { useState, forwardRef, useRef, useImperativeHandle } from 'react';
+import { useState, forwardRef, useRef, useImperativeHandle, useEffect, memo } from 'react';
 import { textStyles } from '../styles/text';
 import { useRouter } from 'next/router';
+import { getYTDRunningDistance } from '../services/strava';
 
 const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   className: props.className || ''
@@ -118,18 +119,19 @@ export interface NavbarRef {
 }
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
-  onGridToggle, 
+  hideSideNavs = false,
+  hideInactiveToggles = false,
+  onGridToggle,
   onNoiseToggle,
   onThemeChange,
   className = '',
-  initialNoiseState = true,
-  hideSideNavs = false,
-  hideInactiveToggles = false
+  initialNoiseState = true
 }, ref) => {
   const { theme, setTheme } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [runningDistance, setRunningDistance] = useState('0km');
   
   // Create refs for each toggle button container
   const toggleRefs = {
@@ -182,6 +184,19 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     onThemeChange?.();
   };
 
+  useEffect(() => {
+    const fetchRunningDistance = async () => {
+      try {
+        const distance = await getYTDRunningDistance();
+        setRunningDistance(distance);
+      } catch (error) {
+        console.error('Error fetching running distance:', error);
+      }
+    };
+
+    fetchRunningDistance();
+  }, []);
+
   return (
     <>
       <NavContainer ref={containerRef} className={className}>
@@ -216,8 +231,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                   <ToggleButton
                     type="multi"
                     label="2025 running distance"
-                    value="349km"
-                    options={["349km"]}
+                    value={runningDistance}
+                    options={[runningDistance]}
                     onChange={() => {}}
                   />
                 </div>

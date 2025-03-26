@@ -17,6 +17,7 @@
     "@react-three/fiber": "^9.0.4",
     "@types/styled-components": "^5.1.34",
     "@vercel/analytics": "^1.5.0",
+    "axios": "^1.8.4",
     "framer-motion": "^12.4.7",
     "gsap": "npm:@gsap/shockingly@^3.12.7",
     "lenis": "^1.1.21",
