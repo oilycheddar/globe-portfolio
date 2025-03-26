@@ -38,7 +38,7 @@ export const themes = {
         "--color-text": colors.earth.earth50,
         "--color-text-secondary": colors.water.water700,
         "--color-accent-primary": colors.water.water300,
-        "--color-accent-secondary": colors.water.water700,
+        "--color-accent-secondary": colors.water.water500,
         "--water_shadow": "0px -8px 100px rgba(230, 214, 251, 0.5)",
         // Spacing variables
         "--space-xs": spacing.xs,
@@ -56,7 +56,7 @@ export const themes = {
         "--color-text": colors.water.water900,
         "--color-text-secondary": colors.earth.earth50,
         "--color-accent-primary": colors.water.water700,
-        "--color-accent-secondary": colors.earth.earth100,
+        "--color-accent-secondary": colors.earth.earth300,
         "--acid_shadow": "0px -8px 100px rgba(99, 33, 238, 0.5)",
         // Spacing variables
         "--space-xs": spacing.xs,
