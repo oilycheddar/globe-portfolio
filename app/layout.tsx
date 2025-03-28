@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://georgevisa.com',
+    url: 'https://georgevisan.com',
     siteName: 'George Visan — Product Designer',
     title: 'George Visan — Product Designer',
     description: 'George is a designer & no co-code developer based in Calgary, Alberta.',
@@ -52,7 +52,6 @@ export const metadata: Metadata = {
     initialScale: 1,
     viewportFit: 'cover',
   },
-  themeColor: '#1A1A1A',
 };
 
 export const viewport = {
@@ -60,8 +59,6 @@ export const viewport = {
   initialScale: 1,
   viewportFit: 'cover',
 };
-
-export const themeColor = '#1A1A1A';
 
 export default function RootLayout({
   children,
@@ -93,7 +90,6 @@ export default function RootLayout({
             document.querySelector('link[rel="stylesheet"][media="print"]').media = 'all';
           `}
         </Script>
-        <meta name="theme-color" content={initialThemeColor} />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="preload" href="/images/optimized/bg-noise-dune.webp" as="image" />
         <link rel="preload" href="/images/optimized/page-noise-dune.webp" as="image" />
