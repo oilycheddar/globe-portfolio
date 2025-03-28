@@ -23,7 +23,7 @@ const Label = styled.span`
 
 const ButtonWrapper = styled.div<{ $isExpandable?: boolean }>`
   position: relative;
-  width: ${props => props.$isExpandable ? '72px' : 'auto'}; /* Only fixed width for expandable */
+  width: ${props => props.$isExpandable ? '80px' : 'auto'}; /* Only fixed width for expandable */
 
   *, *:before, *:after {
     box-sizing: border-box;

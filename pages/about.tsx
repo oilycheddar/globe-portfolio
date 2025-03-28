@@ -82,7 +82,7 @@ const StyledContent = styled.div`
     flex: 1;
     flex-direction: column;
     gap: var(--space-md);
-    justify-content: start;
+    justify-content: center;
     min-height: 0;
     overflow-y: auto;
   }
