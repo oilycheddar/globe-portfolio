@@ -26,7 +26,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="robots" content="index, follow" />
         
         {/* Theme */}
-        <meta name="theme-color" content="#00623A" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         
         {/* Open Graph */}
