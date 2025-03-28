@@ -105,7 +105,7 @@ export default function RootLayout({
             const style = document.createElement('style');
             style.textContent = \`
               :root {
-                --color-page-content: ${defaultTheme['--color-page-content']};
+                --color-page-content: ${defaultTheme['--color-bg']};
                 --color-bg: ${defaultTheme['--color-bg']};
                 --color-text: ${defaultTheme['--color-text']};
                 --bg-noise: ${defaultTheme['--bg-noise']};

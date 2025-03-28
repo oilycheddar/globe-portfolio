@@ -2,8 +2,18 @@ import type { AppProps } from 'next/app';
 import { StyledComponentsProvider } from '../providers/StyledComponentsProvider';
 import "../styles/globals.css";
 import Head from 'next/head';
+import { useEffect } from 'react';
+import { useThemeStore } from '../hooks/useThemeStore';
 
 export default function App({ Component, pageProps }: AppProps) {
+  const { theme } = useThemeStore();
+
+  useEffect(() => {
+    // Update theme-color meta tag
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+  }, [theme]);
+
   return (
     <>
       <Head>
