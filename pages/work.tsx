@@ -73,7 +73,7 @@ const CaseStudiesList = styled.div`
   /* First handle tablet/medium sizes */
   @media (max-width: 768px) {
     width: calc(100% - var(--navbar-width));
-    padding: var(--space-lg) var(--space-lg);
+    padding: var(--space-lg) 64px;
     gap: var(--space-lg);
   }
   
@@ -366,8 +366,7 @@ export default function Work() {
           navbar.grid,
           navbar.noise,
           navbar.themeBottom,   // STATION (bottom)
-          navbar.themeLeft,     // Left nav
-          navbar.themeRight     // Right nav
+
         ];
 
         // Animate all nav elements together
@@ -390,12 +389,6 @@ export default function Work() {
     const ctx = initializeGSAPAnimations();
     return () => ctx.revert();
   }, []);
-
-  // Set initial theme-color
-  useEffect(() => {
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-  }, [theme]);
 
   // Handle mobile responsiveness
   useEffect(() => {
@@ -450,6 +443,7 @@ export default function Work() {
           initialNoiseState={noiseEnabled}
           hideInactiveToggles={false}
           showDvdToggle={false}
+          hideSideNavs={true}
         />
         <CaseStudiesList>
           {caseStudies.map((study, index) => (

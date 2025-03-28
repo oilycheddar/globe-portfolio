@@ -16,7 +16,7 @@ export function ThemeColorManager() {
     }
 
     // Set theme-color to the computed --color-page-content value
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-page-content').trim();
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
     metaThemeColor.setAttribute('content', themeColor);
 
     // Create or update the apple-mobile-web-app-status-bar-style meta tag for iOS Safari

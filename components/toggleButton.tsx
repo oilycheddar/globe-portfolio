@@ -98,31 +98,33 @@ const DropdownItem = styled.div<{ $isSelected?: boolean }>`
   }
 `;
 
-type BaseToggleProps = {
+interface BaseToggleProps {
   label: string;
-};
+  fullWidth?: boolean;
+}
 
-type BooleanToggleProps = BaseToggleProps & {
+interface BooleanToggleProps extends BaseToggleProps {
   type: 'boolean';
   value: boolean;
   onChange: (value: boolean) => void;
-};
+}
 
-type MultiToggleProps<T extends string> = BaseToggleProps & {
+interface MultiToggleProps<T extends string> extends BaseToggleProps {
   type: 'multi';
   value: T;
   options: T[];
   onChange: (value: T) => void;
-};
+}
 
-type ExpandableToggleProps<T extends string> = BaseToggleProps & {
+interface ExpandableToggleProps<T extends string> extends BaseToggleProps {
   type: 'expandable';
   value: T;
   options: T[];
   onChange: (value: T) => void;
   isNavigation?: boolean;
-  paths?: Record<T, string>;
-};
+  paths?: Record<string, T>;
+  autoplay?: boolean;
+}
 
 type ToggleButtonProps<T extends string> = BooleanToggleProps | MultiToggleProps<T> | ExpandableToggleProps<T>;
 
@@ -190,11 +192,14 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   };
 
   return (
-    <Container ref={containerRef}>
+    <Container 
+      ref={containerRef}
+      onClick={handleClick}
+      style={props.fullWidth ? { gridColumn: '1 / -1', justifySelf: 'center' } : undefined}
+    >
       <Label>{props.label}</Label>
       <ButtonWrapper $isExpandable={props.type === 'expandable'}>
         <Button 
-          onClick={handleClick}
           data-type={props.type}
           $isActive={props.type === 'boolean' && props.value}
           $isMulti={props.type === 'multi'}

@@ -156,9 +156,10 @@ const WorkTitleLink = styled.a`
     opacity: 0.8;
   }
 
-  img {
+  img, svg {
     width: 16px;
     height: 16px;
+    color: var(--color-text);
   }
 
   ${WorkSampleTitle} {
@@ -360,7 +361,9 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
             <WorkSampleTitle className={`${textStyles.caption} text-[var(--color-text)]`}>
               {data.title}
             </WorkSampleTitle>
-            <img src="/link-external.svg" alt="External link" />
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path fillRule="evenodd" clipRule="evenodd" d="M4.66699 4.04175C4.32181 4.04175 4.04199 4.32157 4.04199 4.66675C4.04199 5.01193 4.32181 5.29175 4.66699 5.29175H9.82478L4.22505 10.8915C3.98097 11.1356 3.98097 11.5313 4.22505 11.7754C4.46913 12.0194 4.86486 12.0194 5.10893 11.7754L10.7087 6.17563V11.3334C10.7087 11.6786 10.9885 11.9584 11.3337 11.9584C11.6788 11.9584 11.9587 11.6786 11.9587 11.3334V4.66675C11.9587 4.32157 11.6788 4.04175 11.3337 4.04175H4.66699Z" />
+            </svg>
           </WorkTitleLink>
           <WorkSampleDescription className={`${textStyles.caption} text-[var(--color-text)]`}>
             {data.description}

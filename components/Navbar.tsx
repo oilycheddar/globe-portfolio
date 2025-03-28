@@ -26,6 +26,7 @@ const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
 
   @media (max-width: 440px) {
     display: none; /* Hide the top nav on mobile */
+    position: sticky;
   }
 `;
 
@@ -73,6 +74,9 @@ const BottomNavContainer = styled(NavContainer)`
 
   @media (max-width: 440px) {
     display: flex; /* Ensure bottom nav is visible on mobile */
+    z-index: 10;
+    align-items: center;
+    flex-shrink: 0;
   }
 `;
 

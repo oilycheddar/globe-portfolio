@@ -36,23 +36,19 @@ const ContentWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  
+  overflow: hidden;  
   /* Position for mobile navbar */
   .mobile-navbar {
-    position: absolute;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
   }
   
   @media (max-width: 440px) {
-    position: fixed;
-    width: 100%;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    height: 100%;
   }
 `;
 
@@ -69,10 +65,11 @@ const StyledContent = styled.div`
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
+  overflow-y: auto;
   transition: filter 0.4s ease;
 
   /* Add padding to prevent content from overlapping with navs */
-  padding: var(--space-md) var(--space-xl);
+  padding: 0 var(--space-xl);
 
   /* Initial state to prevent FOUC */
   opacity: 0;
@@ -80,13 +77,14 @@ const StyledContent = styled.div`
   /* Responsive adjustments */
   @media (max-width: 440px) {
     --mobile-navbar-height: 32px;
-    padding: 44px var(--space-md);
+    padding: 0 var(--space-md);
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: var(--space-md);
     justify-content: start;
     min-height: 0;
-    height: 100%;
+    overflow-y: auto;
   }
 `;
 
@@ -317,12 +315,6 @@ export default function About() {
     const ctx = initializeGSAPAnimations();
     return () => ctx.revert();
   }, []);
-
-  // Set initial theme-color
-  useEffect(() => {
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-  }, [theme]);
 
   // Handle mobile responsiveness
   useEffect(() => {

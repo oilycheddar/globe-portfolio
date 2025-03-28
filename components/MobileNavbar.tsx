@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const NavContainer = styled.div<{ $isExpanded: boolean }>`
-  position: absolute;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -35,7 +35,7 @@ const NavContainer = styled.div<{ $isExpanded: boolean }>`
   border-bottom-right-radius: 8px;
   overflow: hidden;
   transform-origin: top center;
-`;
+  `;
 
 const Overlay = styled.div<{ $isVisible: boolean }>`
   position: fixed;
@@ -250,7 +250,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   const handleNoiseToggle = (value: boolean) => {
     setIsNoiseActive(value);
     onNoiseToggle(value);
-    handleClose();
   };
 
   const handleDvdToggle = (value: boolean) => {
@@ -260,7 +259,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
-    handleClose();
   };
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -312,6 +310,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
                   label="dvd"
                   value={false}
                   onChange={handleDvdToggle}
+                  fullWidth
                 />
               )}
             </>
