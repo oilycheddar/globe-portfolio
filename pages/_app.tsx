@@ -12,9 +12,6 @@ export default function App({ Component, pageProps }: AppProps) {
     // Update theme-color meta tag
     const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-    
-    // Update apple-mobile-web-app-status-bar-style
-    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', themeColor);
   }, [theme]);
 
   return (
@@ -29,7 +26,8 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="robots" content="index, follow" />
         
         {/* Theme */}
-        <meta name="apple-mobile-web-app-status-bar-style" content="var(--color-bg)" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
