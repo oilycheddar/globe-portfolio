@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const NavContainer = styled.div<{ $isExpanded: boolean }>`
-  position: sticky;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;

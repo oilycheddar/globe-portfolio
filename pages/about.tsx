@@ -37,12 +37,14 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;  
+  
   /* Position for mobile navbar */
   .mobile-navbar {
-    position: sticky;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
+    z-index: 31;
   }
   
   @media (max-width: 440px) {
