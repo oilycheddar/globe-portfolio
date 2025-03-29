@@ -91,6 +91,9 @@ const StyledContent = styled.div`
   gap: var(--space-md);
   overflow: visible;
   transition: filter 0.4s ease;
+  
+  /* Initial state to prevent FOUC */
+  visibility: hidden; /* Change from opacity: 0 */
 
   /* Add padding to prevent content from overlapping with navs */
 

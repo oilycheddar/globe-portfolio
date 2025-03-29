@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState, useEffect } from 'react'
 import { useThemeStore } from '../hooks/useThemeStore'
 import Logo from './Logo'
 
@@ -14,6 +14,16 @@ interface LogoContainerProps {
 
 export default function LogoContainer({ className = '', style }: LogoContainerProps) {
   const { logo3DEnabled, noiseEnabled } = useThemeStore()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Hide initial state until hydration is complete
+    setIsLoading(false)
+  }, [])
+
+  if (isLoading) {
+    return null // Or a minimal placeholder
+  }
 
   return (
     <div className={className} style={style}>
