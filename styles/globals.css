@@ -16,6 +16,11 @@
   --logo-noise: none;
 }
 
+canvas {
+    overflow: visible !important;
+    overflow-clip-margin: unset !important;
+  }
+
 html, body {
     margin: 0;
     padding: 0;
