@@ -6,6 +6,7 @@ import { useState, forwardRef, useRef, useImperativeHandle, useEffect, memo } fr
 import { textStyles } from '../styles/text';
 import { useRouter } from 'next/router';
 import { getYTDRunningDistance } from '../services/strava';
+import LogoToggle from './LogoToggle';
 
 const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   className: props.className || ''
@@ -123,6 +124,7 @@ export interface NavbarRef {
   grid: HTMLDivElement | null;
   noise: HTMLDivElement | null;
   dvd: HTMLDivElement | null;
+  logoToggle: HTMLDivElement | null;
 }
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
@@ -150,7 +152,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeBottom: useRef<HTMLDivElement>(null),
     grid: useRef<HTMLDivElement>(null),
     noise: useRef<HTMLDivElement>(null),
-    dvd: useRef<HTMLDivElement>(null)
+    dvd: useRef<HTMLDivElement>(null),
+    logoToggle: useRef<HTMLDivElement>(null)
   };
 
   // Get current page value based on route
@@ -187,7 +190,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeBottom: toggleRefs.themeBottom.current,
     grid: toggleRefs.grid.current,
     noise: toggleRefs.noise.current,
-    dvd: toggleRefs.dvd.current
+    dvd: toggleRefs.dvd.current,
+    logoToggle: toggleRefs.logoToggle.current
   }));
 
   const handleThemeChange = (newTheme: string) => {
@@ -230,6 +234,9 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                   value={initialNoiseState}
                   onChange={onNoiseToggle}
                 />
+              </div>
+              <div ref={toggleRefs.logoToggle}>
+                <LogoToggle />
               </div>
               {showDvdToggle && (
                 <div ref={toggleRefs.dvd}>

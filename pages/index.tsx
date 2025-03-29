@@ -4,7 +4,7 @@ import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import Logo from "../components/Logo";
+import LogoContainer from "../components/LogoContainer";
 import { Ref, useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
@@ -626,7 +626,7 @@ export default function Home() {
               ref={logoRef}
               className="w-[50vw] aspect-[2/1]"
             >
-              <Logo />
+              <LogoContainer />
             </div>
             <p 
               ref={bottomTextRef}
@@ -655,7 +655,7 @@ export default function Home() {
             left: 0
           }}
         >
-          <Logo />
+          <LogoContainer />
         </div>
       </ContentWrapper>
     </PageWrapper>

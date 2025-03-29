@@ -6,6 +6,7 @@ import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
 import { JetBrains_Mono } from 'next/font/google';
 import { gsap } from '../utils/gsap';
+import LogoToggle from './LogoToggle';
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -304,6 +305,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
                 value={isNoiseActive}
                 onChange={handleNoiseToggle}
               />
+              <LogoToggle />
               {showDvdToggle && (
                 <ToggleButton
                   type="boolean"
