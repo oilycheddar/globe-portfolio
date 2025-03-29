@@ -9,7 +9,8 @@
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "watch-photos": "ts-node scripts/update-photos.ts"
+    "watch-photos": "ts-node scripts/update-photos.ts",
+    "optimize-photos": "node scripts/optimize-photos.js"
   },
   "dependencies": {
     "@gsap/shockingly": "^3.12.7",

@@ -5,127 +5,127 @@ export interface Photo {
 
 const photos: Photo[] = [
   {
-    "src": "/photography/23.jpg",
+    "src": "/photography/optimized/23.webp",
     "alt": "Photography 1"
   },
   {
-    "src": "/photography/IMG_8220.JPG",
+    "src": "/photography/optimized/IMG_8220.webp",
     "alt": "Photography 2"
   },
   {
-    "src": "/photography/Insta Post Frame02.png",
+    "src": "/photography/optimized/Insta Post Frame02.webp",
     "alt": "Photography 3"
   },
   {
-    "src": "/photography/Insta Post Frame03.png",
+    "src": "/photography/optimized/Insta Post Frame03.webp",
     "alt": "Photography 4"
   },
   {
-    "src": "/photography/Insta Post Frame08.png",
+    "src": "/photography/optimized/Insta Post Frame08.webp",
     "alt": "Photography 5"
   },
   {
-    "src": "/photography/Insta Post Frame09.png",
+    "src": "/photography/optimized/Insta Post Frame09.webp",
     "alt": "Photography 6"
   },
   {
-    "src": "/photography/Insta Post Frame12.png",
+    "src": "/photography/optimized/Insta Post Frame12.webp",
     "alt": "Photography 7"
   },
   {
-    "src": "/photography/Insta Post Frame15.png",
+    "src": "/photography/optimized/Insta Post Frame15.webp",
     "alt": "Photography 8"
   },
   {
-    "src": "/photography/Insta Post Frame1801.png",
+    "src": "/photography/optimized/Insta Post Frame1801.webp",
     "alt": "Photography 9"
   },
   {
-    "src": "/photography/Insta Post Frame1802.png",
+    "src": "/photography/optimized/Insta Post Frame1802.webp",
     "alt": "Photography 10"
   },
   {
-    "src": "/photography/Insta Post Frame1804.png",
+    "src": "/photography/optimized/Insta Post Frame1804.webp",
     "alt": "Photography 11"
   },
   {
-    "src": "/photography/Insta Post Frame180601.png",
+    "src": "/photography/optimized/Insta Post Frame180601.webp",
     "alt": "Photography 12"
   },
   {
-    "src": "/photography/Insta Post Frame180602.png",
+    "src": "/photography/optimized/Insta Post Frame180602.webp",
     "alt": "Photography 13"
   },
   {
-    "src": "/photography/Insta Post Frame180603.png",
+    "src": "/photography/optimized/Insta Post Frame180603.webp",
     "alt": "Photography 14"
   },
   {
-    "src": "/photography/L1000707.jpg",
+    "src": "/photography/optimized/L1000707.webp",
     "alt": "Photography 15"
   },
   {
-    "src": "/photography/L1003048-instagram.jpg",
+    "src": "/photography/optimized/L1003048-instagram.webp",
     "alt": "Photography 16"
   },
   {
-    "src": "/photography/L1003692-instagram.jpg",
+    "src": "/photography/optimized/L1003692-instagram.webp",
     "alt": "Photography 17"
   },
   {
-    "src": "/photography/_LOU5142-instagram.jpg",
+    "src": "/photography/optimized/_LOU5142-instagram.webp",
     "alt": "Photography 18"
   },
   {
-    "src": "/photography/_LOU5208-instagram.jpg",
+    "src": "/photography/optimized/_LOU5208-instagram.webp",
     "alt": "Photography 19"
   },
   {
-    "src": "/photography/_LOU5212-instagram.jpg",
+    "src": "/photography/optimized/_LOU5212-instagram.webp",
     "alt": "Photography 20"
   },
   {
-    "src": "/photography/_LOU5218-instagram.jpg",
+    "src": "/photography/optimized/_LOU5218-instagram.webp",
     "alt": "Photography 21"
   },
   {
-    "src": "/photography/ben double exposure.jpg",
+    "src": "/photography/optimized/ben double exposure.webp",
     "alt": "Photography 22"
   },
   {
-    "src": "/photography/cloudy trees.jpg",
+    "src": "/photography/optimized/cloudy trees.webp",
     "alt": "Photography 23"
   },
   {
-    "src": "/photography/fall-chester-lake01.png",
+    "src": "/photography/optimized/fall-chester-lake01.webp",
     "alt": "Photography 24"
   },
   {
-    "src": "/photography/fall-chester-lake03.png",
+    "src": "/photography/optimized/fall-chester-lake03.webp",
     "alt": "Photography 25"
   },
   {
-    "src": "/photography/have mercy (18 of 25).jpg",
+    "src": "/photography/optimized/have mercy (18 of 25).webp",
     "alt": "Photography 26"
   },
   {
-    "src": "/photography/invermere-film01.png",
+    "src": "/photography/optimized/invermere-film01.webp",
     "alt": "Photography 27"
   },
   {
-    "src": "/photography/train_station.png",
+    "src": "/photography/optimized/train_station.webp",
     "alt": "Photography 28"
   },
   {
-    "src": "/photography/turkeyromaniatrip-114.jpg",
+    "src": "/photography/optimized/turkeyromaniatrip-114.webp",
     "alt": "Photography 29"
   },
   {
-    "src": "/photography/turkeyromaniatrip-78.jpg",
+    "src": "/photography/optimized/turkeyromaniatrip-78.webp",
     "alt": "Photography 30"
   },
   {
-    "src": "/photography/turkeyromaniatrip-83.jpg",
+    "src": "/photography/optimized/turkeyromaniatrip-83.webp",
     "alt": "Photography 31"
   }
 ];
