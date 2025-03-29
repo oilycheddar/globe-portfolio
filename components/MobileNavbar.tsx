@@ -316,7 +316,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
                   label="dvd"
                   value={false}
                   onChange={handleDvdToggle}
-                  fullWidth
                 />
               )}
             </>
