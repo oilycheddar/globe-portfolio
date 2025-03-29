@@ -15,7 +15,7 @@ export function ThemeColorManager() {
       document.head.appendChild(metaThemeColor);
     }
 
-    // Set theme-color to the computed --color-bg value
+    // Set theme-color to the computed --color-page-bg value
     const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
     metaThemeColor.setAttribute('content', themeColor);
 

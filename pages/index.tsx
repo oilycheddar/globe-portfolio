@@ -38,7 +38,7 @@ const ContentWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   
   /* Position for mobile navbar */
   .mobile-navbar {
@@ -52,7 +52,7 @@ const ContentWrapper = styled.div`
   @media (max-width: 440px) {
     position: fixed;
     width: 100%;
-    overflow-x: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -68,6 +68,7 @@ const BlurWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
 
   @media (max-width: 440px) {
     --mobile-navbar-height: 32px;
@@ -88,6 +89,7 @@ const StyledContent = styled.div`
   justify-content: center;
   align-items: center;
   gap: var(--space-md);
+  overflow: visible;
   transition: filter 0.4s ease;
 
   /* Add padding to prevent content from overlapping with navs */
@@ -624,7 +626,8 @@ export default function Home() {
             </h1>
             <div 
               ref={logoRef}
-              className="w-[50vw] aspect-[2/1]"
+              className="w-[50vw] aspect-[2/1] overflow-visible"
+              style={{ position: 'relative' }}
             >
               <LogoContainer />
             </div>
