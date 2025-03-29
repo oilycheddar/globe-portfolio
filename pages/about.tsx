@@ -152,6 +152,8 @@ export default function About() {
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
 
+
+
   // Add cycleTheme function
   const cycleTheme = () => {
     const currentIndex = themeKeys.indexOf(theme);

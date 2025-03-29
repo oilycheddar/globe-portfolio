@@ -123,6 +123,7 @@ export interface NavbarRef {
   grid: HTMLDivElement | null;
   noise: HTMLDivElement | null;
   dvd: HTMLDivElement | null;
+  logoToggle: HTMLDivElement | null;
 }
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
@@ -136,7 +137,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   initialNoiseState = true,
   showDvdToggle = false
 }, ref) => {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, logo3DEnabled, setLogo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -150,7 +151,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeBottom: useRef<HTMLDivElement>(null),
     grid: useRef<HTMLDivElement>(null),
     noise: useRef<HTMLDivElement>(null),
-    dvd: useRef<HTMLDivElement>(null)
+    dvd: useRef<HTMLDivElement>(null),
+    logoToggle: useRef<HTMLDivElement>(null)
   };
 
   // Get current page value based on route
@@ -187,7 +189,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     themeBottom: toggleRefs.themeBottom.current,
     grid: toggleRefs.grid.current,
     noise: toggleRefs.noise.current,
-    dvd: toggleRefs.dvd.current
+    dvd: toggleRefs.dvd.current,
+    logoToggle: toggleRefs.logoToggle.current
   }));
 
   const handleThemeChange = (newTheme: string) => {
@@ -229,6 +232,14 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                   label="noise"
                   value={initialNoiseState}
                   onChange={onNoiseToggle}
+                />
+              </div>
+              <div ref={toggleRefs.logoToggle}>
+                <ToggleButton
+                  type="boolean"
+                  label="3D"
+                  value={logo3DEnabled}
+                  onChange={setLogo3DEnabled}
                 />
               </div>
               {showDvdToggle && (

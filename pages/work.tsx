@@ -287,6 +287,7 @@ export default function Work() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [currentCaseStudyIndex, setCurrentCaseStudyIndex] = useState(0);
 
+
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
     gsap.registerPlugin(ScrambleTextPlugin);

@@ -4,7 +4,7 @@ import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import Logo from "../components/Logo";
+import LogoContainer from "../components/LogoContainer";
 import { Ref, useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
@@ -38,7 +38,7 @@ const ContentWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   
   /* Position for mobile navbar */
   .mobile-navbar {
@@ -52,7 +52,7 @@ const ContentWrapper = styled.div`
   @media (max-width: 440px) {
     position: fixed;
     width: 100%;
-    overflow-x: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -68,6 +68,7 @@ const BlurWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
 
   @media (max-width: 440px) {
     --mobile-navbar-height: 32px;
@@ -88,6 +89,7 @@ const StyledContent = styled.div`
   justify-content: center;
   align-items: center;
   gap: var(--space-md);
+  overflow: visible;
   transition: filter 0.4s ease;
 
   /* Add padding to prevent content from overlapping with navs */
@@ -158,7 +160,8 @@ export default function Home() {
           navbar.dvd,      // Add DVD toggle
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
-          navbar.themeRight     // Right nav
+          navbar.themeRight,    // Right nav
+          navbar.logoToggle     // Add 3D logo toggle
         ];
 
         allNavElements.forEach(element => {
@@ -231,7 +234,8 @@ export default function Home() {
           navbar.dvd,      // Add DVD toggle
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
-          navbar.themeRight     // Right nav
+          navbar.themeRight,    // Right nav
+          navbar.logoToggle     // Add 3D logo toggle
         ];
 
         // Animate all nav elements together
@@ -254,12 +258,6 @@ export default function Home() {
     const ctx = initializeGSAPAnimations();
     return () => ctx.revert();
   }, []); // Only run once on mount
-
-  // Set initial theme-color
-  useEffect(() => {
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-  }, [theme]); // Update whenever theme changes
 
   // Remove the mobile state effect that was clearing props
   useEffect(() => {
@@ -502,7 +500,8 @@ export default function Home() {
           navbar.dvd,
           navbar.themeBottom,
           navbar.themeLeft,
-          navbar.themeRight
+          navbar.themeRight,
+          navbar.logoToggle
         ];
 
         tl.to(allNavElements, {
@@ -538,7 +537,8 @@ export default function Home() {
           navbar.dvd,
           navbar.themeBottom,
           navbar.themeLeft,
-          navbar.themeRight
+          navbar.themeRight,
+          navbar.logoToggle
         ];
         
         tl.to(allNavElements, {
@@ -624,9 +624,10 @@ export default function Home() {
             </h1>
             <div 
               ref={logoRef}
-              className="w-[50vw] aspect-[2/1]"
+              className="w-[50vw] aspect-[2/1] overflow-visible"
+              style={{ position: 'relative' }}
             >
-              <Logo />
+              <LogoContainer />
             </div>
             <p 
               ref={bottomTextRef}
@@ -655,7 +656,7 @@ export default function Home() {
             left: 0
           }}
         >
-          <Logo />
+          <LogoContainer />
         </div>
       </ContentWrapper>
     </PageWrapper>

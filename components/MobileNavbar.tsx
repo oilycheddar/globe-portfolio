@@ -126,7 +126,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   hideInactiveToggles = false,
   showDvdToggle = false
 }, ref) => {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, logo3DEnabled, setLogo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -303,6 +303,12 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
                 label="noise"
                 value={isNoiseActive}
                 onChange={handleNoiseToggle}
+              />
+              <ToggleButton
+                type="boolean"
+                label="3D"
+                value={logo3DEnabled}
+                onChange={setLogo3DEnabled}
               />
               {showDvdToggle && (
                 <ToggleButton
