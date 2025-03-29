@@ -12,7 +12,12 @@ interface ThemeState {
 
 export const useThemeStore = create<ThemeState>((set) => ({
   theme: "slime", // Default theme
-  setTheme: (theme) => set({ theme }),
+  setTheme: (theme) => {
+    // Force hardware acceleration for color transitions
+    document.documentElement.style.setProperty('transform', 'translateZ(0)');
+    document.documentElement.style.setProperty('-webkit-transform', 'translateZ(0)');
+    set({ theme });
+  },
   noiseEnabled: true, // Default noise state
   setNoiseEnabled: (enabled) => set({ noiseEnabled: enabled }),
   logo3DEnabled: false, // Default 3D logo state
