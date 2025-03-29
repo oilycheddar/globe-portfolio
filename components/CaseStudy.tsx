@@ -36,7 +36,7 @@ const ImageWrapper = styled.div`
   width: 100%;
   position: relative;
   aspect-ratio: auto;
-  margin: 0 calc(-1 * var(--space-lg));
+  margin: 0;
   overflow: hidden;
   border-radius: 0px;
   display: flex;
@@ -45,7 +45,7 @@ const ImageWrapper = styled.div`
   max-height: 70vh;
   
   @media (max-width: 440px) {
-    margin: 0 calc(-1 * var(--space-md));
+    margin: 0;
     max-height: none;
   }
 `;
@@ -167,27 +167,35 @@ const WorkTitleLink = styled.a`
   }
 `;
 
-const WorkSampleDescription = styled.p`
+interface WorkSampleDescriptionProps {
+  $hideTeam?: boolean;
+}
+
+interface WorkSampleCopyContainerProps {
+  $hideTeam?: boolean;
+}
+
+const WorkSampleDescription = styled.p<WorkSampleDescriptionProps>`
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
   text-align: left;
   overflow: visible;
-  width: 650px;
+  width: 100%;
   max-width: 650px;
   
-  @media (max-width: 440px) {
+  @media (max-width: 1000px) {
     width: 100%;
     max-width: none;
   }
 `;
 
-const WorkSampleCopyContainer = styled.div`
+const WorkSampleCopyContainer = styled.div<WorkSampleCopyContainerProps>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-md);
-  width: fit-content;
+  width: ${props => props.$hideTeam ? '100%' : 'fit-content'};
   overflow: visible;
   
   ${WorkSampleTitle}, ${WorkSampleDescription} {
@@ -223,13 +231,24 @@ const CollaboratorRole = styled(WorkSampleTitle)`
 
 const CollaboratorNames = styled(WorkSampleDescription)`
   white-space: pre-line;
-  width: fit-content;
+  width: 100%;
   text-align: left;
   
   @media (max-width: 440px) {
-    min-width: unset;
-    width: auto;
+    width: 100%;
     flex: 1;
+  }
+`;
+
+const HorizontalRule = styled.hr`
+  display: none;
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-accent-secondary);
+  border: none;
+  
+  @media (max-width: 768px) {
+    display: block;
   }
 `;
 
@@ -241,13 +260,13 @@ const WorkSampleText = styled.div`
   gap: var(--space-xl);
   
   @media (max-width: 768px) {
-    gap: var(--space-sm);
-  }
-  
-  @media (max-width: 440px) {
     flex-direction: column;
     gap: var(--space-xl);
     align-items: stretch;
+  }
+  
+  @media (max-width: 440px) {
+    gap: var(--space-md);
   }
 `;
 
@@ -352,7 +371,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
         )}
       </ImageWrapper>
       <WorkSampleText>
-        <WorkSampleCopyContainer>
+        <WorkSampleCopyContainer $hideTeam={data.hideTeam}>
           <WorkTitleLink 
             href={data.link}
             target="_blank"
@@ -365,19 +384,25 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
               <path fillRule="evenodd" clipRule="evenodd" d="M4.66699 4.04175C4.32181 4.04175 4.04199 4.32157 4.04199 4.66675C4.04199 5.01193 4.32181 5.29175 4.66699 5.29175H9.82478L4.22505 10.8915C3.98097 11.1356 3.98097 11.5313 4.22505 11.7754C4.46913 12.0194 4.86486 12.0194 5.10893 11.7754L10.7087 6.17563V11.3334C10.7087 11.6786 10.9885 11.9584 11.3337 11.9584C11.6788 11.9584 11.9587 11.6786 11.9587 11.3334V4.66675C11.9587 4.32157 11.6788 4.04175 11.3337 4.04175H4.66699Z" />
             </svg>
           </WorkTitleLink>
-          <WorkSampleDescription className={`${textStyles.caption} text-[var(--color-text)]`}>
+          <WorkSampleDescription 
+            className={`${textStyles.caption} text-[var(--color-text)]`}
+            $hideTeam={data.hideTeam}
+          >
             {data.description}
           </WorkSampleDescription>
         </WorkSampleCopyContainer>
         {!data.hideTeam && (
-          <WorkSampleTeamContainer>
-            <CollaboratorRole className={`${textStyles.caption} text-[var(--color-text)]`}>
-              {data.team.map(member => member.role).join('\n')}
-            </CollaboratorRole>
-            <CollaboratorNames className={`${textStyles.caption} text-[var(--color-text)]`}>
-              {data.team.map(member => member.names.join(', ')).join('\n')}
-            </CollaboratorNames>
-          </WorkSampleTeamContainer>
+          <>
+            <HorizontalRule />
+            <WorkSampleTeamContainer>
+              <CollaboratorRole className={`${textStyles.caption} text-[var(--color-text)]`}>
+                {data.team.map(member => member.role).join('\n')}
+              </CollaboratorRole>
+              <CollaboratorNames className={`${textStyles.caption} text-[var(--color-text)]`}>
+                {data.team.map(member => member.names.join(', ')).join('\n')}
+              </CollaboratorNames>
+            </WorkSampleTeamContainer>
+          </>
         )}
       </WorkSampleText>
     </CaseStudyWrapper>

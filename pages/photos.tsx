@@ -444,8 +444,9 @@ export default function Photos() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
+            hideInactiveToggles={false}
             showDvdToggle={false}
+            show3DToggle={false}
           />
         ) : null}
         <Navbar
@@ -454,8 +455,9 @@ export default function Photos() {
           onNoiseToggle={handleNoiseToggle}
           onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideInactiveToggles={true}
+          hideInactiveToggles={false}
           showDvdToggle={false}
+          show3DToggle={false}
         />
         <OrbitalContainer className="mwg_effect023" ref={containerRef}>
           <div className="container">

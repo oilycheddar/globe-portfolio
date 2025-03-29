@@ -65,6 +65,7 @@ const CaseStudiesList = styled.div`
   gap: var(--space-xxl);
   padding: var(--space-xl) var(--space-lg);
   overflow-y: auto;
+  overflow-x: hidden;
   height: calc(100vh - var(--space-xl) *2);
   margin-top: var(--navbar-height);
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
@@ -432,8 +433,9 @@ export default function Work() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
+            hideInactiveToggles={false}
             showDvdToggle={false}
+            show3DToggle={false}
           />
         ) : null}
         <Navbar
@@ -442,12 +444,13 @@ export default function Work() {
           onNoiseToggle={handleNoiseToggle}
           onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideInactiveToggles={true}
+          hideInactiveToggles={false}
           showDvdToggle={false}
+          show3DToggle={false}
           hideSideNavs={true}
         />
         <CaseStudiesList>
-          {caseStudies.map((study, index) => (
+          {caseStudies.filter(study => !study.hide).map((study, index) => (
             <CaseStudy
               key={study.id}
               data={study}

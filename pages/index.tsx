@@ -592,6 +592,7 @@ export default function Home() {
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}
             showDvdToggle={true}
+            show3DToggle={true}
           />
         ) : null}
         <BlurWrapper 
@@ -609,6 +610,7 @@ export default function Home() {
             initialNoiseState={noiseEnabled}
             hideInactiveToggles={false}
             showDvdToggle={true}
+            show3DToggle={true}
           />
           <StyledContent 
             ref={contentRef}

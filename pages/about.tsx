@@ -352,8 +352,9 @@ export default function About() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={true}
+            hideInactiveToggles={false}
             showDvdToggle={false}
+            show3DToggle={false}
           />
         ) : null}
         <Navbar
@@ -362,8 +363,9 @@ export default function About() {
           onNoiseToggle={handleNoiseToggle}
           onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideInactiveToggles={true}
+          hideInactiveToggles={false}
           showDvdToggle={false}
+          show3DToggle={false}
         />
         <StyledContent 
           ref={contentRef}

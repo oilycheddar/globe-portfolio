@@ -112,6 +112,7 @@ interface NavbarProps {
   hideSideNavs?: boolean;
   hideInactiveToggles?: boolean;
   showDvdToggle?: boolean;
+  show3DToggle?: boolean;
 }
 
 export interface NavbarRef {
@@ -135,7 +136,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   onDvdToggle = () => {},
   className = '',
   initialNoiseState = true,
-  showDvdToggle = false
+  showDvdToggle = false,
+  show3DToggle = false
 }, ref) => {
   const { theme, setTheme, logo3DEnabled, setLogo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -234,14 +236,16 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                   onChange={onNoiseToggle}
                 />
               </div>
-              <div ref={toggleRefs.logoToggle}>
-                <ToggleButton
-                  type="boolean"
-                  label="3D"
-                  value={logo3DEnabled}
-                  onChange={setLogo3DEnabled}
-                />
-              </div>
+              {show3DToggle && (
+                <div ref={toggleRefs.logoToggle}>
+                  <ToggleButton
+                    type="boolean"
+                    label="3D"
+                    value={logo3DEnabled}
+                    onChange={setLogo3DEnabled}
+                  />
+                </div>
+              )}
               {showDvdToggle && (
                 <div ref={toggleRefs.dvd}>
                   <ToggleButton

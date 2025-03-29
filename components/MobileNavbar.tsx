@@ -110,6 +110,7 @@ interface MobileNavbarProps {
   initialNoiseState?: boolean;
   hideInactiveToggles?: boolean;
   showDvdToggle?: boolean;
+  show3DToggle?: boolean;
 }
 
 export interface MobileNavbarRef {
@@ -124,7 +125,8 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   className = '',
   initialNoiseState = true,
   hideInactiveToggles = false,
-  showDvdToggle = false
+  showDvdToggle = false,
+  show3DToggle = false
 }, ref) => {
   const { theme, setTheme, logo3DEnabled, setLogo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -296,20 +298,22 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
             options={themeKeys}
             onChange={handleThemeChange}
           />
+          <ToggleButton
+            type="boolean"
+            label="noise"
+            value={isNoiseActive}
+            onChange={handleNoiseToggle}
+          />
           {!hideInactiveToggles && (
             <>
-              <ToggleButton
-                type="boolean"
-                label="noise"
-                value={isNoiseActive}
-                onChange={handleNoiseToggle}
-              />
-              <ToggleButton
-                type="boolean"
-                label="3D"
-                value={logo3DEnabled}
-                onChange={setLogo3DEnabled}
-              />
+              {show3DToggle && (
+                <ToggleButton
+                  type="boolean"
+                  label="3D"
+                  value={logo3DEnabled}
+                  onChange={setLogo3DEnabled}
+                />
+              )}
               {showDvdToggle && (
                 <ToggleButton
                   type="boolean"
