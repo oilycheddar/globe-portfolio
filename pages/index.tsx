@@ -257,12 +257,6 @@ export default function Home() {
     return () => ctx.revert();
   }, []); // Only run once on mount
 
-  // Set initial theme-color
-  useEffect(() => {
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-  }, [theme]); // Update whenever theme changes
-
   // Remove the mobile state effect that was clearing props
   useEffect(() => {
     const checkMobile = () => {

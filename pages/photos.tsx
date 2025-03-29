@@ -372,12 +372,6 @@ export default function Photos() {
     }));
   }, [radius]);
 
-  // Set initial theme-color
-  useEffect(() => {
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-  }, [theme]);
-
   const handleGridToggle = (value: boolean) => {
     // Implement grid toggle functionality
   };
