@@ -11,7 +11,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <title>George Visan — Product Designer</title>
-        <meta name="description" content="Hello, world. I'm a product designer and no-code developer creating timeless and simple experiences and identities." />
+        <meta name="description" content="Hello, world. I'm a product designer and no-code developer creating timeless experiences and identities." />
         <meta name="keywords" content="product design, no-code development, portfolio, creative developer, UX design, product designer, designer, developer, staff designer" />
         <meta name="author" content="George Visan" />
         <meta name="creator" content="George Visan" />
@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:url" content="https://georgevisan.com" />
         <meta property="og:site_name" content="George Visan — Product Designer" />
         <meta property="og:title" content="George Visan — Product Designer" />
-        <meta property="og:description" content="Hello, world. I'm a product designer and no-code developer creating timeless and simple experiences and identities." />
+        <meta property="og:description" content="Hello, world. I'm a product designer and no-code developer creating timeless experiences and identities." />
         <meta property="og:image" content="https://georgevisan.com/og-image.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="George Visan — Product Designer" />
-        <meta name="twitter:description" content="Hello, world. I'm a product designer and no-code developer creating timeless and simple experiences and identities." />
+        <meta name="twitter:description" content="Hello, world. I'm a product designer and no-code developer creating timeless experiences and identities." />
         <meta name="twitter:image" content="https://georgevisan.com/og-image.jpg" />
         
         {/* Icons */}

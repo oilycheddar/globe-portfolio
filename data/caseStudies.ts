@@ -35,7 +35,7 @@ export const caseStudies: CaseStudy[] = [
     id: 'Runway',
     title: 'Runway @ Ramp',
     link: 'none',
-    description: 'I led the research, product spec, and design for Ramp\'s breakthrough cash management feature. Finance teams can set their ideal bank balance, and Ramp will do the rest.',
+    description: 'Research & design for Ramp\'s breakthrough cash management feature. Finance teams can set their ideal bank balance, and Ramp will do the rest.',
     videoUrl: 'none',
     posterUrl: '/Runway_drawer_dark.png',
     team: [
