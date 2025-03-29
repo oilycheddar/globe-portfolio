@@ -152,12 +152,6 @@ export default function About() {
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
 
-  // Set initial theme-color
-  useEffect(() => {
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-  }, [theme]);
-
   // Add cycleTheme function
   const cycleTheme = () => {
     const currentIndex = themeKeys.indexOf(theme);
