@@ -6,7 +6,6 @@ import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
 import { JetBrains_Mono } from 'next/font/google';
 import { gsap } from '../utils/gsap';
-import LogoToggle from './LogoToggle';
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -127,7 +126,7 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
   hideInactiveToggles = false,
   showDvdToggle = false
 }, ref) => {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, logo3DEnabled, setLogo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -305,7 +304,12 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
                 value={isNoiseActive}
                 onChange={handleNoiseToggle}
               />
-              <LogoToggle />
+              <ToggleButton
+                type="boolean"
+                label="3D"
+                value={logo3DEnabled}
+                onChange={setLogo3DEnabled}
+              />
               {showDvdToggle && (
                 <ToggleButton
                   type="boolean"

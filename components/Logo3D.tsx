@@ -6,10 +6,14 @@ import { OrbitControls, useTexture } from "@react-three/drei"
 import * as THREE from "three"
 import { useThemeStore } from '../hooks/useThemeStore'
 import styled from "styled-components"
+import { Suspense } from "react"
+import { useLoader } from "@react-three/fiber"
+import { TextureLoader } from "three"
 
 interface Logo3DProps {
   className?: string;
   style?: React.CSSProperties;
+  noiseEnabled?: boolean;
 }
 
 /**
@@ -24,7 +28,7 @@ interface Logo3DProps {
  * </div>
  */
 
-function Globe({ theme }: { theme: string }) {
+function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }) {
   const meshRef = useRef<THREE.Group>(null)
   const time = useRef(0)
 
@@ -39,8 +43,8 @@ function Globe({ theme }: { theme: string }) {
   innerGeometry.applyMatrix4(scale)
   coreGeometry.applyMatrix4(scale)
 
-  // Load the decal texture
-  const decalTexture = useTexture('/GEORGE.png')
+  // Load texture with error handling
+  const decalTexture = useLoader(TextureLoader, '/GEORGE.png')
   decalTexture.minFilter = THREE.NearestFilter
   decalTexture.magFilter = THREE.NearestFilter
 
@@ -55,6 +59,7 @@ function Globe({ theme }: { theme: string }) {
                '#0822A3') // dune
       },
       time: { value: 0 },
+      noiseEnabled: { value: noiseEnabled },
     },
     vertexShader: `
       varying vec3 vPosition;
@@ -71,6 +76,7 @@ function Globe({ theme }: { theme: string }) {
     fragmentShader: `
       uniform vec3 color;
       uniform float time;
+      uniform bool noiseEnabled;
       varying vec3 vPosition;
       varying vec3 vNormal;
       varying vec2 vUv;
@@ -116,7 +122,7 @@ function Globe({ theme }: { theme: string }) {
         float longSpacing = 2.0 * PI / 10.0;
         float latSpacing = PI / 3.0;
         
-        float thickness = 0.0286 * 1.2;
+        float thickness = 0.0286 * 1.7;
         
         float longAngle = mod(longitude + PI, longSpacing);
         float latAngle = mod(latitude, latSpacing);
@@ -128,7 +134,7 @@ function Globe({ theme }: { theme: string }) {
         
         // Noise effect with larger scale
         vec2 noiseUV = vec2(longitude / (2.0 * PI), latitude / PI) * 0.5;
-        float noise = random(noiseUV + vec2(time * 0.1));
+        float noise = noiseEnabled ? random(noiseUV + vec2(time * 0.1)) : 0.5;
         
         vec3 finalColor = color;
         // Apply soft light blend with noise
@@ -160,6 +166,7 @@ function Globe({ theme }: { theme: string }) {
       },
       mainTex: { value: decalTexture },
       time: { value: 0 },
+      noiseEnabled: { value: noiseEnabled },
     },
     vertexShader: `
       varying vec2 vUv;
@@ -172,6 +179,7 @@ function Globe({ theme }: { theme: string }) {
       uniform vec3 color;
       uniform float time;
       uniform sampler2D mainTex;
+      uniform bool noiseEnabled;
       varying vec2 vUv;
       
       float random(vec2 st) {
@@ -186,7 +194,7 @@ function Globe({ theme }: { theme: string }) {
       
       void main() {
         vec4 texColor = texture2D(mainTex, vUv);
-        float noise = random(vUv + vec2(time * 0.1));
+        float noise = noiseEnabled ? random(vUv + vec2(time * 0.1)) : 0.5;
         
         if (texColor.a > 0.0) {
           vec3 finalColor = color;
@@ -233,7 +241,9 @@ function Globe({ theme }: { theme: string }) {
 
       // Update shader uniforms
       outerMaterial.uniforms.time.value = time.current
+      outerMaterial.uniforms.noiseEnabled.value = noiseEnabled
       decalMaterial.uniforms.time.value = time.current
+      decalMaterial.uniforms.noiseEnabled.value = noiseEnabled
     }
   })
 
@@ -267,7 +277,16 @@ function Globe({ theme }: { theme: string }) {
   )
 }
 
-export default function Logo3D({ className = '', style }: Logo3DProps) {
+// Wrap the Globe component in error boundaries
+function GlobeWithErrorHandling(props: { theme: string; noiseEnabled: boolean }) {
+  return (
+    <Suspense fallback={null}>
+      <Globe {...props} />
+    </Suspense>
+  )
+}
+
+export default function Logo3D({ className = '', style, noiseEnabled = true }: Logo3DProps) {
   const { theme } = useThemeStore()
   const logoRef = useRef<HTMLDivElement>(null)
 
@@ -286,7 +305,7 @@ export default function Logo3D({ className = '', style }: Logo3DProps) {
       <Canvas 
         camera={{ 
           position: [0, 0, 10],
-          fov: 30,
+          fov: 31,
           aspect: 2
         }}
         style={{ 
@@ -303,7 +322,7 @@ export default function Logo3D({ className = '', style }: Logo3DProps) {
           preserveDrawingBuffer: true 
         }}
       >
-        <Globe theme={theme} />
+        <GlobeWithErrorHandling theme={theme} noiseEnabled={noiseEnabled} />
         <OrbitControls
           enableZoom={false}
           enablePan={false}

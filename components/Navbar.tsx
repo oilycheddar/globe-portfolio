@@ -6,7 +6,6 @@ import { useState, forwardRef, useRef, useImperativeHandle, useEffect, memo } fr
 import { textStyles } from '../styles/text';
 import { useRouter } from 'next/router';
 import { getYTDRunningDistance } from '../services/strava';
-import LogoToggle from './LogoToggle';
 
 const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   className: props.className || ''
@@ -138,7 +137,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   initialNoiseState = true,
   showDvdToggle = false
 }, ref) => {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, logo3DEnabled, setLogo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -236,7 +235,12 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                 />
               </div>
               <div ref={toggleRefs.logoToggle}>
-                <LogoToggle />
+                <ToggleButton
+                  type="boolean"
+                  label="3D"
+                  value={logo3DEnabled}
+                  onChange={setLogo3DEnabled}
+                />
               </div>
               {showDvdToggle && (
                 <div ref={toggleRefs.dvd}>

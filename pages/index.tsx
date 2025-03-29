@@ -160,7 +160,8 @@ export default function Home() {
           navbar.dvd,      // Add DVD toggle
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
-          navbar.themeRight     // Right nav
+          navbar.themeRight,    // Right nav
+          navbar.logoToggle     // Add 3D logo toggle
         ];
 
         allNavElements.forEach(element => {
@@ -233,7 +234,8 @@ export default function Home() {
           navbar.dvd,      // Add DVD toggle
           navbar.themeBottom,   // STATION (bottom)
           navbar.themeLeft,     // Left nav
-          navbar.themeRight     // Right nav
+          navbar.themeRight,    // Right nav
+          navbar.logoToggle     // Add 3D logo toggle
         ];
 
         // Animate all nav elements together
@@ -498,7 +500,8 @@ export default function Home() {
           navbar.dvd,
           navbar.themeBottom,
           navbar.themeLeft,
-          navbar.themeRight
+          navbar.themeRight,
+          navbar.logoToggle
         ];
 
         tl.to(allNavElements, {
@@ -534,7 +537,8 @@ export default function Home() {
           navbar.dvd,
           navbar.themeBottom,
           navbar.themeLeft,
-          navbar.themeRight
+          navbar.themeRight,
+          navbar.logoToggle
         ];
         
         tl.to(allNavElements, {

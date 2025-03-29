@@ -13,13 +13,17 @@ interface LogoContainerProps {
 }
 
 export default function LogoContainer({ className = '', style }: LogoContainerProps) {
-  const { logo3DEnabled } = useThemeStore()
+  const { logo3DEnabled, noiseEnabled } = useThemeStore()
 
   return (
     <div className={className} style={style}>
       {logo3DEnabled ? (
         <Suspense fallback={<Logo className={className} style={style} />}>
-          <Logo3D className={className} style={style} />
+          <Logo3D 
+            className={className} 
+            style={style} 
+            noiseEnabled={noiseEnabled}
+          />
         </Suspense>
       ) : (
         <Logo className={className} style={style} />
