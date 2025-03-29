@@ -419,7 +419,7 @@ export default function Photos() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={false}
+            hideInactiveToggles={true}
             showDvdToggle={false}
           />
         ) : null}
@@ -429,7 +429,7 @@ export default function Photos() {
           onNoiseToggle={handleNoiseToggle}
           onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideInactiveToggles={false}
+          hideInactiveToggles={true}
           showDvdToggle={false}
         />
         <OrbitalContainer className="mwg_effect023" ref={containerRef}>

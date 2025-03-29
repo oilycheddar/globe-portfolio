@@ -352,7 +352,7 @@ export default function About() {
             onNoiseToggle={handleNoiseToggle}
             onExpandedChange={handleNavExpandedChange}
             initialNoiseState={noiseEnabled}
-            hideInactiveToggles={false}
+            hideInactiveToggles={true}
             showDvdToggle={false}
           />
         ) : null}
@@ -362,7 +362,7 @@ export default function About() {
           onNoiseToggle={handleNoiseToggle}
           onThemeChange={cycleTheme}
           initialNoiseState={noiseEnabled}
-          hideInactiveToggles={false}
+          hideInactiveToggles={true}
           showDvdToggle={false}
         />
         <StyledContent 
