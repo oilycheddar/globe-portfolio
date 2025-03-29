@@ -1,8 +1,8 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { OrbitControls } from "@react-three/drei"
+import { Canvas, useFrame, useLoader } from "@react-three/fiber"
+import { OrbitControls, Decal, useTexture } from "@react-three/drei"
 import * as THREE from "three"
 import { useThemeStore } from '../hooks/useThemeStore'
 
@@ -76,6 +76,64 @@ function Globe({ mousePosition, theme }: GlobeProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const targetRotation = useRef({ x: 0, y: 0 })
   const time = useRef(0)
+  
+  // Load the SVG as a texture
+  const texture = useTexture('/GEORGE.svg')
+  
+  // Set texture properties for better quality
+  useEffect(() => {
+    if (texture) {
+      texture.anisotropy = 16
+      texture.needsUpdate = true
+    }
+  }, [texture])
+
+  // Create shader material for decals
+  const decalMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      color: { value: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--color-accent-primary').trim()) },
+      noiseColor: { value: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--logo-noise').trim()) },
+      mainTex: { value: texture },
+      time: { value: 0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 color;
+      uniform vec3 noiseColor;
+      uniform sampler2D mainTex;
+      uniform float time;
+      varying vec2 vUv;
+      
+      // Noise function
+      float random(vec2 st) {
+        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+      }
+      
+      void main() {
+        vec4 texColor = texture2D(mainTex, vUv);
+        float noise = random(vUv + vec2(time * 0.1));
+        
+        // Only apply color treatment where the texture has alpha
+        if (texColor.a > 0.0) {
+          vec3 finalColor = mix(color, noiseColor, noise * 0.5);
+          gl_FragColor = vec4(finalColor, texColor.a);
+        } else {
+          gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+      }
+    `,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    depthTest: true
+  })
 
   useFrame((state, delta) => {
     time.current += delta
@@ -83,8 +141,9 @@ function Globe({ mousePosition, theme }: GlobeProps) {
     if (meshRef.current) {
       const baseRotation = -time.current * 0.2
 
-      targetRotation.current.y = (mousePosition.x * 0.25 * mouseEnabled) + baseRotation
-      targetRotation.current.x = -mousePosition.y * 0.15 * mouseEnabled
+      const mouseEnabledValue = mouseEnabled ? 1 : 0
+      targetRotation.current.y = (mousePosition.x * 0.25 * mouseEnabledValue) + baseRotation
+      targetRotation.current.x = -mousePosition.y * 0.15 * mouseEnabledValue
 
       const ambientRotationY = Math.sin(time.current * 0.2) * 0.05
       const ambientRotationX = Math.cos(time.current * 0.15) * 0.03
@@ -92,17 +151,23 @@ function Globe({ mousePosition, theme }: GlobeProps) {
       meshRef.current.rotation.y += (targetRotation.current.y + ambientRotationY - meshRef.current.rotation.y) * 0.05
       meshRef.current.rotation.x += (targetRotation.current.x + ambientRotationX - meshRef.current.rotation.x) * 0.05
 
+      // Update time uniform for materials
+      decalMaterial.uniforms.time.value = time.current
       if (meshRef.current.material instanceof THREE.ShaderMaterial) {
         meshRef.current.material.uniforms.time.value = time.current
       }
     }
   })
 
+  // Create the ellipsoid geometry
+  const geometry = new THREE.SphereGeometry(3.5034375, 64, 32)
+  geometry.applyMatrix4(new THREE.Matrix4().makeScale(1.401375, 0.7006875, 0.7006875))
+
   const material = new THREE.ShaderMaterial({
     uniforms: {
       color: { value: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--color-accent-primary').trim()) },
       noiseColor: { value: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--logo-noise').trim()) },
-      thickness: { value: 0.0286 },
+      thickness: { value: 0.0286 * 1.2 },
       time: { value: 0 },
     },
     vertexShader: `
@@ -112,9 +177,7 @@ function Globe({ mousePosition, theme }: GlobeProps) {
       void main() {
         vPosition = position;
         vNormal = normalize(normalMatrix * normal);
-        vec3 pos = position;
-        pos *= vec3(1.401375, 0.7006875, 0.7006875);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
     fragmentShader: `
@@ -126,7 +189,6 @@ function Globe({ mousePosition, theme }: GlobeProps) {
       varying vec3 vNormal;
       
       const float PI = 3.141592653589793;
-      const vec3 scale = vec3(1.401375, 0.7006875, 0.7006875);
       
       // Noise function
       float random(vec2 st) {
@@ -138,12 +200,7 @@ function Globe({ mousePosition, theme }: GlobeProps) {
         float longitude = atan(p.z, p.x);
         float latitude = acos(p.y);
         
-        // Calculate scale-compensated thickness
-        float yScale = scale.y / scale.x;
-        float zScale = scale.z / scale.x;
-        vec3 scaledPos = vec3(p.x, p.y * yScale, p.z * zScale);
-        float distortionFactor = length(scaledPos) / length(p);
-        float adjustedThickness = thickness * distortionFactor;
+        float adjustedThickness = thickness;
         
         float longSpacing = 2.0 * PI / 10.0;
         float longAngle = mod(longitude + PI, longSpacing);
@@ -175,8 +232,26 @@ function Globe({ mousePosition, theme }: GlobeProps) {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[3.5034375, 64, 32]} />
+      <primitive object={geometry} />
       <primitive object={material} attach="material" />
+      
+      {/* Front decal */}
+      <Decal 
+        position={[0, 0, 3.5034375 * 0.7006875]}
+        rotation={[0, 0, 0]}
+        scale={[4, 0.533, 4]}
+        material={decalMaterial}
+        renderOrder={1}
+      />
+      
+      {/* Back decal */}
+      <Decal 
+        position={[0, 0, -3.5034375 * 0.7006875]}
+        rotation={[0, Math.PI, 0]}
+        scale={[4, 0.533, 4]}
+        material={decalMaterial}
+        renderOrder={1}
+      />
     </mesh>
   )
 } 
