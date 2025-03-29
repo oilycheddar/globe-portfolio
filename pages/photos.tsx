@@ -42,10 +42,10 @@ const ContentWrapper = styled.div`
   @media (max-width: 440px) {
     position: fixed;
     width: 100%;
-    overflow-x: hidden;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    overflow: hidden;
   }
 `;
 
@@ -74,10 +74,12 @@ const StyledContent = styled.div`
   /* Responsive adjustments */
   @media (max-width: 440px) {
     --mobile-navbar-height: 32px;
-    padding: 0 var(--space-md);
-    gap: var(--space-md);
+    padding: var(--space-md);
+    gap: var(--space-lg);
     min-height: 0;
-    height: 100%;
+    position: relative;
+    flex: 1;
+    overflow: hidden;
   }
 `;
 
@@ -152,6 +154,29 @@ const OrbitalContainer = styled.div`
       width: 80vw;
       margin: 40vh 0 0;
       height: 100vw;
+    }
+  }
+
+  @media (max-width: 440px) {
+    display: none;
+  }
+`;
+
+const MobileImageStack = styled.div`
+  display: none;
+  
+  @media (max-width: 440px) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    overflow-y: auto;
+    padding: var(--space-xl) var(--space-md);
+    -webkit-overflow-scrolling: touch;
+    
+    .stack-image {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
     }
   }
 `;
@@ -450,6 +475,21 @@ export default function Photos() {
             ))}
           </div>
         </OrbitalContainer>
+
+        <MobileImageStack>
+          {photos.map((photo: Photo, i: number) => (
+            <Image
+              key={i}
+              className="stack-image"
+              src={noiseEnabled ? photo.src : photo.src.replace('.webp', '_noiseless.webp')}
+              alt={photo.alt}
+              width={600}
+              height={800}
+              quality={100}
+              onClick={() => handleImageClick(i)}
+            />
+          ))}
+        </MobileImageStack>
       </ContentWrapper>
 
       <Lightbox isOpen={isLightboxOpen}>
