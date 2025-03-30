@@ -30,7 +30,7 @@ const scrambleCharSets = {
 };
 
 const ContentWrapper = styled.div`
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -85,6 +85,7 @@ const StyledContent = styled.div`
     flex-direction: column;
     gap: var(--space-md);
     justify-content: center;
+    padding-top: var(--space-xl);
     min-height: 0;
     overflow-y: auto;
   }

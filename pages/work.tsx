@@ -67,7 +67,6 @@ const CaseStudiesList = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   height: calc(100vh - var(--space-xl) *2);
-  margin-top: var(--navbar-height);
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   box-sizing: border-box;
   
@@ -88,7 +87,6 @@ const CaseStudiesList = styled.div`
     padding: var(--space-xl) var(--space-md);
     gap: var(--space-mobile-xxl);
     height: auto;
-    margin-top: var(--mobile-navbar-height);
     padding-bottom: calc(var(--navbar-height) + var(--space-xl));
   }
 `;
