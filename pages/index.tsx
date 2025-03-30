@@ -622,8 +622,12 @@ export default function Home() {
           >
             <h1 
               ref={topTextRef}
-              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
-              style={{ backgroundColor: 'transparent' }}
+              className={`${textStyles.caption} text-[var(--color-text)]`}
+              style={{ 
+                opacity: 0,
+                backgroundColor: 'transparent',
+                mixBlendMode: 'normal'
+              }}
             >
               product designer
             </h1>
@@ -636,8 +640,12 @@ export default function Home() {
             </div>
             <p 
               ref={bottomTextRef}
-              className={`${textStyles.caption} text-[var(--color-text)] text-content-hidden`}
-              style={{ backgroundColor: 'transparent' }}
+              className={`${textStyles.caption} text-[var(--color-text)]`}
+              style={{ 
+                opacity: 0,
+                backgroundColor: 'transparent',
+                mixBlendMode: 'normal'
+              }}
             >
               no code developer
             </p>
