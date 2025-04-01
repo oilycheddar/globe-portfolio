@@ -232,12 +232,12 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
       // Base rotation
       const baseRotation = -time.current * 0.2
 
-      // Ambient motion
+      // Ambient motion - only horizontal
       const ambientRotationY = Math.sin(time.current * 0.2) * 0.05
-      const ambientRotationX = Math.cos(time.current * 0.15) * 0.03
 
+      // Apply only horizontal rotation
       meshRef.current.rotation.y = baseRotation + ambientRotationY
-      meshRef.current.rotation.x = ambientRotationX
+      meshRef.current.rotation.x = 0  // Keep it level by setting to 0
 
       // Update shader uniforms
       outerMaterial.uniforms.time.value = time.current
@@ -293,7 +293,7 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
   return (
     <div 
       ref={logoRef}
-      className={`w-[50vw] overflow-visible ${className}`}
+      className={`w-full overflow-visible ${className}`}
       style={{ 
         filter: `drop-shadow(var(--${theme}_shadow))`,
         aspectRatio: '2/1',
@@ -314,7 +314,8 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
           overflow: 'visible',
           position: 'relative',
           isolation: 'isolate',
-          contain: 'none'
+          contain: 'none',
+          display: 'block' // Ensure proper block layout
         }}
         gl={{ 
           antialias: true,
@@ -329,6 +330,8 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
           enableDamping={true}
           dampingFactor={0.05}
           enableRotate={true}
+          minPolarAngle={Math.PI / 2}
+          maxPolarAngle={Math.PI / 2}
         />
       </Canvas>
     </div>

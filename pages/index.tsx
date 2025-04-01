@@ -633,7 +633,7 @@ export default function Home() {
             </h1>
             <div 
               ref={logoRef}
-              className="w-[50vw] aspect-[2/1] overflow-visible"
+              className="w-[50vw] mx-auto aspect-[2/1] overflow-visible"
               style={{ position: 'relative' }}
             >
               <LogoContainer />

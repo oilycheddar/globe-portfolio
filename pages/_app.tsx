@@ -34,6 +34,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="George Visan — Product Designer" />
+        <meta property="og:image:type" content="image/jpeg" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
