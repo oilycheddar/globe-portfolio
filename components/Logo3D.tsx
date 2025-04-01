@@ -315,7 +315,8 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
           position: 'relative',
           isolation: 'isolate',
           contain: 'none',
-          display: 'block' // Ensure proper block layout
+          display: 'block', // Ensure proper block layout
+          pointerEvents: 'none' // Disable pointer events on the canvas
         }}
         gl={{ 
           antialias: true,
@@ -332,6 +333,7 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
           enableRotate={true}
           minPolarAngle={Math.PI / 2}
           maxPolarAngle={Math.PI / 2}
+          domElement={document.documentElement} // Attach controls to document root
         />
       </Canvas>
     </div>

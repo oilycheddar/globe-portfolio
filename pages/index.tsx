@@ -113,7 +113,7 @@ interface NavbarProps {
 }
 
 export default function Home() {
-  const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
+  const { theme, setTheme, noiseEnabled, setNoiseEnabled, logo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
   const helloTextRef = useRef<HTMLHeadingElement>(null);
@@ -152,7 +152,8 @@ export default function Home() {
         gsap.set(navbar.container, {
           opacity: 1,
           y: 0,
-          visibility: 'visible'
+          visibility: 'visible',
+          pointerEvents: 'auto' // Ensure pointer events are enabled by default
         });
 
         // Hide all nav elements initially
@@ -172,7 +173,8 @@ export default function Home() {
             gsap.set(element, {
               opacity: 0,
               y: -10,
-              filter: 'blur(20px)'
+              filter: 'blur(20px)',
+              pointerEvents: 'auto' // Ensure pointer events are enabled by default
             });
           }
         });
@@ -550,7 +552,7 @@ export default function Home() {
           filter: 'blur(0px)',
           duration: 0.5,
           ease: "power2.out",
-          pointerEvents: 'auto'
+          pointerEvents: 'auto' // Explicitly restore pointer events
         });
       }
       
@@ -558,7 +560,7 @@ export default function Home() {
       tl.to(contentRef.current, {
         opacity: 1,
         y: 0,
-        filter: 'blur(0px)', // Explicitly remove blur
+        filter: 'blur(0px)',
         duration: 0.5,
         ease: "sine.out"
       }, "-=0.3");
@@ -578,6 +580,33 @@ export default function Home() {
       stopDvdAnimation();
     };
   }, [stopDvdAnimation]);
+
+  // Effect for handling 3D logo toggle
+  useEffect(() => {
+    const navbar = navbarRef.current;
+    if (navbar) {
+      const allNavElements = [
+        navbar.themeTop,
+        navbar.grid,
+        navbar.noise,
+        navbar.dvd,
+        navbar.themeBottom,
+        navbar.themeLeft,
+        navbar.themeRight,
+        navbar.logoToggle
+      ];
+
+      // Ensure all nav elements have pointer events enabled regardless of 3D state
+      allNavElements.forEach(element => {
+        if (element) {
+          gsap.set(element, {
+            pointerEvents: 'auto'
+          });
+        }
+      });
+    }
+  }, [logo3DEnabled]);
+
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper ref={containerRef} onClick={handleClick}>
