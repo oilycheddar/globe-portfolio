@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
-import { createClient } from '@vercel/edge-config';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = '42678770';
@@ -58,13 +57,34 @@ export default async function handler(
       lastUpdated: new Date().toISOString()
     };
 
-    // Update Edge Config
-    const edge = createClient(process.env.EDGE_CONFIG);
-    await edge.set('strava_stats', stats);
+    // Create Edge Config client correctly
+    if (!process.env.EDGE_CONFIG) {
+      throw new Error('EDGE_CONFIG environment variable is not set');
+    }
+
+    // Use the Edge Config API directly
+    await fetch(process.env.EDGE_CONFIG, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            operation: 'update',
+            key: 'strava_stats',
+            value: stats
+          }
+        ]
+      })
+    });
 
     res.status(200).json({ message: 'Stats updated successfully', stats });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating Strava stats:', error);
-    res.status(500).json({ message: 'Failed to update stats', error });
+    if (error instanceof Error && error.message.includes('EDGE_CONFIG')) {
+      return res.status(500).json({ message: 'Edge Config not properly configured' });
+    }
+    res.status(500).json({ message: 'Failed to update stats' });
   }
 } 
