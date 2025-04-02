@@ -20,6 +20,6 @@ export const useThemeStore = create<ThemeState>((set) => ({
   },
   noiseEnabled: true, // Default noise state
   setNoiseEnabled: (enabled) => set({ noiseEnabled: enabled }),
-  logo3DEnabled: true, // Changed to true for default 3D state
+  logo3DEnabled: true, // Changed to true for initial test
   setLogo3DEnabled: (enabled) => set({ logo3DEnabled: enabled }),
 }));

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, useTexture } from "@react-three/drei"
 import * as THREE from "three"
@@ -31,6 +31,17 @@ interface Logo3DProps {
 function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }) {
   const meshRef = useRef<THREE.Group>(null)
   const time = useRef(0)
+
+  useEffect(() => {
+    if (meshRef.current) {
+      console.log('[Logo3D] Globe mounted:', {
+        timestamp: new Date().toISOString(),
+        position: meshRef.current.position,
+        rotation: meshRef.current.rotation,
+        scale: meshRef.current.scale
+      })
+    }
+  }, [])
 
   // Create geometries
   const outerGeometry = new THREE.SphereGeometry(3.5034375, 64, 32)
@@ -226,25 +237,35 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
   })
 
   useFrame((state, delta) => {
+    if (!meshRef.current) return
+
     time.current += delta
 
-    if (meshRef.current) {
-      // Base rotation
-      const baseRotation = -time.current * 0.2
+    // Base rotation
+    const baseRotation = -time.current * 0.2
 
-      // Ambient motion - only horizontal
-      const ambientRotationY = Math.sin(time.current * 0.2) * 0.05
+    // Ambient motion - only horizontal
+    const ambientRotationY = Math.sin(time.current * 0.2) * 0.05
 
-      // Apply only horizontal rotation
-      meshRef.current.rotation.y = baseRotation + ambientRotationY
-      meshRef.current.rotation.x = 0  // Keep it level by setting to 0
+    // Apply only horizontal rotation
+    meshRef.current.rotation.y = baseRotation + ambientRotationY
+    meshRef.current.rotation.x = 0  // Keep it level by setting to 0
 
-      // Update shader uniforms
-      outerMaterial.uniforms.time.value = time.current
-      outerMaterial.uniforms.noiseEnabled.value = noiseEnabled
-      decalMaterial.uniforms.time.value = time.current
-      decalMaterial.uniforms.noiseEnabled.value = noiseEnabled
+    // Log position every 5 seconds
+    if (Math.floor(time.current) % 5 === 0) {
+      console.log('[Logo3D] Frame update:', {
+        timestamp: new Date().toISOString(),
+        position: meshRef.current.position,
+        rotation: meshRef.current.rotation,
+        scale: meshRef.current.scale
+      })
     }
+
+    // Update shader uniforms
+    outerMaterial.uniforms.time.value = time.current
+    outerMaterial.uniforms.noiseEnabled.value = noiseEnabled
+    decalMaterial.uniforms.time.value = time.current
+    decalMaterial.uniforms.noiseEnabled.value = noiseEnabled
   })
 
   return (
@@ -289,6 +310,52 @@ function GlobeWithErrorHandling(props: { theme: string; noiseEnabled: boolean })
 export default function Logo3D({ className = '', style, noiseEnabled = true }: Logo3DProps) {
   const { theme } = useThemeStore()
   const logoRef = useRef<HTMLDivElement>(null)
+  const [position, setPosition] = useState({ x: 0, y: 0, width: 0 })
+
+  // Log position on mount and updates
+  useEffect(() => {
+    if (logoRef.current) {
+      const rect = logoRef.current.getBoundingClientRect()
+      const newPosition = {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width
+      }
+      setPosition(newPosition)
+      console.log('Logo3D Position:', {
+        timestamp: Date.now(),
+        position: newPosition,
+        containerWidth: (logoRef.current as HTMLDivElement).offsetWidth,
+        parentWidth: (logoRef.current.parentElement as HTMLDivElement)?.offsetWidth || 0,
+        computedStyle: window.getComputedStyle(logoRef.current)
+      })
+    }
+  }, [])
+
+  // Log position changes
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const rect = entry.target.getBoundingClientRect()
+        console.log('Logo3D Position Updated:', {
+          timestamp: Date.now(),
+          position: {
+            x: rect.left,
+            y: rect.top,
+            width: rect.width
+          },
+          containerWidth: (entry.target as HTMLDivElement).offsetWidth,
+          parentWidth: (entry.target.parentElement as HTMLDivElement)?.offsetWidth || 0
+        })
+      }
+    })
+
+    if (logoRef.current) {
+      observer.observe(logoRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div 
@@ -315,8 +382,8 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
           position: 'relative',
           isolation: 'isolate',
           contain: 'none',
-          display: 'block', // Ensure proper block layout
-          pointerEvents: 'none' // Disable pointer events on the canvas
+          display: 'block',
+          pointerEvents: 'none'
         }}
         gl={{ 
           antialias: true,
@@ -333,7 +400,7 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
           enableRotate={true}
           minPolarAngle={Math.PI / 2}
           maxPolarAngle={Math.PI / 2}
-          domElement={document.documentElement} // Attach controls to document root
+          domElement={document.documentElement}
         />
       </Canvas>
     </div>

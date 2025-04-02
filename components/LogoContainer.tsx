@@ -25,6 +25,8 @@ const CanvasOverride = styled.div`
   & canvas {
     overflow: visible !important;
     overflow-clip-margin: unset !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 `;
 
@@ -32,18 +34,42 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
   const { logo3DEnabled, noiseEnabled } = useThemeStore()
   const [isLoading, setIsLoading] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [dimensions, setDimensions] = useState<null | { width: number, height: number }>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
 
+    // Set initial dimensions immediately
+    const initialDimensions = {
+      width: containerRef.current.offsetWidth,
+      height: containerRef.current.offsetHeight
+    }
+    console.log('[LogoContainer] Initial dimensions:', {
+      timestamp: new Date().toISOString(),
+      dimensions: initialDimensions,
+      logo3DEnabled,
+      containerWidth: containerRef.current.offsetWidth,
+      containerHeight: containerRef.current.offsetHeight,
+      computedStyle: window.getComputedStyle(containerRef.current)
+    })
+    setDimensions(initialDimensions)
+
     const resizeObserver = new ResizeObserver(entries => {
       const entry = entries[0]
-      if (entry) {
-        setDimensions({
+      if (entry && containerRef.current) {
+        const newDimensions = {
           width: entry.contentRect.width,
           height: entry.contentRect.height
+        }
+        console.log('[LogoContainer] Resize dimensions:', {
+          timestamp: new Date().toISOString(),
+          dimensions: newDimensions,
+          logo3DEnabled,
+          containerWidth: containerRef.current.offsetWidth,
+          containerHeight: containerRef.current.offsetHeight,
+          computedStyle: window.getComputedStyle(containerRef.current)
         })
+        setDimensions(newDimensions)
       }
     })
 
@@ -51,9 +77,21 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
     setIsLoading(false)
 
     return () => resizeObserver.disconnect()
-  }, [])
+  }, [logo3DEnabled])
 
-  if (isLoading || !dimensions.width) {
+  useEffect(() => {
+    if (dimensions) {
+      console.log('[LogoContainer] Dimensions updated:', {
+        timestamp: new Date().toISOString(),
+        dimensions,
+        logo3DEnabled,
+        isLoading
+      })
+    }
+  }, [dimensions, logo3DEnabled, isLoading])
+
+  // Don't render 3D logo until we have dimensions
+  if (isLoading || !dimensions) {
     return (
       <CanvasOverride 
         ref={containerRef}
@@ -61,6 +99,8 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
         style={{
           position: 'relative',
           visibility: 'hidden',
+          width: '100%',
+          height: '100%',
           ...style
         }}
       >
@@ -76,6 +116,8 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
       style={{
         position: 'relative',
         visibility: 'visible',
+        width: '100%',
+        height: '100%',
         ...style
       }}
     >
@@ -83,7 +125,11 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
         <Suspense fallback={<Logo className="w-full h-full" style={style} />}>
           <Logo3D 
             className="w-full h-full"
-            style={style} 
+            style={{
+              width: '100%',
+              height: '100%',
+              ...style
+            }} 
             noiseEnabled={noiseEnabled}
           />
         </Suspense>

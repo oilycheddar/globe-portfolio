@@ -607,6 +607,18 @@ export default function Home() {
     }
   }, [logo3DEnabled]);
 
+  // Add logging for 3D toggle state
+  useEffect(() => {
+    console.log('[index] 3D toggle state changed:', {
+      timestamp: new Date().toISOString(),
+      logo3DEnabled,
+      containerWidth: containerRef.current?.offsetWidth,
+      logoWidth: logoRef.current?.offsetWidth,
+      containerRect: containerRef.current?.getBoundingClientRect(),
+      logoRect: logoRef.current?.getBoundingClientRect()
+    })
+  }, [logo3DEnabled])
+
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>
       <ContentWrapper ref={containerRef} onClick={handleClick}>
