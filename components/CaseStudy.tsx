@@ -43,6 +43,7 @@ const ImageWrapper = styled.div`
   align-items: center;
   justify-content: center;
   max-height: 70vh;
+  cursor: ${props => props.$isClickable ? 'pointer' : 'default'} !important;
   
   @media (max-width: 440px) {
     margin: 0;
@@ -291,7 +292,12 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     }
   }, [autoplay]);
 
+  const isLoopingVideo = data.videoUrl.includes('loom');
+  const isClickableVideo = data.videoUrl !== 'none' && !isLoopingVideo;
+
   const handleVideoClick = () => {
+    if (!isClickableVideo) return;
+    
     if (videoRef.current) {
       if (isVideoPlaying) {
         videoRef.current.pause();
@@ -328,9 +334,9 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
       <ImageWrapper 
         className="work-sample-image-wrapper"
         onClick={handleVideoClick}
-        style={{ cursor: data.videoUrl !== 'none' ? 'pointer' : 'default' }}
+        $isClickable={isClickableVideo}
       >
-        {!isVideoPlaying && data.videoUrl !== 'none' && <PlayButton />}
+        {!isVideoPlaying && isClickableVideo && <PlayButton />}
         {data.videoUrl !== 'none' ? (
           <>
             {data.posterUrl !== 'none' && (
