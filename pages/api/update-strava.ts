@@ -69,9 +69,22 @@ export default async function handler(
     // Write to file
     fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
 
-    res.status(200).json({ message: 'Stats updated successfully', stats });
+    res.status(200).json(stats);
   } catch (error) {
     console.error('Error updating Strava stats:', error);
-    res.status(500).json({ message: 'Failed to update stats', error });
+    
+    // Try to read existing stats
+    try {
+      const existingStats = JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
+      return res.status(500).json({ 
+        message: 'Failed to update stats, returning existing data', 
+        ...existingStats 
+      });
+    } catch (readError) {
+      return res.status(500).json({ 
+        message: 'Failed to update stats and read existing data',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   }
 } 
