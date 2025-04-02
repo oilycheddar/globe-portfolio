@@ -1,11 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@vercel/edge-config';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = '42678770';
-const STATS_FILE = path.join(process.cwd(), 'data', 'strava-stats.json');
 
 async function getAccessToken(): Promise<string> {
   try {
@@ -60,14 +58,9 @@ export default async function handler(
       lastUpdated: new Date().toISOString()
     };
 
-    // Ensure data directory exists
-    const dir = path.dirname(STATS_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    // Write to file
-    fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
+    // Update Edge Config
+    const edge = createClient(process.env.EDGE_CONFIG);
+    await edge.set('strava_stats', stats);
 
     res.status(200).json({ message: 'Stats updated successfully', stats });
   } catch (error) {
