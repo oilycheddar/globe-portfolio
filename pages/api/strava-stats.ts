@@ -3,10 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const STATS_FILE = path.join(process.cwd(), 'data', 'strava-stats.json');
-const INITIAL_STATS = { 
-  distance: '394km', 
-  lastUpdated: new Date(0).toISOString() 
-};
+const INITIAL_STATS = { distance: '394km', lastUpdated: new Date(0).toISOString() };
 
 // Ensure the stats file exists with initial data
 if (!fs.existsSync(STATS_FILE)) {
@@ -40,10 +37,12 @@ export default async function handler(
   }
 
   try {
+    // Always read from file - it will exist because we ensure it above
     const stats = JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
     return res.status(200).json(stats);
   } catch (error) {
     console.error('Error reading Strava stats:', error);
+    // If there's an error reading the file, return initial stats
     return res.status(200).json(INITIAL_STATS);
   }
 } 
