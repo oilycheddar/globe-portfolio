@@ -6,6 +6,7 @@ import Script from 'next/script';
 import { defaultTheme } from '../styles/theme-init';
 import { ThemeColorManager } from '../components/ThemeColorManager';
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -105,6 +106,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </StyledComponentsProvider>
       <Analytics />
+      <SpeedInsights />
     </>
   );
 }
