@@ -16,7 +16,7 @@ const getBaseUrl = () => {
 
 const baseUrl = process.env.NODE_ENV === 'production' ? 'https://georgevisan.com' : '';
 
-let lastKnownDistance = '394km'; // Initial fallback, will be updated after successful fetches
+let lastKnownDistance = '395km'; // Initial fallback, will be updated after successful fetches
 
 export const getYTDRunningDistance = async (): Promise<string> => {
   try {
