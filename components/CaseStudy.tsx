@@ -32,7 +32,11 @@ const CaseStudyWrapper = styled.div`
   }
 `;
 
-const ImageWrapper = styled.div`
+interface ImageWrapperProps {
+  $isClickable?: boolean;
+}
+
+const ImageWrapper = styled.div<ImageWrapperProps>`
   width: 100%;
   position: relative;
   aspect-ratio: auto;
