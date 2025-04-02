@@ -19,6 +19,18 @@ interface TokenResponse {
   expires_at: number;
 }
 
+interface CacheData {
+  distance: string;
+  timestamp: number;
+}
+
+// Cache duration of 1 hour
+const CACHE_DURATION = 60 * 60 * 1000;
+let cache: CacheData = {
+  distance: '394km', // Your last known distance
+  timestamp: 0
+};
+
 const getAccessToken = async (): Promise<string> => {
   try {
     // Debug log
@@ -64,11 +76,23 @@ const getBaseUrl = () => {
 const baseUrl = process.env.NODE_ENV === 'production' ? 'https://georgevisan.com' : '';
 
 export const getYTDRunningDistance = async (): Promise<string> => {
+  // Check if cache is still valid
+  const now = Date.now();
+  if (now - cache.timestamp < CACHE_DURATION) {
+    return cache.distance;
+  }
+
   try {
     const response = await axios.get(`${baseUrl}/api/strava-stats`);
-    return response.data.distance;
+    // Update cache with new data and timestamp
+    cache = {
+      distance: response.data.distance,
+      timestamp: now
+    };
+    return cache.distance;
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
-    return '0km';
+    // Return cached value even if expired
+    return cache.distance;
   }
 }; 

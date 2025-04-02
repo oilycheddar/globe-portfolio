@@ -126,7 +126,18 @@ interface ExpandableToggleProps<T extends string> extends BaseToggleProps {
   autoplay?: boolean;
 }
 
-type ToggleButtonProps<T extends string> = BooleanToggleProps | MultiToggleProps<T> | ExpandableToggleProps<T>;
+interface StravaToggleProps extends BaseToggleProps {
+  type: 'strava';
+  value: string;
+  fallbackValue?: string;
+  onChange?: (value: string) => void;
+}
+
+type ToggleButtonProps<T extends string> = 
+  | BooleanToggleProps 
+  | MultiToggleProps<T> 
+  | ExpandableToggleProps<T>
+  | StravaToggleProps;
 
 export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -191,6 +202,17 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
     setIsExpanded(false);
   };
 
+  const renderValue = () => {
+    switch (props.type) {
+      case 'boolean':
+        return props.value ? 'ON' : 'OFF';
+      case 'strava':
+        return props.value || props.fallbackValue || '0km';
+      default:
+        return props.value;
+    }
+  };
+
   return (
     <Container 
       ref={containerRef}
@@ -212,7 +234,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
             $isExpanded={props.type === 'expandable' && isExpanded}
             $isExpandable={props.type === 'expandable'}
           >
-            {props.type === 'boolean' ? (props.value ? 'ON' : 'OFF') : props.value}
+            {renderValue()}
           </Value>
         </Button>
         {props.type === 'expandable' && (

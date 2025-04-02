@@ -19,6 +19,18 @@ interface TokenResponse {
   expires_at: number;
 }
 
+interface CachedStats {
+  distance: string;
+  timestamp: number;
+}
+
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+
+// Update the default fallback value
+let lastKnownStats = { distance: '394km' };
+
+let statsCache: CachedStats | null = null;
+
 async function getAccessToken(): Promise<string> {
   // Validate environment variables
   if (!process.env.STRAVA_CLIENT_ID) {
@@ -76,6 +88,11 @@ export default async function handler(
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
+  // Check cache first
+  if (statsCache && (Date.now() - statsCache.timestamp) < CACHE_DURATION) {
+    return res.status(200).json({ distance: statsCache.distance });
+  }
+
   try {
     const accessToken = await getAccessToken();
     const response = await axios.get<StravaStats>(
@@ -88,15 +105,27 @@ export default async function handler(
     );
 
     const distanceInKm = Math.round(response.data.ytd_run_totals.distance / 1000);
-    return res.status(200).json({ distance: `${distanceInKm}km` });
+    
+    // Update cache
+    statsCache = {
+      distance: `${distanceInKm}km`,
+      timestamp: Date.now()
+    };
+
+    return res.status(200).json({ distance: statsCache.distance });
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
+    
+    // Return cached data if available, even if expired
+    if (statsCache) {
+      return res.status(200).json({ distance: statsCache.distance });
+    }
+
+    // If no cache available, return error
     if (axios.isAxiosError(error)) {
       return res.status(500).json({
         message: 'Error fetching Strava stats',
         error: error.response?.data?.message || error.message,
-        status: error.response?.status,
-        data: error.response?.data
       });
     }
     return res.status(500).json({ 
