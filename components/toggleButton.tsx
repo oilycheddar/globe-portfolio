@@ -196,7 +196,9 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
       if (path) {
         router.push(path);
       }
-    } else {
+    } else if (props.type === 'strava' && props.onChange) {
+      props.onChange(option as string);
+    } else if (props.type !== 'strava') {
       props.onChange(option as never);
     }
     setIsExpanded(false);

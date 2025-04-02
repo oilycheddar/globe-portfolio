@@ -58,12 +58,7 @@ export default function App({ Component, pageProps }: AppProps) {
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" 
           as="style"
         />
-        <link 
-          rel="stylesheet" 
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap"
-          media="print"
-        />
-
+        
         {/* Preload critical assets */}
         <link rel="preload" href="/images/optimized/bg-noise-dune.webp" as="image" />
         <link rel="preload" href="/images/optimized/page-noise-dune.webp" as="image" />
