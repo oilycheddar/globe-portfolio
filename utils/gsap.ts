@@ -26,7 +26,7 @@ import { ScrollSmoother } from 'gsap/ScrollSmoother';
 
 // Register Club GreenSock first
 if (typeof window !== 'undefined') {
-  (window as any)._gsapKey = "b95b2fdc-09e5-40f2-9371-853421076148";
+  (window as any)._gsapKey = process.env.NEXT_PUBLIC_GSAP_KEY;
 }
 
 // Register all plugins
