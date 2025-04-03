@@ -30,12 +30,19 @@ const ButtonWrapper = styled.div<{ $isExpandable?: boolean }>`
   }
 `;
 
-const Button = styled.div<{ 
+const Button = styled.button.attrs<{
+  href?: string;
+}>(props => ({
+  as: props.href ? 'a' : 'button',
+  target: props.href ? '_blank' : undefined,
+  rel: props.href ? 'noopener noreferrer' : undefined,
+}))<{ 
   $isActive?: boolean; 
   $isMulti?: boolean; 
   $isExpanded?: boolean; 
   $isExpandable?: boolean;
   'data-type'?: string;
+  href?: string;
 }>`
   cursor: pointer;
   padding: 4px 8px;
@@ -57,6 +64,15 @@ const Button = styled.div<{
   z-index: 2;
   white-space: nowrap;
   width: ${props => props.$isExpandable ? '100%' : 'auto'}; /* Only full width for expandable */
+  border: none;
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
+  }
 `;
 
 const Value = styled.span<{ 
@@ -127,6 +143,7 @@ const DropdownItem = styled.div<{ $isSelected?: boolean }>`
 interface BaseToggleProps {
   label: string;
   fullWidth?: boolean;
+  href?: string;
 }
 
 interface BooleanToggleProps extends BaseToggleProps {
@@ -170,6 +187,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -242,20 +260,35 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    } else if (e.key === 'Escape' && isExpanded) {
+      e.preventDefault();
+      setIsExpanded(false);
+    }
+  };
+
   return (
     <Container 
       ref={containerRef}
-      onClick={handleClick}
       style={props.fullWidth ? { gridColumn: '1 / -1', justifySelf: 'center' } : undefined}
     >
       <Label>{props.label}</Label>
       <ButtonWrapper $isExpandable={props.type === 'expandable'}>
         <Button 
+          ref={buttonRef}
           data-type={props.type}
           $isActive={props.type === 'boolean' && props.value}
           $isMulti={props.type === 'multi'}
           $isExpanded={props.type === 'expandable' && isExpanded}
           $isExpandable={props.type === 'expandable'}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          aria-expanded={isExpanded}
+          aria-haspopup={props.type === 'expandable' ? 'true' : undefined}
+          href={props.href}
         >
           <Value 
             $isActive={props.type === 'boolean' && props.value}
@@ -274,6 +307,13 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
                 key={option}
                 onClick={() => handleOptionClick(option)}
                 $isSelected={option === props.value}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleOptionClick(option);
+                  }
+                }}
               >
                 {option}
               </DropdownItem>

@@ -264,33 +264,31 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
         <>
           <LeftNavContainer>
             <ToggleGroup>
-              <StyledLink href="https://www.strava.com/athletes/42678770" target="_blank" rel="noopener noreferrer">
-                <div ref={toggleRefs.themeLeft}>
-                  <ToggleButton
-                    type="strava"
-                    label="2025 running distance"
-                    value={runningDistance}
-                    fallbackValue="402km"
-                    onChange={() => {}}
-                    $isActive={true}
-                  />
-                </div>
-              </StyledLink>
+              <div ref={toggleRefs.themeLeft}>
+                <ToggleButton
+                  type="strava"
+                  label="2025 running distance"
+                  value={runningDistance}
+                  fallbackValue="402km"
+                  onChange={() => {}}
+                  $isActive={true}
+                  href="https://www.strava.com/athletes/42678770"
+                />
+              </div>
             </ToggleGroup>
           </LeftNavContainer>
           <RightNavContainer>
             <ToggleGroup>
-              <StyledLink href="https://www.ramp.com" target="_blank" rel="noopener noreferrer">
-                <div ref={toggleRefs.themeRight}>
-                  <ToggleButton
-                    type="multi"
-                    label="employer"
-                    value="Ramp"
-                    options={["Ramp"]}
-                    onChange={() => {}}
-                  />
-                </div>
-              </StyledLink>
+              <div ref={toggleRefs.themeRight}>
+                <ToggleButton
+                  type="multi"
+                  label="employer"
+                  value="Ramp"
+                  options={["Ramp"]}
+                  onChange={() => {}}
+                  href="https://www.ramp.com"
+                />
+              </div>
             </ToggleGroup>
           </RightNavContainer>
         </>
