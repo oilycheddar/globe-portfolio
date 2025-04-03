@@ -674,7 +674,7 @@ export default function Home() {
             </h1>
             <div 
               ref={logoRef}
-              className="w-[50vw] mx-auto aspect-[2/1] overflow-visible"
+              className="w-[50vw] max-[440px]:w-[60vw] mx-auto aspect-[2/1] overflow-visible"
               style={{ position: 'relative' }}
             >
               <LogoContainer />
@@ -694,7 +694,7 @@ export default function Home() {
         </BlurWrapper>
         <div
           ref={dvdLogoRef}
-          className="absolute w-[50vw] aspect-[2/1] pointer-events-none"
+          className="absolute w-[50vw] max-[440px]:w-[60vw] aspect-[2/1] pointer-events-none"
           style={{
             visibility: 'hidden',
             opacity: 0,

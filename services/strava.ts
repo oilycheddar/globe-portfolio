@@ -7,8 +7,15 @@ interface StravaStats {
 }
 
 const TEMPORARY_OVERRIDE = '402km';  // Temporary override until API catches up
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export const getYTDRunningDistance = async (): Promise<string> => {
+  // For local development, return the temporary override
+  if (IS_DEVELOPMENT) {
+    console.log('Running in development mode - using static value:', TEMPORARY_OVERRIDE);
+    return TEMPORARY_OVERRIDE;
+  }
+
   try {
     const edge = createClient(process.env.EDGE_CONFIG);
     const stats = await edge.get<StravaStats>('strava_stats');

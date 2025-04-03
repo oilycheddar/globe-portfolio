@@ -30,11 +30,24 @@ const ButtonWrapper = styled.div<{ $isExpandable?: boolean }>`
   }
 `;
 
-const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean; $isExpandable?: boolean }>`
+const Button = styled.div<{ 
+  $isActive?: boolean; 
+  $isMulti?: boolean; 
+  $isExpanded?: boolean; 
+  $isExpandable?: boolean;
+  'data-type'?: string;
+}>`
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 20px;
-  background-color: ${props => props.$isMulti || props.$isActive || props.$isExpanded || props.$isExpandable ? 'var(--color-accent-primary)' : 'var(--color-accent-secondary)'};
+  background-color: ${props => 
+    props.$isMulti || 
+    props.$isActive || 
+    props.$isExpanded || 
+    props.$isExpandable || 
+    props['data-type'] === 'strava'
+    ? 'var(--color-accent-primary)' 
+    : 'var(--color-accent-secondary)'};
   transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
@@ -46,14 +59,27 @@ const Button = styled.div<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded
   width: ${props => props.$isExpandable ? '100%' : 'auto'}; /* Only full width for expandable */
 `;
 
-const Value = styled.span<{ $isActive?: boolean; $isMulti?: boolean; $isExpanded?: boolean; $isExpandable?: boolean }>`
+const Value = styled.span<{ 
+  $isActive?: boolean; 
+  $isMulti?: boolean; 
+  $isExpanded?: boolean; 
+  $isExpandable?: boolean;
+  'data-type'?: string;
+}>`
   font-size: 12px;
   font-family: var(--font-mono);
   font-weight: 700;
   line-height: 15.8px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${props => props.$isMulti || props.$isActive || props.$isExpanded || props.$isExpandable ? 'var(--color-text-secondary)' : 'var(--color-text)'};
+  color: ${props => 
+    props.$isMulti || 
+    props.$isActive || 
+    props.$isExpanded || 
+    props.$isExpandable || 
+    props['data-type'] === 'strava'
+    ? 'var(--color-text-secondary)' 
+    : 'var(--color-text)'};
   white-space: nowrap;
 `;
 
@@ -236,6 +262,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
             $isMulti={props.type === 'multi'}
             $isExpanded={props.type === 'expandable' && isExpanded}
             $isExpandable={props.type === 'expandable'}
+            data-type={props.type}
           >
             {renderValue()}
           </Value>
