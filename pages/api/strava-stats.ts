@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@vercel/edge-config';
 
-const INITIAL_STATS = { distance: '394km', lastUpdated: new Date(0).toISOString() };
+const INITIAL_STATS = { distance: '401km', lastUpdated: new Date(0).toISOString() };
 
 export default async function handler(
   req: NextApiRequest,
