@@ -131,6 +131,7 @@ interface StravaToggleProps extends BaseToggleProps {
   value: string;
   fallbackValue?: string;
   onChange?: (value: string) => void;
+  $isActive?: boolean;
 }
 
 type ToggleButtonProps<T extends string> = 

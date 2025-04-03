@@ -272,6 +272,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                     value={runningDistance}
                     fallbackValue="402km"
                     onChange={() => {}}
+                    $isActive={true}
                   />
                 </div>
               </StyledLink>
