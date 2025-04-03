@@ -1,31 +1,34 @@
-import axios from 'axios';
+import { createClient } from '@vercel/edge-config';
 
-// Get the base URL for API calls
-const getBaseUrl = () => {
-  if (typeof window !== 'undefined') {
-    // Browser should use relative path
-    return '';
-  }
-  if (process.env.VERCEL_URL) {
-    // Reference for vercel.com
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  // Assume localhost
-  return `http://localhost:${process.env.PORT ?? 3000}`;
-};
+interface StravaStats {
+  distance: string;
+  lastUpdated: string;
+  lastKnownGoodDistance?: string;  // Add this to track last known good value
+}
 
-const baseUrl = process.env.NODE_ENV === 'production' ? 'https://georgevisan.com' : '';
-
-let lastKnownDistance = '402km'; // Initial fallback, will be updated after successful fetches
+const TEMPORARY_OVERRIDE = '402km';  // Temporary override until API catches up
 
 export const getYTDRunningDistance = async (): Promise<string> => {
   try {
-    const response = await axios.get(`${baseUrl}/api/strava-stats`);
-    // Update our last known distance when we get a successful response
-    lastKnownDistance = response.data.distance;
-    return response.data.distance;
+    const edge = createClient(process.env.EDGE_CONFIG);
+    const stats = await edge.get<StravaStats>('strava_stats');
+    
+    if (!stats) return TEMPORARY_OVERRIDE;
+
+    // If we have current stats, return them
+    if (stats.distance) {
+      return stats.distance;
+    }
+    
+    // Fall back to last known good distance if available
+    if (stats.lastKnownGoodDistance) {
+      return stats.lastKnownGoodDistance;
+    }
+
+    // Final fallback to temporary override
+    return TEMPORARY_OVERRIDE;
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
-    return lastKnownDistance; // Return last known good value
+    return TEMPORARY_OVERRIDE;
   }
 }; 

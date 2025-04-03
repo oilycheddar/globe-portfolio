@@ -1,5 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { createClient } from '@vercel/edge-config';
+
+interface StravaStats {
+  distance: string;
+  lastUpdated: string;
+  lastKnownGoodDistance?: string;
+}
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = '42678770';
@@ -22,27 +29,20 @@ async function getAccessToken(): Promise<string> {
   }
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  // Only allow POST requests from Vercel cron
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
+export const runtime = 'edge';
 
+export async function POST(request: Request) {
   // Verify the request is from Vercel cron
-  const authHeader = req.headers.authorization;
+  const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     // Get fresh access token
     const accessToken = await getAccessToken();
-    
     // Fetch latest stats
-    const response = await axios.get(
+    const stravaResponse = await axios.get(
       `${STRAVA_API_URL}/athletes/${ATHLETE_ID}/stats`,
       {
         headers: {
@@ -51,19 +51,25 @@ export default async function handler(
       }
     );
 
-    const distanceInKm = Math.round(response.data.ytd_run_totals.distance / 1000);
-    const stats = {
-      distance: `${distanceInKm}km`,
-      lastUpdated: new Date().toISOString()
+    const distanceInKm = Math.round(stravaResponse.data.ytd_run_totals.distance / 1000);
+    const newDistance = `${distanceInKm}km`;
+
+    // Get current stats to preserve last known good value if needed
+    const edge = createClient(process.env.EDGE_CONFIG);
+    const currentStats = await edge.get<StravaStats>('strava_stats');
+
+    const stats: StravaStats = {
+      distance: newDistance,
+      lastUpdated: new Date().toISOString(),
+      lastKnownGoodDistance: distanceInKm > 0 ? newDistance : currentStats?.lastKnownGoodDistance
     };
 
-    // Create Edge Config client correctly
+    // Update Edge Config using the correct method
     if (!process.env.EDGE_CONFIG) {
       throw new Error('EDGE_CONFIG environment variable is not set');
     }
 
-    // Use the Edge Config API directly
-    await fetch(process.env.EDGE_CONFIG, {
+    const response = await fetch(process.env.EDGE_CONFIG, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -79,12 +85,16 @@ export default async function handler(
       })
     });
 
-    res.status(200).json({ message: 'Stats updated successfully', stats });
+    if (!response.ok) {
+      throw new Error(`Failed to update Edge Config: ${response.statusText}`);
+    }
+
+    return NextResponse.json({ message: 'Stats updated successfully', stats });
   } catch (error: unknown) {
     console.error('Error updating Strava stats:', error);
     if (error instanceof Error && error.message.includes('EDGE_CONFIG')) {
-      return res.status(500).json({ message: 'Edge Config not properly configured' });
+      return NextResponse.json({ message: 'Edge Config not properly configured' }, { status: 500 });
     }
-    res.status(500).json({ message: 'Failed to update stats' });
+    return NextResponse.json({ message: 'Failed to update stats' }, { status: 500 });
   }
 } 

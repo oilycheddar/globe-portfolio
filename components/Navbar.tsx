@@ -143,7 +143,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   const themeKeys = Object.keys(themes);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [runningDistance, setRunningDistance] = useState('0km');
+  const [runningDistance, setRunningDistance] = useState('402km');
   
   // Create refs for each toggle button container
   const toggleRefs = {
@@ -267,10 +267,10 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
               <StyledLink href="https://www.strava.com/athletes/42678770" target="_blank" rel="noopener noreferrer">
                 <div ref={toggleRefs.themeLeft}>
                   <ToggleButton
-                    type="multi"
+                    type="strava"
                     label="2025 running distance"
                     value={runningDistance}
-                    options={[runningDistance]}
+                    fallbackValue="402km"
                     onChange={() => {}}
                   />
                 </div>
