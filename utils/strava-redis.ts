@@ -14,9 +14,9 @@ const STRAVA_STATS_KEY = 'strava:stats';
  */
 export async function getStravaStats(): Promise<StravaStats | null> {
   try {
-    const client = await getRedisClient();
+    const client = getRedisClient();
     const stats = await client.get(STRAVA_STATS_KEY);
-    return stats ? JSON.parse(stats) : null;
+    return stats ? JSON.parse(stats as string) : null;
   } catch (error) {
     console.error('Error reading Strava stats from Redis:', error);
     return null;
@@ -30,7 +30,7 @@ export async function getStravaStats(): Promise<StravaStats | null> {
  */
 export async function updateStravaStats(stats: StravaStats): Promise<boolean> {
   try {
-    const client = await getRedisClient();
+    const client = getRedisClient();
     await client.set(STRAVA_STATS_KEY, JSON.stringify(stats));
     return true;
   } catch (error) {
