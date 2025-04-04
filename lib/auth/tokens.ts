@@ -10,12 +10,12 @@ interface StravaTokens {
 const STRAVA_TOKENS_KEY = 'strava_tokens';
 
 export async function storeTokens(tokens: StravaTokens) {
-  const client = getRedisClient();
+  const client = await getRedisClient();
   await client.set(STRAVA_TOKENS_KEY, JSON.stringify(tokens));
 }
 
 export async function getValidToken(): Promise<string> {
-  const client = getRedisClient();
+  const client = await getRedisClient();
   const tokensStr = await client.get(STRAVA_TOKENS_KEY);
   const tokens = tokensStr ? JSON.parse(tokensStr as string) as StravaTokens : null;
   

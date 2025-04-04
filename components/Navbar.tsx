@@ -201,16 +201,10 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   };
 
   useEffect(() => {
-    const fetchRunningDistance = async () => {
-      try {
-        const distance = await getYTDRunningDistance();
-        setRunningDistance(distance);
-      } catch (error) {
-        console.error('Error fetching running distance:', error);
-      }
-    };
-
-    fetchRunningDistance();
+    // Fetch running distance on mount
+    getYTDRunningDistance().then(distance => {
+      setRunningDistance(distance);
+    });
   }, []);
 
   return (

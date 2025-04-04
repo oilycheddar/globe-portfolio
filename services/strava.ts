@@ -9,19 +9,13 @@ interface StravaStats {
 const TEMPORARY_OVERRIDE = '409km';  // Temporary override until API catches up
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
-export const getYTDRunningDistance = async (): Promise<string> => {
-  // For local development, return the temporary override
-  if (IS_DEVELOPMENT) {
-    console.log('Running in development mode - using static value:', TEMPORARY_OVERRIDE);
-    return TEMPORARY_OVERRIDE;
-  }
-
+export async function getYTDRunningDistance(): Promise<string> {
   try {
-    const stats = await getStravaStats();
+    // Use fetch to get stats from API route
+    const response = await fetch('/api/strava/stats');
+    const stats = await response.json();
     
-    if (!stats) return TEMPORARY_OVERRIDE;
-
-    // If we have current stats, return them
+    // Return the current distance if available
     if (stats.distance) {
       return stats.distance;
     }
@@ -30,11 +24,11 @@ export const getYTDRunningDistance = async (): Promise<string> => {
     if (stats.lastKnownGoodDistance) {
       return stats.lastKnownGoodDistance;
     }
-
+    
     // Final fallback to temporary override
     return TEMPORARY_OVERRIDE;
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
     return TEMPORARY_OVERRIDE;
   }
-}; 
+} 

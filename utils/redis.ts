@@ -5,7 +5,7 @@ const globalForRedis = global as unknown as {
   redis: ReturnType<typeof createClient> | undefined;
 };
 
-export function getRedisClient() {
+export async function getRedisClient() {
   if (!globalForRedis.redis) {
     globalForRedis.redis = createClient({
       url: process.env.REDIS_URL
@@ -17,7 +17,7 @@ export function getRedisClient() {
     });
 
     // Connect to Redis
-    globalForRedis.redis.connect().catch(console.error);
+    await globalForRedis.redis.connect();
   }
 
   return globalForRedis.redis;

@@ -29,8 +29,6 @@ async function getAccessToken(): Promise<string> {
   }
 }
 
-export const runtime = 'edge';
-
 export async function POST(request: Request) {
   // Verify the request is from Vercel cron
   const authHeader = request.headers.get('authorization');
