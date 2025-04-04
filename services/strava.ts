@@ -1,4 +1,4 @@
-import { createClient } from '@vercel/edge-config';
+import { readFromEdgeConfig } from '../utils/edge-config';
 
 interface StravaStats {
   distance: string;
@@ -17,8 +17,7 @@ export const getYTDRunningDistance = async (): Promise<string> => {
   }
 
   try {
-    const edge = createClient(process.env.EDGE_CONFIG);
-    const stats = await edge.get<StravaStats>('strava_stats');
+    const stats = await readFromEdgeConfig<StravaStats>('strava_stats');
     
     if (!stats) return TEMPORARY_OVERRIDE;
 
