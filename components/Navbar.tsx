@@ -143,7 +143,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   const themeKeys = Object.keys(themes);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [runningDistance, setRunningDistance] = useState('409km');
+  const [runningDistance, setRunningDistance] = useState('407km');
   
   // Create refs for each toggle button container
   const toggleRefs = {
@@ -263,7 +263,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                   type="strava"
                   label="2025 running distance"
                   value={runningDistance}
-                  fallbackValue="409km"
+                  fallbackValue="407km"
                   onChange={() => {}}
                   $isActive={true}
                   href="https://www.strava.com/athletes/42678770"

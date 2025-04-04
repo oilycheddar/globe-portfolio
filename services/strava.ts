@@ -6,7 +6,7 @@ interface StravaStats {
   lastKnownGoodDistance?: string;  // Add this to track last known good value
 }
 
-const TEMPORARY_OVERRIDE = '409km';  // Temporary override until API catches up
+const TEMPORARY_OVERRIDE = '407km';  // Temporary override until API catches up
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export async function getYTDRunningDistance(): Promise<string> {

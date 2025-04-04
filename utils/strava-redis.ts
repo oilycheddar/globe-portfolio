@@ -7,7 +7,7 @@ export interface StravaStats {
 }
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000; // 15 minutes in milliseconds
-const TEMPORARY_OVERRIDE = '409km';
+const TEMPORARY_OVERRIDE = '407km';
 
 // Check if data is stale (older than 15 minutes)
 export function isDataStale(lastUpdated: string): boolean {
