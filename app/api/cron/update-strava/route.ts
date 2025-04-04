@@ -33,8 +33,8 @@ export const runtime = 'edge';
 
 export async function GET(request: Request) {
   // Verify the request is from Vercel cron
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const isVercelCron = request.headers.get('x-vercel-cron') === 'true';
+  if (!isVercelCron) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
