@@ -1,4 +1,4 @@
-import { readFromEdgeConfig } from '../utils/edge-config';
+import { getStravaStats } from '../utils/strava-redis';
 
 interface StravaStats {
   distance: string;
@@ -17,7 +17,7 @@ export const getYTDRunningDistance = async (): Promise<string> => {
   }
 
   try {
-    const stats = await readFromEdgeConfig<StravaStats>('strava_stats');
+    const stats = await getStravaStats();
     
     if (!stats) return TEMPORARY_OVERRIDE;
 

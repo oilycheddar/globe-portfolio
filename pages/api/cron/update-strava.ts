@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import { getStravaStats, updateStravaStats } from '../../../../utils/strava-redis';
+import { getStravaStats, updateStravaStats } from '../../../utils/strava-redis';
 
 interface StravaStats {
   distance: string;
@@ -9,7 +9,7 @@ interface StravaStats {
 }
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
-const ATHLETE_ID = process.env.STRAVA_ATHLETE_ID;
+const ATHLETE_ID = '42678770';
 
 async function getAccessToken(): Promise<string> {
   try {
@@ -63,12 +63,8 @@ export async function POST(request: Request) {
       lastKnownGoodDistance: distanceInKm > 0 ? newDistance : currentStats?.lastKnownGoodDistance
     };
 
-    // Update Redis using our utility function
-    const success = await updateStravaStats(stats);
-
-    if (!success) {
-      throw new Error('Failed to update Redis');
-    }
+    // Update Redis
+    await updateStravaStats(stats);
 
     return NextResponse.json({ message: 'Stats updated successfully', stats });
   } catch (error: unknown) {
