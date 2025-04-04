@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv'; // We'll use Vercel KV for token storage
+import { getRedisClient } from '../../utils/redis';
 import axios from 'axios';
 
 interface StravaTokens {
@@ -7,12 +7,17 @@ interface StravaTokens {
   expires_at: number;
 }
 
+const STRAVA_TOKENS_KEY = 'strava_tokens';
+
 export async function storeTokens(tokens: StravaTokens) {
-  await kv.set('strava_tokens', tokens);
+  const client = getRedisClient();
+  await client.set(STRAVA_TOKENS_KEY, JSON.stringify(tokens));
 }
 
 export async function getValidToken(): Promise<string> {
-  const tokens = await kv.get<StravaTokens>('strava_tokens');
+  const client = getRedisClient();
+  const tokensStr = await client.get(STRAVA_TOKENS_KEY);
+  const tokens = tokensStr ? JSON.parse(tokensStr as string) as StravaTokens : null;
   
   if (!tokens) {
     throw new Error('No tokens found');
@@ -26,7 +31,7 @@ export async function getValidToken(): Promise<string> {
   }
 
   return tokens.access_token;
-} 
+}
 
 async function refreshTokens(refresh_token: string): Promise<StravaTokens> {
   const response = await axios.post<StravaTokens>(
