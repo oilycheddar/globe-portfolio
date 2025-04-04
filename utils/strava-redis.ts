@@ -1,10 +1,4 @@
-import { createClient } from 'redis';
-
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
-
-await redis.connect();
+import { getRedisClient } from './redis';
 
 export interface StravaStats {
   distance: string;
@@ -20,7 +14,8 @@ const STRAVA_STATS_KEY = 'strava:stats';
  */
 export async function getStravaStats(): Promise<StravaStats | null> {
   try {
-    const stats = await redis.get(STRAVA_STATS_KEY);
+    const client = await getRedisClient();
+    const stats = await client.get(STRAVA_STATS_KEY);
     return stats ? JSON.parse(stats) : null;
   } catch (error) {
     console.error('Error reading Strava stats from Redis:', error);
@@ -35,7 +30,8 @@ export async function getStravaStats(): Promise<StravaStats | null> {
  */
 export async function updateStravaStats(stats: StravaStats): Promise<boolean> {
   try {
-    await redis.set(STRAVA_STATS_KEY, JSON.stringify(stats));
+    const client = await getRedisClient();
+    await client.set(STRAVA_STATS_KEY, JSON.stringify(stats));
     return true;
   } catch (error) {
     console.error('Error updating Strava stats in Redis:', error);
