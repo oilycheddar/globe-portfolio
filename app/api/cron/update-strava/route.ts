@@ -31,7 +31,7 @@ async function getAccessToken(): Promise<string> {
 
 export const runtime = 'edge';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   // Verify the request is from Vercel cron
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ message: 'Stats updated successfully', stats });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Error updating Strava stats:', error);
     if (error instanceof Error && error.message.includes('EDGE_CONFIG')) {
       return NextResponse.json({ message: 'Edge Config not properly configured' }, { status: 500 });
