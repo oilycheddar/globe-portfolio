@@ -32,9 +32,14 @@ async function getAccessToken(): Promise<string> {
 export const runtime = 'edge';
 
 export async function GET(request: Request) {
-  // Verify the request is from Vercel cron
-  const isVercelCron = request.headers.get('x-vercel-cron') === 'true';
-  if (!isVercelCron) {
+  // Log headers for debugging
+  console.log('Request headers:', Object.fromEntries(request.headers.entries()));
+  
+  // Verify the request is from Vercel Cron
+  const signature = request.headers.get('x-vercel-signature');
+  const userAgent = request.headers.get('user-agent');
+  
+  if (!signature || !userAgent?.startsWith('vercel-cron')) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
