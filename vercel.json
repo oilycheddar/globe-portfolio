@@ -1,6 +1,1 @@
-{
-  "crons": [{
-    "path": "/api/cron/update-strava",
-    "schedule": "0 3 * * *"
-  }]
-} 
+{} 
