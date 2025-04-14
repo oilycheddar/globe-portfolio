@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../utils/gsap';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useHoverSound } from '../hooks/useHoverSound';
 
 const Container = styled.div`
   display: flex;
@@ -32,10 +33,12 @@ const ButtonWrapper = styled.div<{ $isExpandable?: boolean }>`
 
 const Button = styled.button.attrs<{
   href?: string;
+  onMouseEnter?: () => void;
 }>(props => ({
   as: props.href ? 'a' : 'button',
   target: props.href ? '_blank' : undefined,
   rel: props.href ? 'noopener noreferrer' : undefined,
+  onMouseEnter: props.onMouseEnter,
 }))<{ 
   $isActive?: boolean; 
   $isMulti?: boolean; 
@@ -189,6 +192,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
+  const { playSound } = useHoverSound();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -286,6 +290,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
           $isExpandable={props.type === 'expandable'}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
+          onMouseEnter={playSound}
           aria-expanded={isExpanded}
           aria-haspopup={props.type === 'expandable' ? 'true' : undefined}
           href={props.href}
