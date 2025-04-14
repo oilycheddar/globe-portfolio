@@ -53,16 +53,28 @@ const StyledContent = styled.div`
   --navbar-height: 64px;
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: var(--space-md);
+  gap: var(--space-xl);
   overflow-y: auto;
   transition: filter 0.4s ease;
   padding: 0 var(--space-xl);
   opacity: 0;
   
   @media (max-width: 440px) {
+    --mobile-navbar-height: 32px;
+    padding: 0 var(--space-md);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-xl);
+    justify-content: center;
+    padding-top: var(--space-xl);
+    min-height: 0;
+    overflow-y: auto;
+  }
+      @media (max-width: 750px) {
     --mobile-navbar-height: 32px;
     padding: 0 var(--space-md);
     display: flex;
@@ -103,12 +115,12 @@ const ProfileImage = styled(Image)`
 `;
 
 const AboutText = styled.p`
-  width: 300px;
+  width: 250px;
   max-width: 300px;
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  text-align: center;
+  text-align: left;
   
   @media (max-width: 440px) {
     width: 100%;
@@ -311,6 +323,7 @@ export default function NotFound() {
           hideInactiveToggles={false}
           showDvdToggle={false}
           show3DToggle={false}
+          hideSideNavs={true}
         />
         <StyledContent 
           ref={contentRef}
@@ -333,7 +346,11 @@ export default function NotFound() {
             ref={aboutTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            This is Chewy. He's here to say you've found a dead end. Bye.
+            This is Chewy.
+            <br />
+            He says you found a dead end.
+            <br />
+            Bye.
           </AboutText>
         </StyledContent>
       </ContentWrapper>

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { themes } from "../styles/themes";
 
 interface ThemeState {
   theme: string;
@@ -10,7 +11,7 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({
-  theme: "default",
+  theme: "slime",
   setTheme: (theme) => set({ theme }),
   noiseEnabled: true,
   setNoiseEnabled: (enabled) => set({ noiseEnabled: enabled }),
