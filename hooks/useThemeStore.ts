@@ -15,6 +15,6 @@ export const useThemeStore = create<ThemeState>((set) => ({
   setTheme: (theme) => set({ theme }),
   noiseEnabled: true,
   setNoiseEnabled: (enabled) => set({ noiseEnabled: enabled }),
-  logo3DEnabled: false,
+  logo3DEnabled: true,
   setLogo3DEnabled: (enabled) => set({ logo3DEnabled: enabled }),
 }));
