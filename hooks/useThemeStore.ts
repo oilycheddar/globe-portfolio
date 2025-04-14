@@ -8,10 +8,6 @@ interface ThemeState {
   setNoiseEnabled: (enabled: boolean) => void;
   logo3DEnabled: boolean;
   setLogo3DEnabled: (enabled: boolean) => void;
-  soundEnabled: boolean;
-  setSoundEnabled: (enabled: boolean) => void;
-  soundVolume: number;
-  setSoundVolume: (volume: number) => void;
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({
@@ -26,8 +22,4 @@ export const useThemeStore = create<ThemeState>((set) => ({
   setNoiseEnabled: (enabled) => set({ noiseEnabled: enabled }),
   logo3DEnabled: true, // Changed to true for initial test
   setLogo3DEnabled: (enabled) => set({ logo3DEnabled: enabled }),
-  soundEnabled: false,
-  setSoundEnabled: (enabled) => set({ soundEnabled: enabled }),
-  soundVolume: 0.15, // Default volume (0 to 1)
-  setSoundVolume: (volume) => set({ soundVolume: volume }),
 }));

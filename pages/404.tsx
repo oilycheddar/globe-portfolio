@@ -321,7 +321,6 @@ export default function NotFound() {
         >
           <ImageWrapper className="profile-image-wrapper">
             <ProfileImage
-              className="profile-image"
               src="/chewy.JPG"
               alt="Chewy the dog"
               fill

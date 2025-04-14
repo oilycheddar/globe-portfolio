@@ -28,7 +28,6 @@ export const themes = {
       "--space-md": spacing.md,
       "--space-lg": spacing.lg,
       "--space-xl": spacing.xl,
-      "--hover-sound": "url('/sounds/slime-hover.wav')",
     },
     water: {
         "--color-page-content": colors.water.water700,
@@ -47,7 +46,6 @@ export const themes = {
         "--space-md": spacing.md,
         "--space-lg": spacing.lg,
         "--space-xl": spacing.xl,
-        "--hover-sound": "url('/sounds/water-hover.wav')",
     },
     acid: {
         "--color-page-content": colors.earth.earth100,
@@ -66,7 +64,6 @@ export const themes = {
         "--space-md": spacing.md,
         "--space-lg": spacing.lg,
         "--space-xl": spacing.xl,
-        "--hover-sound": "url('/sounds/acid-hover.wav')",
     },    
     bunny: {
         "--color-page-content": colors.water.water50,
@@ -85,7 +82,6 @@ export const themes = {
         "--space-md": spacing.md,
         "--space-lg": spacing.lg,
         "--space-xl": spacing.xl,
-        "--hover-sound": "url('/sounds/bunny-hover.wav')",
     },
     dune: {
         "--color-page-content": colors.dune.dune300,
@@ -104,7 +100,6 @@ export const themes = {
         "--space-md": spacing.md,
         "--space-lg": spacing.lg,
         "--space-xl": spacing.xl,
-        "--hover-sound": "url('/sounds/dune-hover.wav')",
     }
 };
   

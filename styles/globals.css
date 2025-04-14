@@ -86,20 +86,4 @@ html, body {
     align-items: center;
     overflow: hidden;
 }
-
-/* Audio context setup */
-.sound-enabled {
-  --hover-volume: 0.2; /* Adjustable volume level */
-}
-
-/* Interactive elements with hover sound */
-.hover-sound {
-  position: relative;
-}
-
-/* Optional visual feedback */
-.hover-sound:hover {
-  transform: scale(1.02);
-  transition: transform 0.2s ease;
-}
   
