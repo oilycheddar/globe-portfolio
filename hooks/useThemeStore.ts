@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { themes } from "../styles/themes";
 
 interface ThemeState {
   theme: string;
@@ -11,15 +10,10 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({
-  theme: "slime", // Default theme
-  setTheme: (theme) => {
-    // Force hardware acceleration for color transitions
-    document.documentElement.style.setProperty('transform', 'translateZ(0)');
-    document.documentElement.style.setProperty('-webkit-transform', 'translateZ(0)');
-    set({ theme });
-  },
-  noiseEnabled: true, // Default noise state
+  theme: "default",
+  setTheme: (theme) => set({ theme }),
+  noiseEnabled: true,
   setNoiseEnabled: (enabled) => set({ noiseEnabled: enabled }),
-  logo3DEnabled: true, // Changed to true for initial test
+  logo3DEnabled: false,
   setLogo3DEnabled: (enabled) => set({ logo3DEnabled: enabled }),
 }));

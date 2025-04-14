@@ -1,7 +1,11 @@
-import { withHoverSound } from './withHoverSound';
+import React from 'react';
 
-const Button = ({ children, ...props }) => (
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+}
+
+const Button = ({ children, ...props }: ButtonProps) => (
   <button {...props}>{children}</button>
 );
 
-export const ButtonWithSound = withHoverSound(Button); 
+export default Button; 
