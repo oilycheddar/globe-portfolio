@@ -346,7 +346,7 @@ export default function NotFound() {
             ref={aboutTextRef}
             className={`${textStyles.caption} text-[var(--color-text)]`}
           >
-            This is Chewy.
+            This is Chewie.
             <br />
             He says you found a dead end.
             <br />
