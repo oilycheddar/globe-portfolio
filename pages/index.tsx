@@ -186,6 +186,8 @@ export default function Home() {
         y: 20,
         visibility: 'visible' // Make visible before animation
       });
+      gsap.set(topTextRef.current, { opacity: 0 });
+      gsap.set(bottomTextRef.current, { opacity: 0 });
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
@@ -301,8 +303,12 @@ export default function Home() {
     // Create a timeline for theme change animations
     const tl = gsap.timeline();
 
+    // First set opacity to 0 to ensure text is not visible before scramble
+    gsap.set([topTextRef.current, bottomTextRef.current], { opacity: 0 });
+
     // Animate first text
     tl.to(topTextRef.current, {
+      opacity: 1,
       duration: 0.68,
       scrambleText: {
         text: "product designer",
@@ -315,6 +321,7 @@ export default function Home() {
       onComplete: () => {
         // Show second text with scramble effect
         gsap.to(bottomTextRef.current, {
+          opacity: 1,
           duration: 0.68,
           scrambleText: {
             text: "AI maximalist",
