@@ -222,7 +222,7 @@ export default function Home() {
         opacity: 1,
         duration: 0.8,
         scrambleText: {
-          text: "ux engineer",
+          text: "AI maximalist",
           chars: scrambleCharSets.matrix,
           revealDelay: 0.4,
           speed: 0.8,
@@ -317,7 +317,7 @@ export default function Home() {
         gsap.to(bottomTextRef.current, {
           duration: 0.68,
           scrambleText: {
-            text: "ux engineer",
+            text: "AI maximalist",
             chars: secondCharSet,
             revealDelay: 0.4,
             speed: 0.8,
@@ -688,7 +688,7 @@ export default function Home() {
                 mixBlendMode: 'normal'
               }}
             >
-              ux engineer
+              AI maximalist
             </p>
           </StyledContent>
         </BlurWrapper>
