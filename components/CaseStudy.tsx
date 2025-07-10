@@ -363,7 +363,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
               autoPlay={autoplay}
               loop={data.videoUrl.includes('loom')}
               onEnded={handleVideoEnded}
-              style={{ display: isVideoPlaying ? 'block' : 'none' }}
+              style={{ display: (isVideoPlaying || data.posterUrl === 'none') ? 'block' : 'none' }}
             />
           </>
         ) : (

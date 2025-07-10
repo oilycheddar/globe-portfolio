@@ -21,8 +21,8 @@ export const caseStudies: CaseStudy[] = [
     title: 'Treasury @ Ramp',
     link: 'https://www.ramp.com/treasury',
     description: 'I LED THE ZERO-TO-ONE DESIGN FOR RAMP\'S BUSINESS & INVESTMENT ACCOUNTS.\nCREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.',
-    videoUrl: 'none',
-    posterUrl: '/Investment_Landing_Asset_Dark.png',
+    videoUrl: '/treasury_video.mp4',
+    posterUrl: 'none',
     team: [
       { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
       { role: 'BACK END', names: ['ARNAB', 'ERIC', 'DANIELLE'] },
@@ -31,22 +31,6 @@ export const caseStudies: CaseStudy[] = [
       { role: 'MARKETING', names: ['BECKY', 'CHRISTY'] },
       { role: 'BRAND', names: ['EMILY', 'SHIVANI'] }
     ]
-  },
-  {
-    id: 'Runway',
-    title: 'Runway @ Ramp',
-    link: 'none',
-    description: 'Research & design for Ramp\'s breakthrough cash management feature. Finance teams can set their ideal bank balance, and Ramp will do the rest.',
-    videoUrl: 'none',
-    posterUrl: '/Runway_drawer_dark.png',
-    team: [
-        { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
-        { role: 'BACK END', names: ['ARNAB'] },
-        { role: 'PRODUCT', names: ['KARL'] },
-        { role: 'DATA', names: ['JAMES'] },
-    ],
-    hideTeam: true,
-    hide: true
   },
   {
     id: 'affirmations',
