@@ -21,7 +21,6 @@ const CaseStudyWrapper = styled.div`
   transition: filter 0.4s ease;
   width: 100%;
   height: fit-content;
-  cursor: pointer;
   visibility: visible;
   
   @media (max-width: 440px) {
@@ -296,7 +295,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     }
   }, [autoplay]);
 
-  const isLoopingVideo = data.videoUrl.includes('loom');
+  const isLoopingVideo = data.videoUrl.includes('loom') || data.videoUrl.includes('treasury_video.mp4');
   const isClickableVideo = data.videoUrl !== 'none' && !isLoopingVideo;
 
   const handleVideoClick = () => {
@@ -361,7 +360,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
               muted
               playsInline
               autoPlay={autoplay}
-              loop={data.videoUrl.includes('loom')}
+              loop={data.videoUrl.includes('loom') || data.videoUrl.includes('treasury_video.mp4')}
               onEnded={handleVideoEnded}
               style={{ display: (isVideoPlaying || data.posterUrl === 'none') ? 'block' : 'none' }}
             />

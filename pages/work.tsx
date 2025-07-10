@@ -354,8 +354,7 @@ export default function Work() {
         opacity: 1,
         y: 0,
         duration: 0.8,
-        stagger: 0.2,
-        ease: "power2.out",
+        ease: "cubic-bezier(.455, .03, .515, .955)",
         clearProps: "all"
       });
 
@@ -374,10 +373,10 @@ export default function Work() {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.7,
-          ease: "power2.out",
+          duration: 0.5,
+          ease: "cubic-bezier(.455, .03, .515, .955)",
           clearProps: "all"
-        }, "+=0.45");
+        }, "-=0.2");
       }
     }, contentRef);
 
@@ -457,7 +456,7 @@ export default function Work() {
               style={isMobile && isNavExpanded ? {
                 filter: 'blur(8px)'
               } : undefined}
-              autoplay={study.id === 'affirmations'}
+              autoplay={study.id === 'affirmations' || study.id === 'ramp-treasury'}
             />
           ))}
         </CaseStudiesList>

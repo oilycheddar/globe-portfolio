@@ -251,7 +251,7 @@ export default function Home() {
           y: 0,
           filter: 'blur(0px)',
           duration: 0.7,
-          ease: "power2.out",
+          ease: "cubic-bezier(.455, .03, .515, .955)",
           clearProps: "all"
         }, "+=0.45");
       }
