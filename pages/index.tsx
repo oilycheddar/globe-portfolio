@@ -600,7 +600,12 @@ export default function Home() {
     inactivityTimeoutRef.current = setTimeout(() => {
       if (!isDvdActive) {
         setIsInactivityTriggered(true);
-        handleDvdToggle(true);
+        // Trigger the existing GSAP animation timeline instead of DVD mode
+        const ctx = initializeGSAPAnimations();
+        // Clean up the context after animation completes
+        setTimeout(() => {
+          ctx.revert();
+        }, 5000); // Clean up after 5 seconds
       }
     }, INACTIVITY_DURATION);
   }, [isDvdActive, isInactivityTriggered, handleDvdToggle]);
