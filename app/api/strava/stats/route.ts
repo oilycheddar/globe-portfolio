@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { getStravaStats, updateStravaStats, isDataStale, acquireUpdateLock, releaseUpdateLock, StravaStats } from '../../../../utils/strava-redis';
-import { parseAndConvertDistance } from '../utils/unitConversion';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = process.env.STRAVA_ATHLETE_ID;
