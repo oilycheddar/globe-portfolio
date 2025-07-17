@@ -6,6 +6,7 @@ import { useState, forwardRef, useRef, useImperativeHandle, useEffect, memo } fr
 import { textStyles } from '../styles/text';
 import { useRouter } from 'next/router';
 import { getYTDRunningDistance } from '../services/strava';
+import { parseAndConvertDistance } from '../utils/unitConversion';
 
 const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   className: props.className || ''

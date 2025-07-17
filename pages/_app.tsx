@@ -69,7 +69,10 @@ export default function App({ Component, pageProps }: AppProps) {
       {/* Font loading optimization */}
       <Script id="font-loading" strategy="afterInteractive">
         {`
-          document.querySelector('link[rel="stylesheet"][media="print"]').media = 'all';
+          const fontLink = document.querySelector('link[rel="stylesheet"][media="print"]');
+          if (fontLink) {
+            fontLink.media = 'all';
+          }
         `}
       </Script>
 

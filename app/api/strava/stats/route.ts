@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import { getStravaStats, updateStravaStats, isDataStale, acquireUpdateLock, releaseUpdateLock, StravaStats } from '../../../../utils/strava-redis';
+import { parseAndConvertDistance } from '../utils/unitConversion';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = process.env.STRAVA_ATHLETE_ID;
@@ -46,7 +47,7 @@ async function fetchFreshStravaStats(): Promise<{ distance: string; lastKnownGoo
 
     console.log('Raw Strava API response:', response.data);
     const distanceInKm = Math.round(response.data.ytd_run_totals.distance / 1000);
-    const newDistance = `${distanceInKm}km`;
+    const newDistance = `${distanceInKm}km`; // Always store in km
     console.log('Parsed distance:', newDistance);
 
     return {

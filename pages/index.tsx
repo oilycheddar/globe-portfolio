@@ -139,6 +139,12 @@ export default function Home() {
   const dvdLogoRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Inactivity timer state and refs
+  const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastActivityRef = useRef<number>(Date.now());
+  const INACTIVITY_DURATION = 2 * 60 * 1000; // 2 minutes in milliseconds
+  const [isInactivityTriggered, setIsInactivityTriggered] = useState(false);
 
   // Initialize GSAP animations
   const initializeGSAPAnimations = () => {
@@ -574,12 +580,59 @@ export default function Home() {
     }
   }, [startDvdAnimation, stopDvdAnimation, isMobile]);
 
-  // Handle click to exit DVD mode
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    if (isDvdActive) {
+  // Activity tracking function
+  const resetInactivityTimer = useCallback(() => {
+    // Clear existing timeout
+    if (inactivityTimeoutRef.current) {
+      clearTimeout(inactivityTimeoutRef.current);
+    }
+    
+    // Update last activity time
+    lastActivityRef.current = Date.now();
+    
+    // If DVD was triggered by inactivity, turn it off
+    if (isInactivityTriggered && isDvdActive) {
+      setIsInactivityTriggered(false);
       handleDvdToggle(false);
     }
-  }, [isDvdActive, handleDvdToggle]);
+    
+    // Set new timeout
+    inactivityTimeoutRef.current = setTimeout(() => {
+      if (!isDvdActive) {
+        setIsInactivityTriggered(true);
+        handleDvdToggle(true);
+      }
+    }, INACTIVITY_DURATION);
+  }, [isDvdActive, isInactivityTriggered, handleDvdToggle]);
+
+  // Activity event handlers
+  const handleUserActivity = useCallback(() => {
+    resetInactivityTimer();
+  }, [resetInactivityTimer]);
+
+  // Initialize inactivity timer
+  useEffect(() => {
+    // Start the inactivity timer
+    resetInactivityTimer();
+    
+    // Add event listeners for user activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    events.forEach(event => {
+      document.addEventListener(event, handleUserActivity, { passive: true });
+    });
+    
+    // Cleanup function
+    return () => {
+      if (inactivityTimeoutRef.current) {
+        clearTimeout(inactivityTimeoutRef.current);
+      }
+      
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserActivity);
+      });
+    };
+  }, [resetInactivityTimer, handleUserActivity]);
 
   // Cleanup animation on unmount
   useEffect(() => {
@@ -624,7 +677,16 @@ export default function Home() {
       containerRect: containerRef.current?.getBoundingClientRect(),
       logoRect: logoRef.current?.getBoundingClientRect()
     })
-  }, [logo3DEnabled])
+  }, [logo3DEnabled]);
+
+  // Handle click to exit DVD mode
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (isDvdActive) {
+      handleDvdToggle(false);
+      // Reset inactivity timer when user clicks to exit DVD mode
+      resetInactivityTimer();
+    }
+  }, [isDvdActive, handleDvdToggle, resetInactivityTimer]);
 
   return (
     <PageWrapper noiseEnabled={noiseEnabled}>

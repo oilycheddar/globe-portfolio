@@ -1,9 +1,10 @@
 import { getStravaStats } from '../utils/strava-redis';
+import { parseAndConvertDistance } from '../utils/unitConversion';
 
 interface StravaStats {
   distance: string;
   lastUpdated: string;
-  lastKnownGoodDistance?: string;  // Add this to track last known good value
+  lastKnownGoodDistance?: string;
 }
 
 const TEMPORARY_OVERRIDE = '407km';  // Temporary override until API catches up
@@ -15,20 +16,20 @@ export async function getYTDRunningDistance(): Promise<string> {
     const response = await fetch('/api/strava/stats');
     const stats = await response.json();
     
-    // Return the current distance if available
+    // Convert to local units
     if (stats.distance) {
-      return stats.distance;
+      return parseAndConvertDistance(stats.distance);
     }
     
     // Fall back to last known good distance if available
     if (stats.lastKnownGoodDistance) {
-      return stats.lastKnownGoodDistance;
+      return parseAndConvertDistance(stats.lastKnownGoodDistance);
     }
     
     // Final fallback to temporary override
-    return TEMPORARY_OVERRIDE;
+    return parseAndConvertDistance(TEMPORARY_OVERRIDE);
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
-    return TEMPORARY_OVERRIDE;
+    return parseAndConvertDistance(TEMPORARY_OVERRIDE);
   }
 } 
