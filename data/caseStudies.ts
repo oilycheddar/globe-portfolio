@@ -90,5 +90,34 @@ export const caseStudies: CaseStudy[] = [
       { role: 'BRAND', names: ['EMILY', 'SHIVANI'] }
     ],
     hideTeam: true
+  },
+  {
+    id: 'fig-psychology',
+    title: 'Fig Psychology',
+    link: 'none',
+    description: 'Logo design for my wife\'s psychology practice',
+    videoUrl: 'none',
+    posterUrl: '/fig_lockup.png',
+    team: [],
+    hideTeam: true
+  },
+  {
+    id: 'various-art',
+    title: 'Various Art',
+    link: 'none',
+    description: 'Posters, illustrations, and ceramics.',
+    videoUrl: 'none',
+    posterUrl: '/various_art_poster.png',
+    useBentoLayout: true,
+    images: [
+      '/layoffs.png',
+      '/beware_explosives.png',
+      '/Canada as 51st State_black.png',
+      '/robot_zuck_analysis.png',
+      '/panther_timelapse.mov',
+      '/butterfly_timelapse.mov'
+    ],
+    team: [],
+    hideTeam: true
   }
 ]; 

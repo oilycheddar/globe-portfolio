@@ -141,10 +141,10 @@ const BentoGrid = styled.div`
   display: grid;
   gap: var(--space-sm);
   width: 100%;
-  max-height: 70vh;
   height: fit-content;
   border-radius: 12px;
   overflow: hidden;
+  justify-self: center; /* Center when not full width */
   
   /* 2 images: side by side */
   &[data-count="2"] {
@@ -159,11 +159,11 @@ const BentoGrid = styled.div`
     aspect-ratio: 16/10;
   }
   
-  /* 4 images: 2x2 grid */
+  /* 4 images: 1x4 grid for A4 posters */
   &[data-count="4"] {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    aspect-ratio: 16/10;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    aspect-ratio: 28/8; /* Optimized for 4 A4 portraits side by side */
   }
   
   /* 5 images: 2 top, 3 bottom */
@@ -173,11 +173,16 @@ const BentoGrid = styled.div`
     aspect-ratio: 16/9;
   }
   
-  /* 6 images: 3x2 grid */
+  /* 6 images: 2-column layout - Left: 2x2 A4 posters, Right: 1x2 videos */
   &[data-count="6"] {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 1fr 1fr;
-    aspect-ratio: 16/9;
+    grid-template-columns: auto auto minmax(200px, 1fr); /* Auto-sized A4 columns, flexible video column */
+    grid-template-rows: 1fr 1fr; /* Split available height evenly */
+    aspect-ratio: unset; /* Let content determine size */
+    height: 100%; /* Use full available height within 70vh */
+    width: fit-content; /* Size to content instead of full width */
+    max-width: 100%; /* Don't exceed container */
+    justify-content: start; /* Align content to start */
+    align-items: stretch; /* Stretch items to fill rows */
   }
   
   @media (max-width: 440px) {
@@ -215,13 +220,26 @@ interface BentoItemProps {
   $span?: string;
   $count: number;
   $index: number;
+  $caseStudyId?: string;
 }
 
 const BentoGridItem = styled.div<BentoItemProps>`
   position: relative;
-  overflow: hidden;
-  background: var(--color-bg-secondary, #f5f5f5);
-  border-radius: 8px;
+  overflow: ${props => 
+    props.$caseStudyId === 'various-art' && props.$index < 4 
+      ? 'visible' 
+      : 'hidden'
+  };
+  background: ${props => 
+    props.$caseStudyId === 'various-art' && props.$index < 4 
+      ? 'transparent' 
+      : 'var(--color-bg-secondary, #f5f5f5)'
+  };
+  border-radius: ${props => 
+    props.$caseStudyId === 'various-art' && props.$index < 4 
+      ? '0px' 
+      : '8px'
+  };
   
   /* 3 images layout: first image spans 2 rows */
   ${props => props.$count === 3 && props.$index === 0 && `
@@ -236,6 +254,51 @@ const BentoGridItem = styled.div<BentoItemProps>`
   
   ${props => props.$count === 5 && props.$index >= 2 && `
     grid-row: 2;
+  `}
+  
+  /* 6 images layout: Left 2x2 (items 0-3) + Right 1x2 (items 4-5) */
+  ${props => props.$count === 6 && props.$index === 0 && `
+    grid-column: 1;
+    grid-row: 1;
+  `}
+  
+  ${props => props.$count === 6 && props.$index === 1 && `
+    grid-column: 2;
+    grid-row: 1;
+  `}
+  
+  ${props => props.$count === 6 && props.$index === 2 && `
+    grid-column: 1;
+    grid-row: 2;
+  `}
+  
+  ${props => props.$count === 6 && props.$index === 3 && `
+    grid-column: 2;
+    grid-row: 2;
+  `}
+  
+  ${props => props.$count === 6 && props.$index === 4 && `
+    grid-column: 3;
+    grid-row: 1;
+  `}
+  
+  ${props => props.$count === 6 && props.$index === 5 && `
+    grid-column: 3;
+    grid-row: 2;
+  `}
+  
+  /* Video and A4 poster sizing for Various Art (items 0-5) - fill available space */
+  ${props => props.$count === 6 && props.$caseStudyId === 'various-art' && `
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `}
+  
+  /* A4 aspect ratio for posters only (first 4 items) */
+  ${props => props.$count === 6 && props.$index < 4 && props.$caseStudyId === 'various-art' && `
+    aspect-ratio: 210/297; /* Maintain A4 ratio */
   `}
   
   @media (max-width: 440px) {
@@ -255,10 +318,11 @@ const BentoGridItem = styled.div<BentoItemProps>`
   }
 `;
 
-const BentoImage = styled(Image)`
+const BentoImage = styled(Image)<{ $caseStudyId?: string; $index?: number }>`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: ${props => props.$caseStudyId === 'various-art' ? 'contain' : 'cover'};
+  object-position: center;
   display: block;
   transition: transform 0.3s cubic-bezier(.455, .03, .515, .955);
   
@@ -279,10 +343,11 @@ const BentoImage = styled(Image)`
   }
 `;
 
-const BentoVideo = styled.video`
+const BentoVideo = styled.video<{ $caseStudyId?: string; $index?: number }>`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: ${props => props.$caseStudyId === 'various-art' ? 'contain' : 'cover'};
+  object-position: center;
   display: block;
   transition: transform 0.3s cubic-bezier(.455, .03, .515, .955);
   cursor: pointer;
@@ -740,9 +805,30 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
   // Initialize bento video playing state
   useEffect(() => {
     if (data.useBentoLayout && data.images) {
-      setBentoVideosPlaying(new Array(data.images.length).fill(false));
+      const initialPlayState = data.images.map((mediaSrc, index) => {
+        const isVideo = mediaSrc.endsWith('.mp4') || mediaSrc.endsWith('.webm') || mediaSrc.endsWith('.mov');
+        // Autoplay timelapse videos in Various Art case study (indices 4 and 5)
+        return isVideo && data.id === 'various-art' && index >= 4;
+      });
+      setBentoVideosPlaying(initialPlayState);
     }
-  }, [data.useBentoLayout, data.images]);
+  }, [data.useBentoLayout, data.images, data.id]);
+
+  // Autoplay bento videos that should start playing
+  useEffect(() => {
+    if (data.useBentoLayout && data.images && bentoVideosPlaying.length > 0) {
+      bentoVideosPlaying.forEach((shouldPlay, index) => {
+        if (shouldPlay && bentoVideoRefs.current[index]) {
+          const video = bentoVideoRefs.current[index];
+          if (video) {
+            video.play().catch(error => {
+              console.error('Bento video autoplay failed:', error);
+            });
+          }
+        }
+      });
+    }
+  }, [bentoVideosPlaying, data.useBentoLayout, data.images]);
 
   const handleBentoVideoClick = (index: number) => {
     const video = bentoVideoRefs.current[index];
@@ -874,6 +960,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                   key={`${data.id}-bento-${index}`}
                   $count={data.images!.length}
                   $index={index}
+                  $caseStudyId={data.id}
                   data-is-video={isVideo}
                   onClick={isVideo ? () => handleBentoVideoClick(index) : () => openLightbox(index)}
                   onDoubleClick={isVideo ? () => openLightbox(index) : undefined}
@@ -886,9 +973,12 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                         ref={(el) => { bentoVideoRefs.current[index] = el; }}
                         src={mediaSrc}
                         poster={mediaSrc.includes('treasury_demo') ? '/Treasury_demo_poster.png' : undefined}
+                        $caseStudyId={data.id}
+                        $index={index}
                         muted
                         loop
                         playsInline
+                        autoPlay={data.id === 'various-art' && index >= 4}
                         onEnded={() => {
                           const newBentoVideosPlaying = [...bentoVideosPlaying];
                           newBentoVideosPlaying[index] = false;
@@ -900,6 +990,8 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                     <BentoImage
                       src={mediaSrc}
                       alt={`${data.title} - Image ${index + 1}`}
+                      $caseStudyId={data.id}
+                      $index={index}
                       fill
                       quality={95}
                       sizes="(max-width: 440px) 90vw, (max-width: 768px) 60vw, 50vw"
