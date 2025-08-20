@@ -230,7 +230,7 @@ export default function Home() {
         opacity: 1,
         duration: 0.8,
         scrambleText: {
-          text: "AI maximalist",
+          text: "long distance athlete",
           chars: scrambleCharSets.matrix,
           revealDelay: 0.4,
           speed: 0.8,
@@ -330,7 +330,7 @@ export default function Home() {
           opacity: 1,
           duration: 0.68,
           scrambleText: {
-            text: "AI maximalist",
+            text: "long distance athlete",
             chars: secondCharSet,
             revealDelay: 0.4,
             speed: 0.8,
@@ -762,7 +762,7 @@ export default function Home() {
                 mixBlendMode: 'normal'
               }}
             >
-              AI maximalist
+              Long distance athlete
             </p>
           </StyledContent>
         </BlurWrapper>

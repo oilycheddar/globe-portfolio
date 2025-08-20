@@ -82,9 +82,6 @@ export default function App({ Component, pageProps }: AppProps) {
           (function() {
             const style = document.createElement('style');
             style.textContent = \`
-              /* Hide content until CSS is loaded */
-              body { visibility: hidden; }
-              
               :root {
                 --color-page-content: ${defaultTheme['--color-bg']};
                 --color-bg: ${defaultTheme['--color-bg']};
@@ -95,11 +92,6 @@ export default function App({ Component, pageProps }: AppProps) {
               }
             \`;
             document.head.appendChild(style);
-            
-            // Show content once CSS is loaded
-            window.addEventListener('load', function() {
-              document.body.style.visibility = 'visible';
-            });
           })();
         `}
       </Script>

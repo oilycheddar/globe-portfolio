@@ -10,6 +10,8 @@ export interface CaseStudy {
   description: string;
   videoUrl: string;
   posterUrl: string;
+  images?: string[]; // For bento box layout
+  useBentoLayout?: boolean; // Enable bento box instead of single image/video
   team: TeamMember[];
   hideTeam?: boolean;
   hide?: boolean;
@@ -21,8 +23,14 @@ export const caseStudies: CaseStudy[] = [
     title: 'Treasury @ Ramp',
     link: 'https://www.ramp.com/treasury',
     description: 'I LED THE ZERO-TO-ONE DESIGN FOR RAMP\'S BUSINESS & INVESTMENT ACCOUNTS.\nCREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.',
-    videoUrl: '/treasury_video.mp4',
-    posterUrl: 'none',
+    videoUrl: 'none',
+    posterUrl: '/Investment_Landing_Asset_Dark.png',
+    useBentoLayout: true,
+    images: [
+      '/treasury_demo.mp4',                // Left: Tall demo video
+      '/treasury_strategy_selection.png',  // Top right: Strategy selection
+      '/treasury_mobile.png'               // Bottom right: Mobile view
+    ],
     team: [
       { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
       { role: 'BACK END', names: ['ARNAB', 'ERIC', 'DANIELLE'] },
@@ -38,7 +46,7 @@ export const caseStudies: CaseStudy[] = [
     link: 'https://www.loom.com',
     description: 'Designed loom\'s affirmations feature, which writes you a short, positive message after every recording.',
     videoUrl: 'loom_affirmations.mp4',
-    posterUrl: 'none',
+    posterUrl: '/loom_poster_image.png',
     team: [
       { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
       { role: 'BACK END', names: ['ARNAB', 'ERIC'] },

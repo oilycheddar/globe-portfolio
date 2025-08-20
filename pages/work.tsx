@@ -456,7 +456,7 @@ export default function Work() {
               style={isMobile && isNavExpanded ? {
                 filter: 'blur(8px)'
               } : undefined}
-              autoplay={study.id === 'affirmations' || study.id === 'ramp-treasury'}
+              autoplay={false}
             />
           ))}
         </CaseStudiesList>
