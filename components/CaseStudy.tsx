@@ -56,34 +56,10 @@ const ImageWrapper = styled.div<ImageWrapperProps>`
 `;
 
 const PlayButton = styled.div`
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  z-index: 10;
+  display: none; /* Hidden on desktop - use hover tooltip instead */
   
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  &::before {
-    content: '';
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 15px 0 15px 25px;
-    border-color: transparent transparent transparent white;
-    margin-left: 5px;
-  }
-
   @media (max-width: 440px) {
-    display: none; /* Hide desktop version on mobile */
+    display: none; /* Also hidden on mobile - use MobilePlayButton instead */
   }
 `;
 
@@ -277,6 +253,7 @@ const BentoGridItem = styled.div<BentoItemProps>`
     overflow: hidden;
     width: 100%;
     height: 100%;
+    aspect-ratio: 16/10; /* Fixed aspect ratio to prevent cropping */
   `}
   
   /* 5 images layout: first 2 span wider */
@@ -419,34 +396,10 @@ const BentoVideo = styled.video<{ $caseStudyId?: string; $index?: number }>`
 `;
 
 const BentoPlayButton = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 10;
-  pointer-events: none;
+  display: none; /* Hidden on desktop - use hover tooltip instead */
   
-  &::before {
-    content: '';
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 12px 0 12px 20px;
-    border-color: transparent transparent transparent white;
-    margin-left: 4px;
-  }
-
   @media (max-width: 440px) {
-    display: none; /* Hide desktop version on mobile */
+    display: none; /* Also hidden on mobile - use MobileBentoPlayButton instead */
   }
 `;
 
@@ -1085,10 +1038,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
         onMouseLeave={data.videoUrl !== 'none' ? () => handleVideoHover(0, false, 'single') : undefined}
       >
         {!isVideoPlaying && isClickableVideo && (
-          <>
-            <PlayButton />
-            <MobilePlayButton />
-          </>
+          <MobilePlayButton />
         )}
         {data.useBentoLayout && data.images && data.images.length > 0 ? (
           <BentoGrid data-count={data.images.length}>
@@ -1119,10 +1069,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                   {isVideo ? (
                     <>
                       {!bentoVideosPlaying[index] && (
-                        <>
-                          <BentoPlayButton />
-                          <MobileBentoPlayButton />
-                        </>
+                        <MobileBentoPlayButton />
                       )}
                       <BentoVideo
                         ref={(el) => { bentoVideoRefs.current[index] = el; }}

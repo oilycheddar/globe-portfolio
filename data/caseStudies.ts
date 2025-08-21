@@ -105,7 +105,7 @@ export const caseStudies: CaseStudy[] = [
     id: 'various-art',
     title: 'Various Art',
     link: 'none',
-    description: 'Posters, illustrations, and ceramics.',
+    description: 'Posters and illustrations.',
     videoUrl: 'none',
     posterUrl: '/various_art_poster.png',
     useBentoLayout: true,
