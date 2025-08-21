@@ -14,6 +14,22 @@ export async function getYTDRunningDistance(): Promise<string> {
   try {
     // Use fetch to get stats from API route
     const response = await fetch('/api/strava/stats');
+    
+    // Check if the response is ok and actually JSON
+    if (!response.ok) {
+      console.error('API response not ok:', response.status, response.statusText);
+      return parseAndConvertDistance(TEMPORARY_OVERRIDE);
+    }
+
+    // Check content type to ensure it's JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Response is not JSON, got:', contentType);
+      const text = await response.text();
+      console.error('Response body:', text.substring(0, 200) + '...');
+      return parseAndConvertDistance(TEMPORARY_OVERRIDE);
+    }
+
     const stats = await response.json();
     
     // Convert to local units
