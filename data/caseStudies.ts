@@ -45,7 +45,7 @@ export const caseStudies: CaseStudy[] = [
     title: 'Affirmations @ Loom',
     link: 'https://www.loom.com',
     description: 'Designed loom\'s affirmations feature, which writes you a short, positive message after every recording.',
-    videoUrl: 'loom_affirmations.mp4',
+    videoUrl: '/loom_demo_video.mp4',
     posterUrl: '/loom_poster_image.png',
     team: [
       { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },

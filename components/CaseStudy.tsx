@@ -4,6 +4,7 @@ import { textStyles } from '../styles/text';
 import { CaseStudy as CaseStudyType } from '../data/caseStudies';
 import React from 'react';
 import Image from 'next/image';
+import { CursorTooltip } from './CursorTooltip';
 
 const CaseStudyWrapper = styled.div`
   --space-xs: 8px;
@@ -82,13 +83,35 @@ const PlayButton = styled.div`
   }
 
   @media (max-width: 440px) {
-    width: 60px;
-    height: 60px;
+    display: none; /* Hide desktop version on mobile */
+  }
+`;
 
-    &::before {
-      border-width: 12px 0 12px 20px;
-      margin-left: 4px;
-    }
+const MobilePlayButton = styled.div`
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  z-index: 10;
+  
+  &::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 9px 0 9px 15px;
+    border-color: transparent transparent transparent white;
+    margin-left: 3px;
+  }
+
+  @media (max-width: 440px) {
+    display: flex; /* Only show on mobile */
   }
 `;
 
@@ -141,6 +164,7 @@ const BentoGrid = styled.div`
   display: grid;
   gap: var(--space-sm);
   width: 100%;
+  max-height: 70vh;
   height: fit-content;
   border-radius: 12px;
   overflow: hidden;
@@ -231,7 +255,8 @@ const BentoGridItem = styled.div<BentoItemProps>`
       : 'hidden'
   };
   background: ${props => 
-    props.$caseStudyId === 'various-art' && props.$index < 4 
+    (props.$caseStudyId === 'various-art' && props.$index < 4) || 
+    props.$caseStudyId === 'ramp-treasury'
       ? 'transparent' 
       : 'var(--color-bg-secondary, #f5f5f5)'
   };
@@ -244,6 +269,14 @@ const BentoGridItem = styled.div<BentoItemProps>`
   /* 3 images layout: first image spans 2 rows */
   ${props => props.$count === 3 && props.$index === 0 && `
     grid-row: span 2;
+  `}
+  
+  /* Treasury-specific sizing to prevent overflow */
+  ${props => props.$count === 3 && props.$caseStudyId === 'ramp-treasury' && `
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
   `}
   
   /* 5 images layout: first 2 span wider */
@@ -307,13 +340,13 @@ const BentoGridItem = styled.div<BentoItemProps>`
     /* Mobile: Each item takes full width and auto height */
     grid-column: 1;
     grid-row: auto;
-    aspect-ratio: 16/10; /* Consistent aspect ratio for better layout */
+    aspect-ratio: ${props => props.$caseStudyId === 'various-art' ? '10/16' : '16/10'}; /* Portrait for Various Art A4 posters, landscape for others */
   }
   
   /* Video items get slightly more height for better visibility on mobile */
   &[data-is-video="true"] {
     @media (max-width: 440px) {
-      aspect-ratio: 16/9;
+      aspect-ratio: 16/9; /* Videos always use landscape ratio */
     }
   }
 `;
@@ -321,7 +354,15 @@ const BentoGridItem = styled.div<BentoItemProps>`
 const BentoImage = styled(Image)<{ $caseStudyId?: string; $index?: number }>`
   width: 100%;
   height: 100%;
-  object-fit: ${props => props.$caseStudyId === 'various-art' ? 'contain' : 'cover'};
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: ${props => 
+    props.$caseStudyId === 'ramp-treasury'
+      ? 'cover'
+      : props.$caseStudyId === 'various-art' 
+      ? 'contain' 
+      : 'cover'
+  };
   object-position: center;
   display: block;
   transition: transform 0.3s cubic-bezier(.455, .03, .515, .955);
@@ -346,7 +387,15 @@ const BentoImage = styled(Image)<{ $caseStudyId?: string; $index?: number }>`
 const BentoVideo = styled.video<{ $caseStudyId?: string; $index?: number }>`
   width: 100%;
   height: 100%;
-  object-fit: ${props => props.$caseStudyId === 'various-art' ? 'contain' : 'cover'};
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: ${props => 
+    props.$caseStudyId === 'ramp-treasury'
+      ? 'cover'
+      : props.$caseStudyId === 'various-art' 
+      ? 'contain' 
+      : 'cover'
+  };
   object-position: center;
   display: block;
   transition: transform 0.3s cubic-bezier(.455, .03, .515, .955);
@@ -397,13 +446,39 @@ const BentoPlayButton = styled.div`
   }
 
   @media (max-width: 440px) {
-    width: 56px;
-    height: 56px;
+    display: none; /* Hide desktop version on mobile */
+  }
+`;
 
-    &::before {
-      border-width: 11px 0 11px 18px;
-      margin-left: 3px;
-    }
+const MobileBentoPlayButton = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  pointer-events: none;
+  
+  &::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 7px 0 7px 12px;
+    border-color: transparent transparent transparent white;
+    margin-left: 2px;
+  }
+
+  @media (max-width: 440px) {
+    display: flex; /* Only show on mobile */
   }
 `;
 
@@ -425,7 +500,7 @@ const LightboxOverlay = styled.div<{ $isOpen: boolean }>`
   transition: all 0.25s cubic-bezier(.215, .61, .355, 1);
   
   @media (max-width: 440px) {
-    padding: 0;
+    display: none !important; /* Hide lightbox completely on mobile */
   }
 `;
 
@@ -761,6 +836,10 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  // Cursor tooltip state for Various Art videos
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipText, setTooltipText] = useState('');
+  const [hoveredVideoIndex, setHoveredVideoIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (autoplay && videoRef.current) {
@@ -807,30 +886,34 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     if (data.useBentoLayout && data.images) {
       const initialPlayState = data.images.map((mediaSrc, index) => {
         const isVideo = mediaSrc.endsWith('.mp4') || mediaSrc.endsWith('.webm') || mediaSrc.endsWith('.mov');
-        // Autoplay timelapse videos in Various Art case study (indices 4 and 5)
-        return isVideo && data.id === 'various-art' && index >= 4;
+        // No autoplay - all videos start paused
+        return false;
       });
       setBentoVideosPlaying(initialPlayState);
     }
   }, [data.useBentoLayout, data.images, data.id]);
 
-  // Autoplay bento videos that should start playing
+  // Handle video playback state changes
   useEffect(() => {
     if (data.useBentoLayout && data.images && bentoVideosPlaying.length > 0) {
       bentoVideosPlaying.forEach((shouldPlay, index) => {
-        if (shouldPlay && bentoVideoRefs.current[index]) {
+        if (bentoVideoRefs.current[index]) {
           const video = bentoVideoRefs.current[index];
           if (video) {
-            video.play().catch(error => {
-              console.error('Bento video autoplay failed:', error);
-            });
+            if (shouldPlay && video.paused) {
+              video.play().catch(error => {
+                console.error('Video play failed:', error);
+              });
+            } else if (!shouldPlay && !video.paused) {
+              video.pause();
+            }
           }
         }
       });
     }
   }, [bentoVideosPlaying, data.useBentoLayout, data.images]);
 
-  const handleBentoVideoClick = (index: number) => {
+    const handleBentoVideoClick = (index: number) => {
     const video = bentoVideoRefs.current[index];
     if (!video) return;
 
@@ -843,12 +926,62 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
       video.play();
       newBentoVideosPlaying[index] = true;
     }
-    
+
     setBentoVideosPlaying(newBentoVideosPlaying);
   };
 
+  // Handle hover for all videos
+  const handleVideoHover = (index: number, isEntering: boolean, videoType: 'bento' | 'single' = 'bento') => {
+    // Don't show tooltip on mobile/touch devices
+    if (window.innerWidth <= 440 || 'ontouchstart' in window) return;
+
+    if (isEntering) {
+      setHoveredVideoIndex(index);
+      
+      let tooltipText = '';
+      if (data.id === 'various-art' && index >= 4) {
+        // Various Art videos: "watch process" / "pause process"
+        const isPlaying = videoType === 'bento' ? bentoVideosPlaying[index] : isVideoPlaying;
+        tooltipText = isPlaying ? 'pause process' : 'watch process';
+      } else {
+        // All other videos: "watch demo"
+        const isPlaying = videoType === 'bento' ? bentoVideosPlaying[index] : isVideoPlaying;
+        tooltipText = isPlaying ? 'pause demo' : 'watch demo';
+      }
+      
+      setTooltipText(tooltipText);
+      setTooltipVisible(true);
+    } else {
+      setHoveredVideoIndex(null);
+      setTooltipVisible(false);
+    }
+  };
+
+  // Update tooltip text when video state changes (while hovering)
+  useEffect(() => {
+    if (tooltipVisible && hoveredVideoIndex !== null) {
+      let tooltipText = '';
+      if (data.id === 'various-art' && hoveredVideoIndex >= 4) {
+        // Various Art videos: "watch process" / "pause process"
+        const isPlaying = bentoVideosPlaying[hoveredVideoIndex];
+        tooltipText = isPlaying ? 'pause process' : 'watch process';
+      } else if (data.useBentoLayout && hoveredVideoIndex !== null) {
+        // Other bento videos: "watch demo" / "pause demo"
+        const isPlaying = bentoVideosPlaying[hoveredVideoIndex];
+        tooltipText = isPlaying ? 'pause demo' : 'watch demo';
+      } else {
+        // Single videos: "watch demo" / "pause demo"
+        tooltipText = isVideoPlaying ? 'pause demo' : 'watch demo';
+      }
+      setTooltipText(tooltipText);
+    }
+  }, [bentoVideosPlaying, isVideoPlaying, tooltipVisible, hoveredVideoIndex, data.id, data.useBentoLayout]);
+
   // Lightbox functionality
   const openLightbox = (index: number) => {
+    // Don't open lightbox on mobile
+    if (window.innerWidth <= 440) return;
+    
     setLightboxIndex(index);
     setLightboxOpen(true);
     document.body.style.overflow = 'hidden'; // Prevent body scroll
@@ -948,8 +1081,15 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
         className="work-sample-image-wrapper"
         onClick={handleVideoClick}
         $isClickable={isClickableVideo}
+        onMouseEnter={data.videoUrl !== 'none' ? () => handleVideoHover(0, true, 'single') : undefined}
+        onMouseLeave={data.videoUrl !== 'none' ? () => handleVideoHover(0, false, 'single') : undefined}
       >
-        {!isVideoPlaying && isClickableVideo && <PlayButton />}
+        {!isVideoPlaying && isClickableVideo && (
+          <>
+            <PlayButton />
+            <MobilePlayButton />
+          </>
+        )}
         {data.useBentoLayout && data.images && data.images.length > 0 ? (
           <BentoGrid data-count={data.images.length}>
             {data.images.map((mediaSrc, index) => {
@@ -962,23 +1102,43 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                   $index={index}
                   $caseStudyId={data.id}
                   data-is-video={isVideo}
-                  onClick={isVideo ? () => handleBentoVideoClick(index) : () => openLightbox(index)}
-                  onDoubleClick={isVideo ? () => openLightbox(index) : undefined}
+                  onClick={isVideo ? () => handleBentoVideoClick(index) : () => {
+                    // Don't open lightbox on mobile
+                    if (window.innerWidth <= 440) return;
+                    openLightbox(index);
+                  }}
+                  onDoubleClick={isVideo ? () => {
+                    // Don't open lightbox on mobile
+                    if (window.innerWidth <= 440) return;
+                    openLightbox(index);
+                  } : undefined}
+                  onMouseEnter={isVideo ? () => handleVideoHover(index, true, 'bento') : undefined}
+                  onMouseLeave={isVideo ? () => handleVideoHover(index, false, 'bento') : undefined}
                   style={{ cursor: 'pointer' }}
                 >
                   {isVideo ? (
                     <>
-                      {!bentoVideosPlaying[index] && <BentoPlayButton />}
+                      {!bentoVideosPlaying[index] && (
+                        <>
+                          <BentoPlayButton />
+                          <MobileBentoPlayButton />
+                        </>
+                      )}
                       <BentoVideo
                         ref={(el) => { bentoVideoRefs.current[index] = el; }}
                         src={mediaSrc}
-                        poster={mediaSrc.includes('treasury_demo') ? '/Treasury_demo_poster.png' : undefined}
+                        poster={
+                          mediaSrc.includes('treasury_demo') ? '/Treasury_demo_poster.png' :
+                          mediaSrc.includes('panther_timelapse') ? '/panther_of_love.png' :
+                          mediaSrc.includes('butterfly_timelapse') ? '/butterfly.png' :
+                          undefined
+                        }
                         $caseStudyId={data.id}
                         $index={index}
                         muted
                         loop
                         playsInline
-                        autoPlay={data.id === 'various-art' && index >= 4}
+                        autoPlay={false}
                         onEnded={() => {
                           const newBentoVideosPlaying = [...bentoVideosPlaying];
                           newBentoVideosPlaying[index] = false;
@@ -1152,6 +1312,12 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
           </LightboxContent>
         </LightboxOverlay>
       )}
+      
+      {/* Cursor tooltip for Various Art videos */}
+      <CursorTooltip
+        text={tooltipText}
+        isVisible={tooltipVisible}
+      />
     </CaseStudyWrapper>
   );
 }); 
