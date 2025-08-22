@@ -370,7 +370,7 @@ const BentoVideo = styled.video<{ $caseStudyId?: string; $index?: number }>`
     props.$caseStudyId === 'ramp-treasury'
       ? 'cover'
       : props.$caseStudyId === 'various-art' 
-      ? 'contain' 
+      ? 'cover' // Changed from 'contain' to 'cover' to crop out black bars
       : 'cover'
   };
   object-position: center;
@@ -378,19 +378,36 @@ const BentoVideo = styled.video<{ $caseStudyId?: string; $index?: number }>`
   transition: transform 0.3s cubic-bezier(.455, .03, .515, .955);
   cursor: pointer;
   
+  /* Crop butterfly video to remove black bars */
+  ${props => props.$caseStudyId === 'various-art' && `
+    transform: scale(1.08); /* Gently zoom in to crop out letterboxing while preserving content */
+  `}
+  
   &:hover {
-    transform: scale(1.02);
+    transform: ${props => 
+      props.$caseStudyId === 'various-art' 
+        ? 'scale(1.10)' // Maintain crop + hover effect
+        : 'scale(1.02)'
+    };
   }
   
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      transform: scale(1.02);
+      transform: ${props => 
+        props.$caseStudyId === 'various-art' 
+          ? 'scale(1.10)'
+          : 'scale(1.02)'
+      };
     }
   }
   
   @media not (hover: hover) {
     &:hover {
-      transform: none;
+      transform: ${props => 
+        props.$caseStudyId === 'various-art' 
+          ? 'scale(1.08)' // Keep the crop, remove hover effect
+          : 'none'
+      };
     }
   }
 `;
@@ -783,6 +800,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
   const bentoVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const lightboxVideoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(autoplay);
+  const [hasVideoStarted, setHasVideoStarted] = useState(autoplay); // Track if video has ever been started
   const [bentoVideosPlaying, setBentoVideosPlaying] = useState<boolean[]>([]);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -803,7 +821,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
   }, [autoplay]);
 
   const isLoopingVideo = data.videoUrl.includes('loom');
-  const isClickableVideo = data.videoUrl !== 'none' && (!isLoopingVideo || data.posterUrl !== 'none');
+  const isClickableVideo = data.videoUrl !== 'none'; // All videos should be clickable for pause/play
 
   const handleVideoClick = () => {
     if (!isClickableVideo) return;
@@ -813,12 +831,16 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
         videoRef.current.pause();
       } else {
         videoRef.current.play();
+        setHasVideoStarted(true); // Mark that video has been started
       }
       setIsVideoPlaying(!isVideoPlaying);
     }
   };
 
   const handleVideoEnded = () => {
+    // Don't handle ended event for looping videos (they should loop naturally)
+    if (isLoopingVideo) return;
+    
     setIsVideoPlaying(false);
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
@@ -876,6 +898,10 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
       video.pause();
       newBentoVideosPlaying[index] = false;
     } else {
+      // Set 4x speed for Various Art videos
+      if (data.id === 'various-art') {
+        video.playbackRate = 4.0;
+      }
       video.play();
       newBentoVideosPlaying[index] = true;
     }
@@ -1083,13 +1109,22 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                         $caseStudyId={data.id}
                         $index={index}
                         muted
-                        loop
+                        loop={data.id !== 'various-art'} // Don't loop Various Art videos
                         playsInline
                         autoPlay={false}
                         onEnded={() => {
                           const newBentoVideosPlaying = [...bentoVideosPlaying];
                           newBentoVideosPlaying[index] = false;
                           setBentoVideosPlaying(newBentoVideosPlaying);
+                          
+                          // For Various Art videos, reset to beginning and show poster
+                          if (data.id === 'various-art') {
+                            const video = bentoVideoRefs.current[index];
+                            if (video) {
+                              video.currentTime = 0;
+                              video.load(); // This will show the poster again
+                            }
+                          }
                         }}
                       />
                     </>
@@ -1118,7 +1153,9 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                 height={1080}
                 priority
                 quality={100}
-                style={{ display: isVideoPlaying ? 'none' : 'block' }}
+                style={{ 
+                  display: (isLoopingVideo && hasVideoStarted) ? 'none' : (isVideoPlaying ? 'none' : 'block')
+                }}
               />
             )}
             <WorkSampleVideo
@@ -1130,7 +1167,9 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
               autoPlay={autoplay}
               loop={data.videoUrl.includes('loom')}
               onEnded={handleVideoEnded}
-              style={{ display: (isVideoPlaying || data.posterUrl === 'none') ? 'block' : 'none' }}
+              style={{ 
+                display: (isLoopingVideo && hasVideoStarted) ? 'block' : ((isVideoPlaying || data.posterUrl === 'none') ? 'block' : 'none')
+              }}
             />
           </>
         ) : (
