@@ -262,7 +262,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
               <div ref={toggleRefs.themeLeft}>
                 <ToggleButton
                   type="strava"
-                  label="2025 running distance"
+                  label={`${new Date().getFullYear()} running distance`}
                   value={runningDistance}
                   fallbackValue="407km"
                   onChange={() => {}}
