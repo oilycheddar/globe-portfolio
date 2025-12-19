@@ -24,13 +24,7 @@ export const caseStudies: CaseStudy[] = [
     link: 'https://www.ramp.com/treasury',
     description: 'I LED THE ZERO-TO-ONE DESIGN FOR RAMP\'S BUSINESS & INVESTMENT ACCOUNTS.\nCREATED WITH THE FINANCIAL PRODUCTS TEAM AT RAMP.',
     videoUrl: 'none',
-    posterUrl: '/Investment_Landing_Asset_Dark.png',
-    useBentoLayout: true,
-    images: [
-      '/treasury_demo.mp4',                // Left: Tall demo video
-      '/treasury_strategy_selection.png',  // Top right: Strategy selection
-      '/treasury_mobile.png'               // Bottom right: Mobile view
-    ],
+    posterUrl: '/Treasury Cover Image.png',
     team: [
       { role: 'FRONT END', names: ['FARDEEM', 'MARK'] },
       { role: 'BACK END', names: ['ARNAB', 'ERIC', 'DANIELLE'] },
@@ -100,24 +94,24 @@ export const caseStudies: CaseStudy[] = [
     posterUrl: '/fig_lockup.png',
     team: [],
     hideTeam: true
-  },
-  {
-    id: 'various-art',
-    title: 'Various Art',
-    link: 'none',
-    description: 'Posters and illustrations.',
-    videoUrl: 'none',
-    posterUrl: '/various_art_poster.png',
-    useBentoLayout: true,
-    images: [
-      '/layoffs.png',
-      '/beware_explosives.png',
-      '/Canada as 51st State_black.png',
-      '/robot_zuck_analysis.png',
-      '/panther_timelapse.mov',
-      '/butterfly_timelapse.mov'
-    ],
-    team: [],
-    hideTeam: true
   }
+  // {
+  //   id: 'various-art',
+  //   title: 'Various Art',
+  //   link: 'none',
+  //   description: 'Posters and illustrations.',
+  //   videoUrl: 'none',
+  //   posterUrl: '/various_art_poster.png',
+  //   useBentoLayout: true,
+  //   images: [
+  //     '/layoffs.png',
+  //     '/beware_explosives.png',
+  //     '/Canada as 51st State_black.png',
+  //     '/robot_zuck_analysis.png',
+  //     '/panther_timelapse.mov',
+  //     '/butterfly_timelapse.mov'
+  //   ],
+  //   team: [],
+  //   hideTeam: true
+  // }
 ]; 
