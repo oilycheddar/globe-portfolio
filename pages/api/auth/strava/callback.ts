@@ -22,14 +22,27 @@ async function exchangeCodeForTokens(code: string): Promise<StravaTokens> {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Validate HTTP method
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { code } = req.query;
 
+  // Validate code parameter - ensure it's a string and not an array
   if (!code) {
     return res.status(400).json({ error: 'Missing authorization code' });
   }
 
+  // Ensure code is a string (query params can be arrays)
+  const codeString = Array.isArray(code) ? code[0] : code;
+  
+  if (typeof codeString !== 'string' || codeString.trim().length === 0) {
+    return res.status(400).json({ error: 'Invalid authorization code format' });
+  }
+
   try {
-    const tokens = await exchangeCodeForTokens(code as string);
+    const tokens = await exchangeCodeForTokens(codeString);
     await storeTokens(tokens);
     
     res.redirect('/');

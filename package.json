@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "watch-photos": "ts-node scripts/update-photos.ts",
     "optimize-photos": "node scripts/optimize-photos.js"
   },
@@ -22,7 +20,7 @@
     "framer-motion": "^12.4.7",
     "gsap": "^3.12.7",
     "lenis": "^1.1.21",
-    "next": "15.2.4",
+    "next": "^15.2.5",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -33,14 +31,6 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^3.2.6",
-    "@storybook/addon-essentials": "^8.6.6",
-    "@storybook/addon-onboarding": "^8.6.6",
-    "@storybook/blocks": "^8.6.6",
-    "@storybook/experimental-addon-test": "^8.6.6",
-    "@storybook/experimental-nextjs-vite": "^8.6.6",
-    "@storybook/react": "^8.6.6",
-    "@storybook/test": "^8.6.6",
     "@tailwindcss/cli": "^4.0.9",
     "@tailwindcss/postcss": "^4.0.9",
     "@types/chokidar": "^1.7.5",
@@ -54,10 +44,12 @@
     "playwright": "^1.51.0",
     "postcss": "^8.5.3",
     "postcss-import": "^16.1.0",
-    "storybook": "^8.6.6",
     "tailwindcss": "^4.0.9",
     "ts-node": "^10.9.2",
     "typescript": "^5",
     "vitest": "^3.0.8"
+  },
+  "overrides": {
+    "glob": ">=10.4.6"
   }
 }

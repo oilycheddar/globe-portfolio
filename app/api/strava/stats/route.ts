@@ -6,20 +6,33 @@ const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = process.env.STRAVA_ATHLETE_ID;
 
 async function getAccessToken(): Promise<string> {
+  const clientId = process.env.STRAVA_CLIENT_ID;
+  const clientSecret = process.env.STRAVA_CLIENT_SECRET;
+  const refreshToken = process.env.STRAVA_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error('Missing required Strava environment variables: STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, or STRAVA_REFRESH_TOKEN');
+  }
+
   try {
     console.log('Attempting to get access token with:', {
-      client_id: process.env.STRAVA_CLIENT_ID,
-      refresh_token: process.env.STRAVA_REFRESH_TOKEN?.substring(0, 5) + '...'
+      client_id: clientId,
+      refresh_token: refreshToken.substring(0, 5) + '...'
     });
     const response = await axios.post(
       'https://www.strava.com/oauth/token',
       {
-        client_id: process.env.STRAVA_CLIENT_ID,
-        client_secret: process.env.STRAVA_CLIENT_SECRET,
-        refresh_token: process.env.STRAVA_REFRESH_TOKEN,
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
         grant_type: 'refresh_token'
       }
     );
+    
+    if (!response.data?.access_token) {
+      throw new Error('Invalid response from Strava token endpoint: missing access_token');
+    }
+    
     return response.data.access_token;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -32,6 +45,10 @@ async function getAccessToken(): Promise<string> {
 }
 
 async function fetchFreshStravaStats(): Promise<{ distance: string; lastKnownGoodDistance?: string }> {
+  if (!ATHLETE_ID) {
+    throw new Error('STRAVA_ATHLETE_ID environment variable is not set');
+  }
+
   try {
     const accessToken = await getAccessToken();
     console.log('Got access token, fetching stats for athlete:', ATHLETE_ID);
@@ -45,7 +62,18 @@ async function fetchFreshStravaStats(): Promise<{ distance: string; lastKnownGoo
     );
 
     console.log('Raw Strava API response:', response.data);
-    const distanceInKm = Math.round(response.data.ytd_run_totals.distance / 1000);
+    
+    // Validate response structure
+    if (!response.data?.ytd_run_totals) {
+      throw new Error('Invalid Strava API response: missing ytd_run_totals');
+    }
+    
+    const distance = response.data.ytd_run_totals.distance;
+    if (typeof distance !== 'number' || isNaN(distance)) {
+      throw new Error(`Invalid distance value from Strava API: ${distance}`);
+    }
+    
+    const distanceInKm = Math.round(distance / 1000);
     const newDistance = `${distanceInKm}km`; // Always store in km
     console.log('Parsed distance:', newDistance);
 
