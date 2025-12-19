@@ -34,14 +34,26 @@ export async function getValidToken(): Promise<string> {
 }
 
 async function refreshTokens(refresh_token: string): Promise<StravaTokens> {
+  const clientId = process.env.STRAVA_CLIENT_ID;
+  const clientSecret = process.env.STRAVA_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error('Missing required Strava environment variables: STRAVA_CLIENT_ID or STRAVA_CLIENT_SECRET');
+  }
+
   const response = await axios.post<StravaTokens>(
     'https://www.strava.com/oauth/token',
     {
-      client_id: process.env.STRAVA_CLIENT_ID,
-      client_secret: process.env.STRAVA_CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       refresh_token: refresh_token,
       grant_type: 'refresh_token'
     }
   );
+  
+  if (!response.data?.access_token || !response.data?.refresh_token) {
+    throw new Error('Invalid response from Strava token endpoint: missing required tokens');
+  }
+  
   return response.data;
 }

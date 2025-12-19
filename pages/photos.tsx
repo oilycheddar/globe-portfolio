@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const ContentWrapper = styled.div`
-  position: fixed;
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -42,10 +42,9 @@ const ContentWrapper = styled.div`
   @media (max-width: 440px) {
     position: fixed;
     width: 100%;
-    height: 100%;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
   }
 `;
 
@@ -109,85 +108,162 @@ const ProfileImage = styled(Image)`
   }
 `;
 
-const OrbitalContainer = styled.div`
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+// Commented out orbital/rolodex animation container
+// const OrbitalContainer = styled.div`
+//   height: 100vh;
+//   position: relative;
+//   overflow: hidden;
+//   -webkit-overflow-scrolling: touch;
+//   touch-action: pan-y;
 
-  .container {
-    position: absolute;
-    width: 500vw;
-    height: 500vw;
-    left: -210vw;
-    will-change: transform;
-    touch-action: pan-y;
+//   .container {
+//     position: absolute;
+//     width: 500vw;
+//     height: 500vw;
+//     left: -210vw;
+//     will-change: transform;
+//     touch-action: pan-y;
 
-    @media (max-width: 440px) {
-      width: 1000vw;
-      height: 1000vw;
-      left: -500vw;
-    }
-  }
+//     @media (max-width: 440px) {
+//       width: 1000vw;
+//       height: 1000vw;
+//       left: -500vw;
+//     }
+//   }
 
-  .inner-media {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-  }
+//   .inner-media {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+//     display: flex;
+//     justify-content: center;
+//   }
 
-  .media {
-    width: 40vw;
-    height: 40vw;
-    margin: 37vh 0 0;
-    transform: translate(0, -50%);
-    object-fit: contain;
-    object-position: 50% 100%;
-    will-change: transform;
-    border-radius: 0px;
+//   .media {
+//     width: 40vw;
+//     height: 40vw;
+//     margin: 37vh 0 0;
+//     transform: translate(0, -50%);
+//     object-fit: contain;
+//     object-position: 50% 100%;
+//     will-change: transform;
+//     border-radius: 0px;
     
-    @media (max-width: 440px) {
-      width: 80vw;
-      margin: 40vh 0 0;
-      height: 100vw;
-    }
-  }
+//     @media (max-width: 440px) {
+//       width: 80vw;
+//       margin: 40vh 0 0;
+//       height: 100vw;
+//     }
+//   }
 
-  @media (max-width: 440px) {
-    display: none;
-  }
-`;
+//   @media (max-width: 440px) {
+//     display: none;
+//   }
+// `;
 
-const MobileImageStack = styled.div`
-  display: none;
+const VerticalScrollContainer = styled.div`
+  --navbar-height: 64px;
+  --mobile-navbar-height: 32px;
+  --gap-desktop: 100px;
+  --gap-mobile: 50px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-desktop);
+  padding-top: 0;
+  padding-bottom: var(--space-xl);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   
   @media (max-width: 440px) {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-    overflow-y: auto;
-    padding: var(--space-xl) var(--space-md);
-    -webkit-overflow-scrolling: touch;
-    
-    .stack-image {
-      width: 100%;
-      height: auto;
-      cursor: pointer;
+    height: calc(100vh - var(--mobile-navbar-height));
+    gap: var(--gap-mobile);
+    padding-top: 0;
+    padding-bottom: var(--space-lg);
+  }
+`;
+
+const ImageSection = styled.div`
+  --navbar-height: 64px;
+  --mobile-navbar-height: 32px;
+  --max-content-width: 1400px;
+  --space-md: 16px;
+  --space-xl: 40px;
+  
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: var(--space-xl);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  
+  @media (max-width: 440px) {
+    padding: var(--space-md);
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+    height: calc(100vh - var(--mobile-navbar-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    min-height: calc(100vh - var(--mobile-navbar-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+  
+  .scroll-image {
+    width: 100%;
+    height: 100%;
+    max-width: var(--max-content-width);
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 `;
 
-interface OrbitalConfig {
-  radius: number;
-  rotationSpeed: number;
-  yDisplacement: number;
-  animationDuration: number;
-}
+// Commented out mobile image stack - now using unified vertical scroll
+// const MobileImageStack = styled.div`
+//   display: none;
+  
+//   @media (max-width: 440px) {
+//     display: flex;
+//     flex-direction: column;
+//     gap: var(--space-lg);
+//     overflow-y: auto;
+//     padding: var(--space-xl) var(--space-md);
+//     -webkit-overflow-scrolling: touch;
+    
+//     .stack-image {
+//       width: 100%;
+//       height: auto;
+//       cursor: pointer;
+//     }
+//   }
+// `;
+
+// Commented out orbital config interface
+// interface OrbitalConfig {
+//   radius: number;
+//   rotationSpeed: number;
+//   yDisplacement: number;
+//   animationDuration: number;
+// }
 
 export default function Photos() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
@@ -195,43 +271,44 @@ export default function Photos() {
   const contentRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
   const mobileNavbarRef = useRef<MobileNavbarRef>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // const containerRef = useRef<HTMLDivElement>(null); // Commented out - no longer needed for orbital animation
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const [radius, setRadius] = useState(200); // Default desktop radius
-  const [config, setConfig] = useState<OrbitalConfig>({
-    radius: 200,
-    rotationSpeed: 40,
-    yDisplacement: 4,
-    animationDuration: 0.8
-  });
-  const startingRotation = 170; // Set this value to control starting position (0-360)
+  // Commented out orbital animation state
+  // const [radius, setRadius] = useState(200); // Default desktop radius
+  // const [config, setConfig] = useState<OrbitalConfig>({
+  //   radius: 200,
+  //   rotationSpeed: 40,
+  //   yDisplacement: 4,
+  //   animationDuration: 0.8
+  // });
+  // const startingRotation = 170; // Set this value to control starting position (0-360)
 
-  // Prevent body scrolling when component mounts
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+  // Allow body scrolling for vertical scroll layout
+  // useEffect(() => {
+  //   document.body.style.overflow = 'hidden';
+  //   return () => {
+  //     document.body.style.overflow = 'unset';
+  //   };
+  // }, []);
 
-  // Configuration for touch and scroll behavior
-  const touchConfig = {
-    sensitivity: 4, // Higher number = less sensitive
-    direction: 1, // 1 for clockwise, -1 for counter-clockwise
-  };
+  // Commented out orbital/rolodex animation configuration and effects
+  // // Configuration for touch and scroll behavior
+  // const touchConfig = {
+  //   sensitivity: 4, // Higher number = less sensitive
+  //   direction: 1, // 1 for clockwise, -1 for counter-clockwise
+  // };
 
-  const scrollConfig = {
-    sensitivity: 10, // Much more responsive
-    direction: -1,
-  };
+  // const scrollConfig = {
+  //   sensitivity: 10, // Much more responsive
+  //   direction: -1,
+  // };
 
-  // Handle mobile responsiveness and radius
+  // Handle mobile responsiveness
   useEffect(() => {
     const checkMobile = () => {
       const isMobileView = window.innerWidth <= 440;
       setIsMobile(isMobileView);
-      setRadius(isMobileView ? 400 : 200); // Different values for mobile/desktop
     };
 
     checkMobile();
@@ -239,99 +316,100 @@ export default function Photos() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Set initial state for orbital images
-      gsap.set(".mwg_effect023 .media", { yPercent: -50 });
-      gsap.set(".mwg_effect023 .container", { rotation: startingRotation });
+  // Commented out orbital animation GSAP effect
+  // useEffect(() => {
+  //   const ctx = gsap.context(() => {
+  //     // Set initial state for orbital images
+  //     gsap.set(".mwg_effect023 .media", { yPercent: -50 });
+  //     gsap.set(".mwg_effect023 .container", { rotation: startingRotation });
 
-      let incr = startingRotation; // Use the startingRotation value
+  //     let incr = startingRotation; // Use the startingRotation value
 
-      const medias = document.querySelectorAll<HTMLElement>(".mwg_effect023 .inner-media");
-      const mediasTotal = medias.length;
+  //     const medias = document.querySelectorAll<HTMLElement>(".mwg_effect023 .inner-media");
+  //     const mediasTotal = medias.length;
 
-      // Distribute images evenly in a circle
-      medias.forEach((media, index) => {
-        const angle = (360 / mediasTotal) * index;
-        const radian = (angle * Math.PI) / 180;
+  //     // Distribute images evenly in a circle
+  //     medias.forEach((media, index) => {
+  //       const angle = (360 / mediasTotal) * index;
+  //       const radian = (angle * Math.PI) / 180;
         
-        // Calculate x and y positions based on angle and radius
-        const x = Math.cos(radian) * radius;
-        const y = Math.sin(radian) * radius;
+  //       // Calculate x and y positions based on angle and radius
+  //       const x = Math.cos(radian) * radius;
+  //       const y = Math.sin(radian) * radius;
         
-        gsap.set(media, {
-          rotation: angle,
-          x: x,
-          y: y
-        });
-      });
+  //       gsap.set(media, {
+  //         rotation: angle,
+  //         x: x,
+  //         y: y
+  //       });
+  //     });
 
-      // Create quickTo instances for smooth animations
-      const rotTo = gsap.quickTo(".mwg_effect023 .container", "rotation", {
-        duration: 1.25,
-        ease: "ease.inOut2",
-      });
+  //     // Create quickTo instances for smooth animations
+  //     const rotTo = gsap.quickTo(".mwg_effect023 .container", "rotation", {
+  //       duration: 1.25,
+  //       ease: "ease.inOut2",
+  //     });
 
-      const yTo = gsap.quickTo(".mwg_effect023 .media", "yPercent", {
-        duration: 1,
-        ease: "power3",
-      });
+  //     const yTo = gsap.quickTo(".mwg_effect023 .media", "yPercent", {
+  //       duration: 1,
+  //       ease: "power3",
+  //     });
 
-      const handleScroll = (e: WheelEvent) => {
-        const deltaY = e.deltaY;
-        incr += (deltaY / scrollConfig.sensitivity) * scrollConfig.direction;
-        rotTo(incr);
-      };
+  //     const handleScroll = (e: WheelEvent) => {
+  //       const deltaY = e.deltaY;
+  //       incr += (deltaY / scrollConfig.sensitivity) * scrollConfig.direction;
+  //       rotTo(incr);
+  //     };
 
-      window.addEventListener("wheel", handleScroll, { passive: true });
+  //     window.addEventListener("wheel", handleScroll, { passive: true });
 
-      // Add touch event handling
-      let touchStartX = 0;
-      let lastTouchX = 0;
+  //     // Add touch event handling
+  //     let touchStartX = 0;
+  //     let lastTouchX = 0;
 
-      const handleTouchStart = (e: TouchEvent) => {
-        touchStartX = e.touches[0].clientX;
-        lastTouchX = touchStartX;
-      };
+  //     const handleTouchStart = (e: TouchEvent) => {
+  //       touchStartX = e.touches[0].clientX;
+  //       lastTouchX = touchStartX;
+  //     };
 
-      const handleTouchMove = (e: TouchEvent) => {
-        e.preventDefault();
-        const touchX = e.touches[0].clientX;
+  //     const handleTouchMove = (e: TouchEvent) => {
+  //       e.preventDefault();
+  //       const touchX = e.touches[0].clientX;
         
-        // Calculate delta movement
-        const deltaX = touchX - lastTouchX;
+  //       // Calculate delta movement
+  //       const deltaX = touchX - lastTouchX;
         
-        // Update rotation based on horizontal movement
-        incr += (deltaX / touchConfig.sensitivity) * touchConfig.direction;
-        rotTo(incr);
+  //       // Update rotation based on horizontal movement
+  //       incr += (deltaX / touchConfig.sensitivity) * touchConfig.direction;
+  //       rotTo(incr);
 
-        lastTouchX = touchX;
-      };
+  //       lastTouchX = touchX;
+  //     };
 
-      const container = containerRef.current;
-      if (container) {
-        container.addEventListener('touchstart', handleTouchStart, { passive: true });
-        container.addEventListener('touchmove', handleTouchMove, { passive: false });
-      }
+  //     const container = containerRef.current;
+  //     if (container) {
+  //       container.addEventListener('touchstart', handleTouchStart, { passive: true });
+  //       container.addEventListener('touchmove', handleTouchMove, { passive: false });
+  //     }
 
-      return () => {
-        window.removeEventListener("wheel", handleScroll);
-        if (container) {
-          container.removeEventListener('touchstart', handleTouchStart);
-          container.removeEventListener('touchmove', handleTouchMove);
-        }
-      };
-    }, containerRef);
+  //     return () => {
+  //       window.removeEventListener("wheel", handleScroll);
+  //       if (container) {
+  //         container.removeEventListener('touchstart', handleTouchStart);
+  //         container.removeEventListener('touchmove', handleTouchMove);
+  //       }
+  //     };
+  //   }, containerRef);
 
-    return () => ctx.revert();
-  }, []);
+  //   return () => ctx.revert();
+  // }, []);
 
-  useEffect(() => {
-    setConfig(prev => ({
-      ...prev,
-      radius: radius // This will update whenever radius changes
-    }));
-  }, [radius]);
+  // useEffect(() => {
+  //   setConfig(prev => ({
+  //     ...prev,
+  //     radius: radius // This will update whenever radius changes
+  //   }));
+  // }, [radius]);
 
   const handleGridToggle = (value: boolean) => {
     // Implement grid toggle functionality
@@ -378,7 +456,8 @@ export default function Photos() {
           showDvdToggle={false}
           show3DToggle={false}
         />
-        <OrbitalContainer className="mwg_effect023" ref={containerRef}>
+        {/* Commented out orbital/rolodex animation container */}
+        {/* <OrbitalContainer className="mwg_effect023" ref={containerRef}>
           <div className="container">
             {photos.map((photo: Photo, i: number) => (
               <div className="inner-media" key={i}>
@@ -421,7 +500,26 @@ export default function Photos() {
               }}
             />
           ))}
-        </MobileImageStack>
+        </MobileImageStack> */}
+
+        <VerticalScrollContainer>
+          {photos.map((photo: Photo, i: number) => (
+            <ImageSection key={i}>
+              <Image
+                className="scroll-image"
+                src={photo.src}
+                alt={photo.alt}
+                width={800}
+                height={1000}
+                quality={90}
+                priority={i < 3}
+                sizes="(max-width: 440px) 100vw, (max-width: 1400px) 100vw, 1400px"
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRseHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/2wBDAR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+              />
+            </ImageSection>
+          ))}
+        </VerticalScrollContainer>
       </ContentWrapper>
     </PageWrapper>
   );

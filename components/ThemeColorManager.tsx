@@ -7,6 +7,15 @@ export function ThemeColorManager() {
   const { theme } = useThemeStore();
 
   useEffect(() => {
+    // Get the computed theme color from CSS variable
+    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
+    
+    // iOS 26 Safari requires the body background color to be explicitly set
+    // Safari uses the body background color to determine toolbar colors
+    if (document.body) {
+      document.body.style.backgroundColor = themeColor;
+    }
+
     // Create or update the theme-color meta tag
     let metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (!metaThemeColor) {
@@ -16,7 +25,6 @@ export function ThemeColorManager() {
     }
 
     // Set theme-color to the computed --color-bg value
-    const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim();
     metaThemeColor.setAttribute('content', themeColor);
 
     // Create or update the apple-mobile-web-app-status-bar-style meta tag for iOS Safari
@@ -29,6 +37,11 @@ export function ThemeColorManager() {
 
     // Set to 'black-translucent' so that the background color extends into the status bar
     appleStatusBar.setAttribute('content', 'black-translucent');
+
+    // Also set html background color for iOS 26 Safari compatibility
+    if (document.documentElement) {
+      document.documentElement.style.backgroundColor = themeColor;
+    }
 
   }, [theme]);
 
