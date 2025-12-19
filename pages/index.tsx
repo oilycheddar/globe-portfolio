@@ -197,7 +197,7 @@ export default function Home() {
 
       // Create main timeline with a delay to wait for innerShape animation
       const tl = gsap.timeline({
-        delay: 1.2,
+        delay: 0.84,
         defaults: {
           ease: "sine.out",
         }
@@ -208,35 +208,35 @@ export default function Home() {
         {
           opacity: 1,
           y: 0,
-          duration: 0.5,
+          duration: 0.35,
         }
       );
 
       // Animate top text with scramble effect
       tl.to(topTextRef.current, {
         opacity: 1,
-        duration: 0.8,
+        duration: 0.56,
         scrambleText: {
           text: "product designer",
           chars: scrambleCharSets.japanese,
-          revealDelay: 0.4,
+          revealDelay: 0.28,
           speed: 0.8,
           delimiter: ""
         }
-      }, "+=0.2");
+      }, "+=0.14");
 
       // Animate bottom text with scramble effect
       tl.to(bottomTextRef.current, {
         opacity: 1,
-        duration: 0.8,
+        duration: 0.56,
         scrambleText: {
           text: "long distance athlete",
           chars: scrambleCharSets.matrix,
-          revealDelay: 0.4,
+          revealDelay: 0.28,
           speed: 0.8,
           delimiter: ""
         }
-      }, "+=0.2");
+      }, "+=0.14");
 
       // Animate all nav elements together
       if (navbar) {
@@ -256,10 +256,10 @@ export default function Home() {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.7,
+          duration: 0.49,
           ease: "cubic-bezier(.455, .03, .515, .955)",
           clearProps: "all"
-        }, "+=0.45");
+        }, "+=0.315");
       }
     }, contentRef);
 

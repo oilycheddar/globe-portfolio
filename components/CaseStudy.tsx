@@ -6,6 +6,38 @@ import React from 'react';
 import Image from 'next/image';
 import { CursorTooltip } from './CursorTooltip';
 
+/**
+ * Bento Box Aspect Ratio Guidelines
+ * 
+ * Use these aspect ratios when preparing images for upload to ensure perfect fit without cropping:
+ * 
+ * 2 Images Layout:
+ *   - Each cell: 1:1 (square)
+ * 
+ * 3 Images Layout (Ramp Treasury style):
+ *   - Left cell (spans 2 rows): 16:15 or 1:1
+ *   - Right top cell: 16:15 or 1:1
+ *   - Right bottom cell: 16:15 or 1:1
+ * 
+ * 4 Images Layout:
+ *   - Each cell: 7:2 or 16:9 (wide landscape)
+ * 
+ * 5 Images Layout:
+ *   - Top row cells (2 images): 16:9
+ *   - Bottom row cells (3 images): 16:13.5 or 4:3
+ * 
+ * 6 Images Layout (Various Art style):
+ *   - Left 2x2 grid (A4 posters): 210:297 (A4 portrait)
+ *   - Right column (videos): 16:9 (landscape)
+ */
+const BENTO_ASPECT_RATIOS = {
+  2: { cell: '1:1' }, // Square
+  3: { left: '16:15', right: '16:15' }, // Slightly landscape
+  4: { cell: '7:2' }, // Wide landscape
+  5: { top: '16:9', bottom: '16:13.5' },
+  6: { left: '210:297', right: '16:9' } // A4 portrait + landscape video
+} as const;
+
 const CaseStudyWrapper = styled.div`
   --space-xs: 8px;
   --space-sm: 12px;
@@ -231,10 +263,11 @@ const BentoGridItem = styled.div<BentoItemProps>`
       : 'hidden'
   };
   background: ${props => 
-    (props.$caseStudyId === 'various-art' && props.$index < 4) || 
     props.$caseStudyId === 'ramp-treasury'
-      ? 'transparent' 
-      : 'var(--color-bg-secondary, #f5f5f5)'
+      ? 'transparent' /* Ramp Treasury uses cover, no background needed */
+      : props.$caseStudyId === 'various-art' && props.$index < 4
+      ? 'transparent' /* Various Art A4 posters have overflow: visible, no background */
+      : 'var(--color-bg-secondary, rgba(0, 0, 0, 0.02))' /* Subtle background for contain mode to fill empty space */
   };
   border-radius: ${props => 
     props.$caseStudyId === 'various-art' && props.$index < 4 
@@ -242,9 +275,19 @@ const BentoGridItem = styled.div<BentoItemProps>`
       : '8px'
   };
   
+  /* 2 images layout: square cells */
+  ${props => props.$count === 2 && `
+    aspect-ratio: 1 / 1;
+  `}
+  
   /* 3 images layout: first image spans 2 rows */
   ${props => props.$count === 3 && props.$index === 0 && `
     grid-row: span 2;
+    aspect-ratio: 16 / 15; /* Left cell aspect ratio */
+  `}
+  
+  ${props => props.$count === 3 && props.$index > 0 && `
+    aspect-ratio: 16 / 15; /* Right cells aspect ratio */
   `}
   
   /* Treasury-specific sizing to prevent overflow */
@@ -253,17 +296,23 @@ const BentoGridItem = styled.div<BentoItemProps>`
     overflow: hidden;
     width: 100%;
     height: 100%;
-    aspect-ratio: 16/10; /* Fixed aspect ratio to prevent cropping */
+  `}
+  
+  /* 4 images layout: wide landscape cells */
+  ${props => props.$count === 4 && `
+    aspect-ratio: 7 / 2;
   `}
   
   /* 5 images layout: first 2 span wider */
   ${props => props.$count === 5 && props.$index < 2 && `
     grid-column: span 1;
     grid-row: 1;
+    aspect-ratio: 16 / 9; /* Top row cells */
   `}
   
   ${props => props.$count === 5 && props.$index >= 2 && `
     grid-row: 2;
+    aspect-ratio: 16 / 13.5; /* Bottom row cells */
   `}
   
   /* 6 images layout: Left 2x2 (items 0-3) + Right 1x2 (items 4-5) */
@@ -290,11 +339,13 @@ const BentoGridItem = styled.div<BentoItemProps>`
   ${props => props.$count === 6 && props.$index === 4 && `
     grid-column: 3;
     grid-row: 1;
+    aspect-ratio: 16 / 9; /* Right column videos */
   `}
   
   ${props => props.$count === 6 && props.$index === 5 && `
     grid-column: 3;
     grid-row: 2;
+    aspect-ratio: 16 / 9; /* Right column videos */
   `}
   
   /* Video and A4 poster sizing for Various Art (items 0-5) - fill available space */
@@ -335,10 +386,8 @@ const BentoImage = styled(Image)<{ $caseStudyId?: string; $index?: number }>`
   max-height: 100%;
   object-fit: ${props => 
     props.$caseStudyId === 'ramp-treasury'
-      ? 'cover'
-      : props.$caseStudyId === 'various-art' 
-      ? 'contain' 
-      : 'cover'
+      ? 'cover' /* Ramp Treasury can use cover for specific design needs */
+      : 'contain' /* Default to contain to prevent cropping */
   };
   object-position: center;
   display: block;
@@ -1136,7 +1185,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
                       $index={index}
                       fill
                       quality={95}
-                      sizes="(max-width: 440px) 90vw, (max-width: 768px) 60vw, 50vw"
+                      sizes="(max-width: 440px) 100vw, (max-width: 768px) 50vw, 33vw"
                     />
                   )}
                 </BentoGridItem>
