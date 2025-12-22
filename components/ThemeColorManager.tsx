@@ -16,22 +16,28 @@ export function ThemeColorManager() {
       
       if (!themeColor) return;
       
-      // iOS 26 Safari requires the body background color to be explicitly set
+      // iOS 26 Safari requires the body background color to be explicitly set first
       // Safari uses the body background color to determine toolbar colors
       if (document.body) {
         document.body.style.backgroundColor = themeColor;
       }
 
-      // Create or update the theme-color meta tag
-      let metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (!metaThemeColor) {
-        metaThemeColor = document.createElement('meta');
-        (metaThemeColor as HTMLMetaElement).name = 'theme-color';
-        document.head.appendChild(metaThemeColor);
+      // Also set html background color for iOS 26 Safari compatibility
+      if (document.documentElement) {
+        document.documentElement.style.backgroundColor = themeColor;
       }
 
-      // Set theme-color to the theme's --color-bg value
+      // Remove existing theme-color meta tag to force Safari to re-evaluate it
+      const existingMetaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (existingMetaThemeColor) {
+        existingMetaThemeColor.remove();
+      }
+
+      // Create a fresh theme-color meta tag
+      const metaThemeColor = document.createElement('meta');
+      metaThemeColor.name = 'theme-color';
       metaThemeColor.setAttribute('content', themeColor);
+      document.head.appendChild(metaThemeColor);
 
       // Create or update the apple-mobile-web-app-status-bar-style meta tag for iOS Safari
       let appleStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
@@ -44,10 +50,9 @@ export function ThemeColorManager() {
       // Set to 'black-translucent' so that the background color extends into the status bar
       appleStatusBar.setAttribute('content', 'black-translucent');
 
-      // Also set html background color for iOS 26 Safari compatibility
-      if (document.documentElement) {
-        document.documentElement.style.backgroundColor = themeColor;
-      }
+      // Force a browser reflow to trigger Safari's toolbar color update mechanism
+      // Accessing layout properties forces the browser to recalculate layout
+      void document.body.offsetHeight;
     });
   }, [theme]);
 
