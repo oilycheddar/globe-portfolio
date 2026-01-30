@@ -556,6 +556,7 @@ export default function Data() {
   const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
   const [activityMetricsLoading, setActivityMetricsLoading] = useState(false);
   const [showActivities, setShowActivities] = useState(false);
+  const [showZones, setShowZones] = useState(false);
   
   const dateRanges = getDateRanges();
   const AEROBIC_THRESHOLD = 151; // BPM
@@ -867,7 +868,10 @@ export default function Data() {
 
                 {/* HR Zones */}
                 <Section>
-                  {aggregatedMetrics ? (
+                  <ToggleLink onClick={() => setShowZones(!showZones)}>
+                    {showZones ? 'Hide' : 'Show'} HR Zones
+                  </ToggleLink>
+                  {showZones && (aggregatedMetrics ? (
                     <>
                       {[
                         { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1 },
@@ -884,14 +888,13 @@ export default function Data() {
                               <ZoneBar $width={percent} $zone={index} />
                             </ZoneBarContainer>
                             <ZoneTime>{formatTime(zone.time)}</ZoneTime>
-                            <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
                           </ZoneRow>
                         );
                       })}
                     </>
                   ) : (
                     <EmptyText>Loading HR data...</EmptyText>
-                  )}
+                  ))}
                 </Section>
 
                 {/* Activities List */}
@@ -957,7 +960,6 @@ export default function Data() {
                                             <ZoneBar $width={percent} $zone={index} />
                                           </ZoneBarContainer>
                                           <ZoneTime>{formatTime(zone.time)}</ZoneTime>
-                                          <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
                                         </ZoneRow>
                                       );
                                     })}
