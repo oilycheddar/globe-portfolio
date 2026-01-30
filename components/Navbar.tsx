@@ -164,6 +164,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     switch (path) {
       case '/':
         return 'HOME';
+      case '/data':
+        return 'DATA';
       case '/about':
         return 'ABOUT';
       case '/work':

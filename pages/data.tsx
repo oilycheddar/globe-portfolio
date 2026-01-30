@@ -2,21 +2,15 @@
 
 import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
+import { typography } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "../utils/gsap";
-import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
 import type { MobileNavbarRef } from "../components/MobileNavbar";
-
-const jetbrainsMono = JetBrains_Mono({ 
-  subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
-});
 
 // Types
 interface Activity {
@@ -29,7 +23,6 @@ interface Activity {
   start_date: string;
   start_date_local: string;
   average_speed: number;
-  average_cadence?: number;
   average_heartrate?: number;
   max_heartrate?: number;
   has_heartrate: boolean;
@@ -133,18 +126,18 @@ const DateSelectorWrapper = styled.div`
 
 const DateButton = styled.button<{ $isActive: boolean }>`
   padding: var(--space-xs) var(--space-md);
-  border: 1px solid ${props => props.$isActive ? 'var(--color-text)' : 'var(--color-text)'};
+  border: 1px solid var(--color-text);
   background: ${props => props.$isActive ? 'var(--color-text)' : 'transparent'};
   color: ${props => props.$isActive ? 'var(--color-page-content)' : 'var(--color-text)'};
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 200ms ease;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   opacity: ${props => props.$isActive ? 1 : 0.6};
   
   @media (hover: hover) and (pointer: fine) {
@@ -164,10 +157,11 @@ const Section = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   margin: 0;
   opacity: 0.6;
@@ -181,18 +175,20 @@ const StatRow = styled.div`
 `;
 
 const StatLabel = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
 `;
 
 const StatValue = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
 `;
 
@@ -206,16 +202,18 @@ const ThresholdSection = styled.div`
 `;
 
 const ThresholdValue = styled.div`
+  font-family: ${typography.caption.fontFamily};
   font-size: 24px;
-  font-weight: 700;
+  font-weight: ${typography.caption.fontWeight};
   color: var(--color-page-content);
 `;
 
 const ThresholdLabel = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-page-content);
   opacity: 0.8;
 `;
@@ -228,10 +226,11 @@ const ZoneRow = styled.div`
 `;
 
 const ZoneLabel = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   width: 24px;
   flex-shrink: 0;
@@ -255,10 +254,11 @@ const ZoneBar = styled.div<{ $width: number; $zone: number }>`
 `;
 
 const ZoneTime = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   width: 80px;
   text-align: right;
@@ -266,10 +266,11 @@ const ZoneTime = styled.span`
 `;
 
 const ZonePercent = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   opacity: 0.6;
   width: 40px;
@@ -277,7 +278,7 @@ const ZonePercent = styled.span`
   flex-shrink: 0;
 `;
 
-const ActivityCard = styled.button`
+const ActivityCard = styled.button<{ $isExpanded: boolean }>`
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
@@ -289,103 +290,50 @@ const ActivityCard = styled.button`
   text-align: left;
   width: 100%;
   transition: all 200ms ease;
-  opacity: 0.6;
+  opacity: ${props => props.$isExpanded ? 1 : 0.6};
   
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       opacity: 1;
-      border-color: var(--color-text);
-      background: var(--color-text);
-      
-      span {
-        color: var(--color-page-content);
-      }
     }
   }
 `;
 
 const ActivityName = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  transition: color 200ms ease;
 `;
 
 const ActivityMeta = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  transition: color 200ms ease;
+  opacity: 0.6;
 `;
 
-const ModalOverlay = styled.div<{ $isOpen: boolean }>`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: ${props => props.$isOpen ? 'flex' : 'none'};
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: var(--space-md);
-`;
-
-const ModalContent = styled.div`
-  background: var(--color-page-content);
-  border-radius: 12px;
-  padding: var(--space-lg);
-  max-width: 400px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  display: flex;
+const ActivityDetails = styled.div<{ $isVisible: boolean }>`
+  display: ${props => props.$isVisible ? 'flex' : 'none'};
   flex-direction: column;
-  gap: var(--space-lg);
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: var(--space-md);
-`;
-
-const ModalTitle = styled.h3`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  margin: 0;
-`;
-
-const CloseButton = styled.button`
-  padding: var(--space-xs);
-  background: transparent;
-  border: 1px solid var(--color-text);
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--color-text);
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 200ms ease;
-  
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-text);
-      color: var(--color-page-content);
-    }
-  }
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-text);
+  margin-top: var(--space-sm);
+  opacity: 0.3;
 `;
 
 const LoadingText = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   opacity: 0.6;
   text-align: center;
@@ -393,10 +341,11 @@ const LoadingText = styled.div`
 `;
 
 const EmptyText = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   opacity: 0.6;
   text-align: center;
@@ -404,10 +353,11 @@ const EmptyText = styled.div`
 `;
 
 const ErrorText = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   text-align: center;
   padding: var(--space-md);
@@ -546,7 +496,7 @@ export default function Data() {
   const [error, setError] = useState<string | null>(null);
   const [zoneData, setZoneData] = useState<{ [key: number]: ActivityZone[] }>({});
   const [aggregatedZones, setAggregatedZones] = useState<number[]>([0, 0, 0, 0, 0]);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
   const [activityZonesLoading, setActivityZonesLoading] = useState(false);
   
   const dateRanges = getDateRanges();
@@ -622,7 +572,7 @@ export default function Data() {
     setAggregatedZones(aggregated);
   };
 
-  // Fetch zones for selected activity
+  // Fetch zones for expanded activity
   const fetchActivityZones = async (activityId: number) => {
     if (zoneData[activityId]) return;
     
@@ -644,9 +594,6 @@ export default function Data() {
   // Calculate stats
   const totalDistance = activities.reduce((sum, a) => sum + a.distance, 0);
   const totalTime = activities.reduce((sum, a) => sum + a.moving_time, 0);
-  const avgCadence = activities.filter(a => a.average_cadence).length > 0
-    ? activities.reduce((sum, a) => sum + (a.average_cadence || 0), 0) / activities.filter(a => a.average_cadence).length
-    : 0;
   const avgPace = totalTime > 0 ? totalDistance / totalTime : 0;
   
   // Calculate time below threshold (Z1 + Z2 typically)
@@ -734,14 +681,14 @@ export default function Data() {
   }, []);
 
   const handleActivityClick = (activity: Activity) => {
-    setSelectedActivity(activity);
-    if (activity.has_heartrate && !zoneData[activity.id]) {
-      fetchActivityZones(activity.id);
+    if (expandedActivityId === activity.id) {
+      setExpandedActivityId(null);
+    } else {
+      setExpandedActivityId(activity.id);
+      if (activity.has_heartrate && !zoneData[activity.id]) {
+        fetchActivityZones(activity.id);
+      }
     }
-  };
-
-  const closeModal = () => {
-    setSelectedActivity(null);
   };
 
   const handleGridToggle = () => {};
@@ -776,7 +723,6 @@ export default function Data() {
         />
         <StyledContent 
           ref={contentRef}
-          className={jetbrainsMono.className}
           style={isMobile && isNavExpanded ? { filter: 'blur(8px)' } : undefined}
         >
           <DataContainer className="data-container">
@@ -815,10 +761,6 @@ export default function Data() {
                     <StatValue>{formatDistance(totalDistance)}</StatValue>
                   </StatRow>
                   <StatRow>
-                    <StatLabel>Avg Cadence</StatLabel>
-                    <StatValue>{avgCadence > 0 ? `${Math.round(avgCadence * 2)} spm` : '--'}</StatValue>
-                  </StatRow>
-                  <StatRow>
                     <StatLabel>Avg Pace</StatLabel>
                     <StatValue>{formatPace(avgPace)}</StatValue>
                   </StatRow>
@@ -848,96 +790,79 @@ export default function Data() {
                   {activities.length === 0 ? (
                     <EmptyText>No activities found</EmptyText>
                   ) : (
-                    activities.map(activity => (
-                      <ActivityCard 
-                        key={activity.id}
-                        onClick={() => handleActivityClick(activity)}
-                      >
-                        <ActivityName>{activity.name}</ActivityName>
-                        <ActivityMeta>
-                          {formatDate(activity.start_date_local)} • {formatDistance(activity.distance)} • {formatTime(activity.moving_time)}
-                        </ActivityMeta>
-                      </ActivityCard>
-                    ))
+                    activities.map(activity => {
+                      const isExpanded = expandedActivityId === activity.id;
+                      const activityZones = zoneData[activity.id];
+                      
+                      return (
+                        <ActivityCard 
+                          key={activity.id}
+                          $isExpanded={isExpanded}
+                          onClick={() => handleActivityClick(activity)}
+                        >
+                          <ActivityName>{activity.name}</ActivityName>
+                          <ActivityMeta>
+                            {formatDate(activity.start_date_local)} • {formatDistance(activity.distance)} • {formatTime(activity.moving_time)}
+                          </ActivityMeta>
+                          
+                          <ActivityDetails $isVisible={isExpanded}>
+                            {activity.has_heartrate ? (
+                              activityZonesLoading && !activityZones ? (
+                                <LoadingText>Loading zones...</LoadingText>
+                              ) : activityZones && activityZones[0]?.distribution_buckets ? (
+                                <Section>
+                                  <SectionTitle>HR Zones</SectionTitle>
+                                  {activityZones[0].distribution_buckets.map((bucket, index) => {
+                                    const totalActivityTime = activityZones[0].distribution_buckets.reduce(
+                                      (sum, b) => sum + (b.time || 0), 0
+                                    );
+                                    const percent = totalActivityTime > 0 ? (bucket.time / totalActivityTime) * 100 : 0;
+                                    return (
+                                      <ZoneRow key={index}>
+                                        <ZoneLabel>Z{index + 1}</ZoneLabel>
+                                        <ZoneBarContainer>
+                                          <ZoneBar $width={percent} $zone={index} />
+                                        </ZoneBarContainer>
+                                        <ZoneTime>{formatTime(bucket.time)}</ZoneTime>
+                                        <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
+                                      </ZoneRow>
+                                    );
+                                  })}
+                                </Section>
+                              ) : (
+                                <EmptyText>No zone data available</EmptyText>
+                              )
+                            ) : (
+                              <EmptyText>No heart rate data</EmptyText>
+                            )}
+
+                            <Section>
+                              <SectionTitle>Stats</SectionTitle>
+                              <StatRow>
+                                <StatLabel>Duration</StatLabel>
+                                <StatValue>{formatTime(activity.moving_time)}</StatValue>
+                              </StatRow>
+                              <StatRow>
+                                <StatLabel>Pace</StatLabel>
+                                <StatValue>{formatPace(activity.average_speed)}</StatValue>
+                              </StatRow>
+                              {activity.average_heartrate && (
+                                <StatRow>
+                                  <StatLabel>Avg HR</StatLabel>
+                                  <StatValue>{Math.round(activity.average_heartrate)} bpm</StatValue>
+                                </StatRow>
+                              )}
+                            </Section>
+                          </ActivityDetails>
+                        </ActivityCard>
+                      );
+                    })
                   )}
                 </Section>
               </>
             )}
           </DataContainer>
         </StyledContent>
-
-        {/* Activity Detail Modal */}
-        <ModalOverlay $isOpen={!!selectedActivity} onClick={closeModal}>
-          <ModalContent onClick={e => e.stopPropagation()}>
-            {selectedActivity && (
-              <>
-                <ModalHeader>
-                  <div>
-                    <ModalTitle>{selectedActivity.name}</ModalTitle>
-                    <ActivityMeta style={{ marginTop: '8px' }}>
-                      {formatDate(selectedActivity.start_date_local)} • {formatDistance(selectedActivity.distance)}
-                    </ActivityMeta>
-                  </div>
-                  <CloseButton onClick={closeModal}>×</CloseButton>
-                </ModalHeader>
-
-                {selectedActivity.has_heartrate ? (
-                  activityZonesLoading ? (
-                    <LoadingText>Loading zones...</LoadingText>
-                  ) : zoneData[selectedActivity.id] ? (
-                    <Section>
-                      <SectionTitle>HR Zones</SectionTitle>
-                      {zoneData[selectedActivity.id][0]?.distribution_buckets?.map((bucket, index) => {
-                        const totalActivityTime = zoneData[selectedActivity.id][0].distribution_buckets.reduce(
-                          (sum, b) => sum + (b.time || 0), 0
-                        );
-                        const percent = totalActivityTime > 0 ? (bucket.time / totalActivityTime) * 100 : 0;
-                        return (
-                          <ZoneRow key={index}>
-                            <ZoneLabel>Z{index + 1}</ZoneLabel>
-                            <ZoneBarContainer>
-                              <ZoneBar $width={percent} $zone={index} />
-                            </ZoneBarContainer>
-                            <ZoneTime>{formatTime(bucket.time)}</ZoneTime>
-                            <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
-                          </ZoneRow>
-                        );
-                      })}
-                    </Section>
-                  ) : (
-                    <EmptyText>No zone data available</EmptyText>
-                  )
-                ) : (
-                  <EmptyText>No heart rate data for this activity</EmptyText>
-                )}
-
-                <Section>
-                  <SectionTitle>Stats</SectionTitle>
-                  <StatRow>
-                    <StatLabel>Duration</StatLabel>
-                    <StatValue>{formatTime(selectedActivity.moving_time)}</StatValue>
-                  </StatRow>
-                  <StatRow>
-                    <StatLabel>Pace</StatLabel>
-                    <StatValue>{formatPace(selectedActivity.average_speed)}</StatValue>
-                  </StatRow>
-                  {selectedActivity.average_heartrate && (
-                    <StatRow>
-                      <StatLabel>Avg HR</StatLabel>
-                      <StatValue>{Math.round(selectedActivity.average_heartrate)} bpm</StatValue>
-                    </StatRow>
-                  )}
-                  {selectedActivity.average_cadence && (
-                    <StatRow>
-                      <StatLabel>Cadence</StatLabel>
-                      <StatValue>{Math.round(selectedActivity.average_cadence * 2)} spm</StatValue>
-                    </StatRow>
-                  )}
-                </Section>
-              </>
-            )}
-          </ModalContent>
-        </ModalOverlay>
       </ContentWrapper>
     </PageWrapper>
   );

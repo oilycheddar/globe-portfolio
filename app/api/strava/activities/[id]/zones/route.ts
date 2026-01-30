@@ -129,9 +129,17 @@ export async function GET(
     );
 
     const allZones = response.data;
+    
+    // Debug logging
+    console.log(`Raw zones response for activity ${id}:`, JSON.stringify(allZones));
+    console.log(`Number of zone types returned: ${allZones.length}`);
+    allZones.forEach((zone, i) => {
+      console.log(`Zone ${i}: type=${zone.type}, buckets=${zone.distribution_buckets?.length || 0}`);
+    });
 
     // Filter to only include heartrate zones (exclude pace zones)
     const hrZones = allZones.filter(zone => zone.type === 'heartrate');
+    console.log(`HR zones after filter: ${hrZones.length}`);
 
     // Try to cache the results
     await cacheZones(id, hrZones);
