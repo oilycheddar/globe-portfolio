@@ -200,9 +200,9 @@ const SectionTitle = styled.h2`
 
 const StatRow = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   padding: var(--space-xs) 0;
+  gap: var(--space-xs);
 `;
 
 const StatLabel = styled.span`
@@ -212,6 +212,21 @@ const StatLabel = styled.span`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
+  flex-shrink: 0;
+`;
+
+const StatDots = styled.span`
+  flex: 1;
+  overflow: hidden;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  color: var(--color-text);
+  opacity: 0.3;
+  
+  &::before {
+    content: '....................................................................................................................';
+    letter-spacing: 2px;
+  }
 `;
 
 const StatValue = styled.span`
@@ -221,6 +236,8 @@ const StatValue = styled.span`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
+  flex-shrink: 0;
+  text-align: right;
 `;
 
 const ThresholdSection = styled.div`
@@ -833,14 +850,17 @@ export default function Data() {
                 <Section>
                   <StatRow>
                     <StatLabel>Distance</StatLabel>
+                    <StatDots />
                     <StatValue>{formatDistance(totalDistance)}</StatValue>
                   </StatRow>
                   <StatRow>
                     <StatLabel>Elevation</StatLabel>
+                    <StatDots />
                     <StatValue>{formatElevation(totalElevation)}</StatValue>
                   </StatRow>
                   <StatRow>
                     <StatLabel>Avg Pace</StatLabel>
+                    <StatDots />
                     <StatValue>{formatPace(avgPace)}</StatValue>
                   </StatRow>
                 </Section>
@@ -907,10 +927,12 @@ export default function Data() {
                                     <SectionTitle>Time Below AeT</SectionTitle>
                                     <StatRow>
                                       <StatLabel>Below Threshold</StatLabel>
+                                      <StatDots />
                                       <StatValue>{formatTime(activityMetrics.timeBelowThreshold)}</StatValue>
                                     </StatRow>
                                     <StatRow>
                                       <StatLabel>Above Threshold</StatLabel>
+                                      <StatDots />
                                       <StatValue>{formatTime(activityMetrics.timeAboveThreshold)}</StatValue>
                                     </StatRow>
                                   </Section>
@@ -951,15 +973,18 @@ export default function Data() {
                             <Section>
                               <StatRow>
                                 <StatLabel>Duration</StatLabel>
+                                <StatDots />
                                 <StatValue>{formatTime(activity.moving_time)}</StatValue>
                               </StatRow>
                               <StatRow>
                                 <StatLabel>Pace</StatLabel>
+                                <StatDots />
                                 <StatValue>{formatPace(activity.average_speed)}</StatValue>
                               </StatRow>
                               {activity.average_heartrate && (
                                 <StatRow>
                                   <StatLabel>Avg HR</StatLabel>
+                                  <StatDots />
                                   <StatValue>{Math.round(activity.average_heartrate)} bpm</StatValue>
                                 </StatRow>
                               )}

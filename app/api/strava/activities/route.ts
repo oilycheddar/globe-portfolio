@@ -177,6 +177,7 @@ export async function GET(request: Request) {
       distance: activity.distance,
       moving_time: activity.moving_time,
       elapsed_time: activity.elapsed_time,
+      total_elevation_gain: activity.total_elevation_gain,
       sport_type: activity.sport_type,
       start_date: activity.start_date,
       start_date_local: activity.start_date_local,
