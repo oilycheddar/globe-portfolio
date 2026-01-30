@@ -151,6 +151,15 @@ const DateButton = styled.button<{ $isActive: boolean }>`
   }
 `;
 
+const DateRangeText = styled.span`
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
+  color: var(--color-text);
+`;
+
 const Section = styled.div`
   display: flex;
   flex-direction: column;
@@ -238,10 +247,10 @@ const ZoneLabel = styled.span`
 const ZoneBarContainer = styled.div`
   flex: 1;
   height: 16px;
-  background: var(--color-text);
+  background: var(--color-text-secondary);
   border-radius: 4px;
   overflow: hidden;
-  opacity: 0.15;
+  position: relative;
 `;
 
 const ZoneBar = styled.div<{ $width: number; $zone: number }>`
@@ -464,6 +473,24 @@ function getDateRanges(): DateRange[] {
       }
     }
   ];
+}
+
+// Format date range for display
+function formatDateRange(rangeId: string): string {
+  const range = getDateRanges().find(r => r.id === rangeId);
+  if (!range) return '';
+  
+  const { after, before } = range.getRange();
+  const startDate = new Date(after * 1000);
+  const endDate = new Date(before * 1000);
+  
+  const formatDate = (date: Date) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`;
+  };
+  
+  return `${formatDate(startDate)} - ${formatDate(endDate)}`;
 }
 
 // Main Component
@@ -752,6 +779,7 @@ export default function Data() {
                 </DateButton>
               ))}
             </DateSelectorWrapper>
+            <DateRangeText>{formatDateRange(selectedRange)}</DateRangeText>
 
             {error && (
               <ErrorText>{error}</ErrorText>
