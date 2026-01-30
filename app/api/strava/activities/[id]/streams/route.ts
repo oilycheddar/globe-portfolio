@@ -220,7 +220,16 @@ export async function GET(
     let hrData: number[] = [];
     let timeData: number[] = [];
 
-    if (Array.isArray(streams)) {
+    // Handle both response formats:
+    // 1. key_by_type=true returns: { heartrate: { data: [...] }, time: { data: [...] } }
+    // 2. key_by_type=false returns: [{ type: 'heartrate', data: [...] }, { type: 'time', data: [...] }]
+    if (streams && typeof streams === 'object' && !Array.isArray(streams)) {
+      // Object format (key_by_type=true)
+      const streamObj = streams as Record<string, { data: number[] }>;
+      if (streamObj.heartrate?.data) hrData = streamObj.heartrate.data;
+      if (streamObj.time?.data) timeData = streamObj.time.data;
+    } else if (Array.isArray(streams)) {
+      // Array format (key_by_type=false)
       const hrStream = streams.find(s => s.type === 'heartrate');
       const timeStream = streams.find(s => s.type === 'time');
       
