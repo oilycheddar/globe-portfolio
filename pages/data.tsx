@@ -160,6 +160,27 @@ const DateRangeText = styled.span`
   color: var(--color-text);
 `;
 
+const ToggleLink = styled.button`
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
+  color: var(--color-text);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 200ms ease;
+  
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+`;
+
 const Section = styled.div`
   display: flex;
   flex-direction: column;
@@ -512,6 +533,7 @@ export default function Data() {
   const [aggregatedMetrics, setAggregatedMetrics] = useState<HRMetrics | null>(null);
   const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
   const [activityMetricsLoading, setActivityMetricsLoading] = useState(false);
+  const [showActivities, setShowActivities] = useState(false);
   
   const dateRanges = getDateRanges();
   const AEROBIC_THRESHOLD = 151; // BPM
@@ -526,6 +548,11 @@ export default function Data() {
   const fetchActivities = useCallback(async () => {
     setLoading(true);
     setError(null);
+    // Clear old data immediately so user sees loading state
+    setActivities([]);
+    setHRMetricsMap({});
+    setAggregatedMetrics(null);
+    setExpandedActivityId(null);
     const range = dateRanges.find(r => r.id === selectedRange);
     if (!range) return;
     
@@ -840,8 +867,10 @@ export default function Data() {
 
                 {/* Activities List */}
                 <Section>
-                  <SectionTitle>Activities ({activities.length})</SectionTitle>
-                  {activities.length === 0 ? (
+                  <ToggleLink onClick={() => setShowActivities(!showActivities)}>
+                    {showActivities ? 'Hide' : 'Show'} Activities ({activities.length})
+                  </ToggleLink>
+                  {showActivities && (activities.length === 0 ? (
                     <EmptyText>No activities found</EmptyText>
                   ) : (
                     activities.map(activity => {
