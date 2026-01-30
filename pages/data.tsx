@@ -28,17 +28,20 @@ interface Activity {
   has_heartrate: boolean;
 }
 
-interface ZoneBucket {
-  min: number;
-  max: number;
-  time: number;
-}
-
-interface ActivityZone {
-  distribution_buckets: ZoneBucket[];
-  type: string;
-  sensor_based: boolean;
-  custom_zones: boolean;
+interface HRMetrics {
+  timeBelowThreshold: number;
+  timeAboveThreshold: number;
+  totalTime: number;
+  avgHR: number;
+  maxHR: number;
+  minHR: number;
+  zoneDistribution: {
+    zone1: number;
+    zone2: number;
+    zone3: number;
+    zone4: number;
+    zone5: number;
+  };
 }
 
 interface DateRange {
@@ -315,7 +318,6 @@ const ActivityMeta = styled.span`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  opacity: 0.6;
 `;
 
 const ActivityDetails = styled.div<{ $isVisible: boolean }>`
@@ -325,7 +327,6 @@ const ActivityDetails = styled.div<{ $isVisible: boolean }>`
   padding-top: var(--space-md);
   border-top: 1px solid var(--color-text);
   margin-top: var(--space-sm);
-  opacity: 0.3;
 `;
 
 const LoadingText = styled.div`
@@ -494,10 +495,10 @@ export default function Data() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [zoneData, setZoneData] = useState<{ [key: number]: ActivityZone[] }>({});
-  const [aggregatedZones, setAggregatedZones] = useState<number[]>([0, 0, 0, 0, 0]);
+  const [hrMetricsMap, setHRMetricsMap] = useState<{ [key: number]: HRMetrics }>({});
+  const [aggregatedMetrics, setAggregatedMetrics] = useState<HRMetrics | null>(null);
   const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
-  const [activityZonesLoading, setActivityZonesLoading] = useState(false);
+  const [activityMetricsLoading, setActivityMetricsLoading] = useState(false);
   
   const dateRanges = getDateRanges();
   const AEROBIC_THRESHOLD = 151; // BPM
@@ -527,8 +528,8 @@ export default function Data() {
       
       if (data.activities) {
         setActivities(data.activities);
-        // Fetch zones for each activity
-        fetchZonesForActivities(data.activities);
+        // Fetch HR streams for each activity
+        fetchHRMetricsForActivities(data.activities);
       }
     } catch (err) {
       console.error('Error fetching activities:', err);
@@ -538,56 +539,78 @@ export default function Data() {
     }
   }, [selectedRange]);
 
-  // Fetch zones for all activities
-  const fetchZonesForActivities = async (acts: Activity[]) => {
-    const zonesMap: { [key: number]: ActivityZone[] } = {};
-    const aggregated = [0, 0, 0, 0, 0];
+  // Fetch HR metrics from streams for all activities
+  const fetchHRMetricsForActivities = async (acts: Activity[]) => {
+    const metricsMap: { [key: number]: HRMetrics } = {};
+    const aggregated: HRMetrics = {
+      timeBelowThreshold: 0,
+      timeAboveThreshold: 0,
+      totalTime: 0,
+      avgHR: 0,
+      maxHR: 0,
+      minHR: Infinity,
+      zoneDistribution: { zone1: 0, zone2: 0, zone3: 0, zone4: 0, zone5: 0 }
+    };
+    
+    let hrSum = 0;
+    let hrCount = 0;
     
     for (const activity of acts) {
       if (activity.has_heartrate) {
         try {
-          const response = await fetch(`/api/strava/activities/${activity.id}/zones`);
+          const response = await fetch(`/api/strava/activities/${activity.id}/streams`);
           const data = await response.json();
           
-          if (data.zones && data.zones.length > 0) {
-            zonesMap[activity.id] = data.zones;
+          if (data.metrics) {
+            metricsMap[activity.id] = data.metrics;
             
-            // Aggregate zone times
-            const hrZone = data.zones[0];
-            if (hrZone && hrZone.distribution_buckets) {
-              hrZone.distribution_buckets.forEach((bucket: ZoneBucket, index: number) => {
-                if (index < 5) {
-                  aggregated[index] += bucket.time || 0;
-                }
-              });
-            }
+            // Aggregate metrics
+            aggregated.timeBelowThreshold += data.metrics.timeBelowThreshold;
+            aggregated.timeAboveThreshold += data.metrics.timeAboveThreshold;
+            aggregated.totalTime += data.metrics.totalTime;
+            aggregated.zoneDistribution.zone1 += data.metrics.zoneDistribution.zone1;
+            aggregated.zoneDistribution.zone2 += data.metrics.zoneDistribution.zone2;
+            aggregated.zoneDistribution.zone3 += data.metrics.zoneDistribution.zone3;
+            aggregated.zoneDistribution.zone4 += data.metrics.zoneDistribution.zone4;
+            aggregated.zoneDistribution.zone5 += data.metrics.zoneDistribution.zone5;
+            
+            if (data.metrics.maxHR > aggregated.maxHR) aggregated.maxHR = data.metrics.maxHR;
+            if (data.metrics.minHR < aggregated.minHR) aggregated.minHR = data.metrics.minHR;
+            hrSum += data.metrics.avgHR * data.metrics.totalTime;
+            hrCount += data.metrics.totalTime;
           }
         } catch (error) {
-          console.error(`Error fetching zones for activity ${activity.id}:`, error);
+          console.error(`Error fetching HR metrics for activity ${activity.id}:`, error);
         }
       }
     }
     
-    setZoneData(zonesMap);
-    setAggregatedZones(aggregated);
+    // Calculate overall average HR
+    if (hrCount > 0) {
+      aggregated.avgHR = Math.round(hrSum / hrCount);
+    }
+    if (aggregated.minHR === Infinity) aggregated.minHR = 0;
+    
+    setHRMetricsMap(metricsMap);
+    setAggregatedMetrics(aggregated);
   };
 
-  // Fetch zones for expanded activity
-  const fetchActivityZones = async (activityId: number) => {
-    if (zoneData[activityId]) return;
+  // Fetch HR metrics for expanded activity
+  const fetchActivityMetrics = async (activityId: number) => {
+    if (hrMetricsMap[activityId]) return;
     
-    setActivityZonesLoading(true);
+    setActivityMetricsLoading(true);
     try {
-      const response = await fetch(`/api/strava/activities/${activityId}/zones`);
+      const response = await fetch(`/api/strava/activities/${activityId}/streams`);
       const data = await response.json();
       
-      if (data.zones) {
-        setZoneData(prev => ({ ...prev, [activityId]: data.zones }));
+      if (data.metrics) {
+        setHRMetricsMap(prev => ({ ...prev, [activityId]: data.metrics }));
       }
     } catch (error) {
-      console.error('Error fetching activity zones:', error);
+      console.error('Error fetching activity HR metrics:', error);
     } finally {
-      setActivityZonesLoading(false);
+      setActivityMetricsLoading(false);
     }
   };
 
@@ -596,9 +619,14 @@ export default function Data() {
   const totalTime = activities.reduce((sum, a) => sum + a.moving_time, 0);
   const avgPace = totalTime > 0 ? totalDistance / totalTime : 0;
   
-  // Calculate time below threshold (Z1 + Z2 typically)
-  const timeBelowThreshold = aggregatedZones[0] + aggregatedZones[1];
-  const totalZoneTime = aggregatedZones.reduce((sum, t) => sum + t, 0);
+  // Get HR metrics from aggregated data
+  const timeBelowThreshold = aggregatedMetrics?.timeBelowThreshold || 0;
+  const totalZoneTime = aggregatedMetrics ? 
+    aggregatedMetrics.zoneDistribution.zone1 + 
+    aggregatedMetrics.zoneDistribution.zone2 + 
+    aggregatedMetrics.zoneDistribution.zone3 + 
+    aggregatedMetrics.zoneDistribution.zone4 + 
+    aggregatedMetrics.zoneDistribution.zone5 : 0;
 
   // Initialize animations
   useEffect(() => {
@@ -685,8 +713,8 @@ export default function Data() {
       setExpandedActivityId(null);
     } else {
       setExpandedActivityId(activity.id);
-      if (activity.has_heartrate && !zoneData[activity.id]) {
-        fetchActivityZones(activity.id);
+      if (activity.has_heartrate && !hrMetricsMap[activity.id]) {
+        fetchActivityMetrics(activity.id);
       }
     }
   };
@@ -769,19 +797,31 @@ export default function Data() {
                 {/* HR Zones */}
                 <Section>
                   <SectionTitle>HR Zones</SectionTitle>
-                  {aggregatedZones.map((time, index) => {
-                    const percent = totalZoneTime > 0 ? (time / totalZoneTime) * 100 : 0;
-                    return (
-                      <ZoneRow key={index}>
-                        <ZoneLabel>Z{index + 1}</ZoneLabel>
-                        <ZoneBarContainer>
-                          <ZoneBar $width={percent} $zone={index} />
-                        </ZoneBarContainer>
-                        <ZoneTime>{formatTime(time)}</ZoneTime>
-                        <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
-                      </ZoneRow>
-                    );
-                  })}
+                  {aggregatedMetrics ? (
+                    <>
+                      {[
+                        { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1 },
+                        { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2 },
+                        { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3 },
+                        { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4 },
+                        { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5 },
+                      ].map((zone, index) => {
+                        const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
+                        return (
+                          <ZoneRow key={index}>
+                            <ZoneLabel>{zone.label}</ZoneLabel>
+                            <ZoneBarContainer>
+                              <ZoneBar $width={percent} $zone={index} />
+                            </ZoneBarContainer>
+                            <ZoneTime>{formatTime(zone.time)}</ZoneTime>
+                            <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
+                          </ZoneRow>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <EmptyText>Loading HR data...</EmptyText>
+                  )}
                 </Section>
 
                 {/* Activities List */}
@@ -792,7 +832,7 @@ export default function Data() {
                   ) : (
                     activities.map(activity => {
                       const isExpanded = expandedActivityId === activity.id;
-                      const activityZones = zoneData[activity.id];
+                      const activityMetrics = hrMetricsMap[activity.id];
                       
                       return (
                         <ActivityCard 
@@ -807,30 +847,51 @@ export default function Data() {
                           
                           <ActivityDetails $isVisible={isExpanded}>
                             {activity.has_heartrate ? (
-                              activityZonesLoading && !activityZones ? (
-                                <LoadingText>Loading zones...</LoadingText>
-                              ) : activityZones && activityZones[0]?.distribution_buckets ? (
-                                <Section>
-                                  <SectionTitle>HR Zones</SectionTitle>
-                                  {activityZones[0].distribution_buckets.map((bucket, index) => {
-                                    const totalActivityTime = activityZones[0].distribution_buckets.reduce(
-                                      (sum, b) => sum + (b.time || 0), 0
-                                    );
-                                    const percent = totalActivityTime > 0 ? (bucket.time / totalActivityTime) * 100 : 0;
-                                    return (
-                                      <ZoneRow key={index}>
-                                        <ZoneLabel>Z{index + 1}</ZoneLabel>
-                                        <ZoneBarContainer>
-                                          <ZoneBar $width={percent} $zone={index} />
-                                        </ZoneBarContainer>
-                                        <ZoneTime>{formatTime(bucket.time)}</ZoneTime>
-                                        <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
-                                      </ZoneRow>
-                                    );
-                                  })}
-                                </Section>
+                              activityMetricsLoading && !activityMetrics ? (
+                                <LoadingText>Loading HR data...</LoadingText>
+                              ) : activityMetrics ? (
+                                <>
+                                  <Section>
+                                    <SectionTitle>Time Below {AEROBIC_THRESHOLD} BPM</SectionTitle>
+                                    <StatRow>
+                                      <StatLabel>Below Threshold</StatLabel>
+                                      <StatValue>{formatTime(activityMetrics.timeBelowThreshold)}</StatValue>
+                                    </StatRow>
+                                    <StatRow>
+                                      <StatLabel>Above Threshold</StatLabel>
+                                      <StatValue>{formatTime(activityMetrics.timeAboveThreshold)}</StatValue>
+                                    </StatRow>
+                                  </Section>
+                                  <Section>
+                                    <SectionTitle>HR Zones</SectionTitle>
+                                    {[
+                                      { label: 'Z1', time: activityMetrics.zoneDistribution.zone1 },
+                                      { label: 'Z2', time: activityMetrics.zoneDistribution.zone2 },
+                                      { label: 'Z3', time: activityMetrics.zoneDistribution.zone3 },
+                                      { label: 'Z4', time: activityMetrics.zoneDistribution.zone4 },
+                                      { label: 'Z5', time: activityMetrics.zoneDistribution.zone5 },
+                                    ].map((zone, index) => {
+                                      const activityTotalTime = activityMetrics.zoneDistribution.zone1 +
+                                        activityMetrics.zoneDistribution.zone2 +
+                                        activityMetrics.zoneDistribution.zone3 +
+                                        activityMetrics.zoneDistribution.zone4 +
+                                        activityMetrics.zoneDistribution.zone5;
+                                      const percent = activityTotalTime > 0 ? (zone.time / activityTotalTime) * 100 : 0;
+                                      return (
+                                        <ZoneRow key={index}>
+                                          <ZoneLabel>{zone.label}</ZoneLabel>
+                                          <ZoneBarContainer>
+                                            <ZoneBar $width={percent} $zone={index} />
+                                          </ZoneBarContainer>
+                                          <ZoneTime>{formatTime(zone.time)}</ZoneTime>
+                                          <ZonePercent>{percent.toFixed(0)}%</ZonePercent>
+                                        </ZoneRow>
+                                      );
+                                    })}
+                                  </Section>
+                                </>
                               ) : (
-                                <EmptyText>No zone data available</EmptyText>
+                                <EmptyText>No HR stream data available</EmptyText>
                               )
                             ) : (
                               <EmptyText>No heart rate data</EmptyText>
