@@ -141,11 +141,9 @@ const DateButton = styled.button<{ $isActive: boolean }>`
   font-weight: ${typography.caption.fontWeight};
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
-  opacity: ${props => props.$isActive ? 1 : 0.6};
   
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      opacity: 1;
       border-color: var(--color-text);
       background: var(--color-text);
       color: var(--color-page-content);
@@ -167,7 +165,6 @@ const SectionTitle = styled.h2`
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   margin: 0;
-  opacity: 0.6;
 `;
 
 const StatRow = styled.div`
@@ -218,7 +215,6 @@ const ThresholdLabel = styled.div`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-page-content);
-  opacity: 0.8;
 `;
 
 const ZoneRow = styled.div`
@@ -275,7 +271,6 @@ const ZonePercent = styled.span`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  opacity: 0.6;
   width: 40px;
   text-align: right;
   flex-shrink: 0;
@@ -293,13 +288,6 @@ const ActivityCard = styled.button<{ $isExpanded: boolean }>`
   text-align: left;
   width: 100%;
   transition: all 200ms ease;
-  opacity: ${props => props.$isExpanded ? 1 : 0.6};
-  
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: 1;
-    }
-  }
 `;
 
 const ActivityName = styled.span`
@@ -336,7 +324,6 @@ const LoadingText = styled.div`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  opacity: 0.6;
   text-align: center;
   padding: var(--space-lg);
 `;
@@ -348,7 +335,6 @@ const EmptyText = styled.div`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  opacity: 0.6;
   text-align: center;
   padding: var(--space-lg);
 `;

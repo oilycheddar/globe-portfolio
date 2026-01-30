@@ -137,14 +137,19 @@ function calculateHRMetrics(hrData: number[], timeData: number[]): HRMetrics {
       timeAboveThreshold += timeDelta;
     }
     
-    // Zone distribution (using common HR zone boundaries)
-    if (hr < 120) {
+    // Zone distribution (user's custom HR zones)
+    // Z1 (Recovery): 0-132
+    // Z2 (Aerobic): 132-151
+    // Z3 (Tempo): 151-160
+    // Z4 (Threshold): 160-178
+    // Z5 (VO2 Max): 179+
+    if (hr < 132) {
       zoneDistribution.zone1 += timeDelta;
-    } else if (hr < 140) {
+    } else if (hr < 151) {
       zoneDistribution.zone2 += timeDelta;
     } else if (hr < 160) {
       zoneDistribution.zone3 += timeDelta;
-    } else if (hr < 175) {
+    } else if (hr < 179) {
       zoneDistribution.zone4 += timeDelta;
     } else {
       zoneDistribution.zone5 += timeDelta;
