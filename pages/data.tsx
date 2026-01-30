@@ -961,7 +961,7 @@ export default function Data() {
                         </ActivityCard>
                       );
                     })
-                  )}
+                  ))}
                 </Section>
               </>
             )}
