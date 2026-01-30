@@ -26,6 +26,7 @@ interface Activity {
   average_heartrate?: number;
   max_heartrate?: number;
   has_heartrate: boolean;
+  total_elevation_gain: number;
 }
 
 interface HRMetrics {
@@ -412,6 +413,10 @@ function formatPace(metersPerSecond: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')} /km`;
 }
 
+function formatElevation(meters: number): string {
+  return `${Math.round(meters)} m`;
+}
+
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -579,8 +584,19 @@ export default function Data() {
     }
   }, [selectedRange]);
 
-  // Fetch HR metrics from streams for all activities
+  // Fetch HR metrics from streams for all activities (in parallel)
   const fetchHRMetricsForActivities = async (acts: Activity[]) => {
+    // Fetch all HR metrics in parallel
+    const results = await Promise.all(
+      acts.filter(a => a.has_heartrate).map(activity =>
+        fetch(`/api/strava/activities/${activity.id}/streams`)
+          .then(r => r.json())
+          .then(data => ({ activityId: activity.id, metrics: data.metrics as HRMetrics | null }))
+          .catch(() => ({ activityId: activity.id, metrics: null }))
+      )
+    );
+
+    // Aggregate results
     const metricsMap: { [key: number]: HRMetrics } = {};
     const aggregated: HRMetrics = {
       timeBelowThreshold: 0,
@@ -594,34 +610,24 @@ export default function Data() {
     
     let hrSum = 0;
     let hrCount = 0;
-    
-    for (const activity of acts) {
-      if (activity.has_heartrate) {
-        try {
-          const response = await fetch(`/api/strava/activities/${activity.id}/streams`);
-          const data = await response.json();
-          
-          if (data.metrics) {
-            metricsMap[activity.id] = data.metrics;
-            
-            // Aggregate metrics
-            aggregated.timeBelowThreshold += data.metrics.timeBelowThreshold;
-            aggregated.timeAboveThreshold += data.metrics.timeAboveThreshold;
-            aggregated.totalTime += data.metrics.totalTime;
-            aggregated.zoneDistribution.zone1 += data.metrics.zoneDistribution.zone1;
-            aggregated.zoneDistribution.zone2 += data.metrics.zoneDistribution.zone2;
-            aggregated.zoneDistribution.zone3 += data.metrics.zoneDistribution.zone3;
-            aggregated.zoneDistribution.zone4 += data.metrics.zoneDistribution.zone4;
-            aggregated.zoneDistribution.zone5 += data.metrics.zoneDistribution.zone5;
-            
-            if (data.metrics.maxHR > aggregated.maxHR) aggregated.maxHR = data.metrics.maxHR;
-            if (data.metrics.minHR < aggregated.minHR) aggregated.minHR = data.metrics.minHR;
-            hrSum += data.metrics.avgHR * data.metrics.totalTime;
-            hrCount += data.metrics.totalTime;
-          }
-        } catch (error) {
-          console.error(`Error fetching HR metrics for activity ${activity.id}:`, error);
-        }
+
+    for (const result of results) {
+      if (result.metrics) {
+        metricsMap[result.activityId] = result.metrics;
+        
+        aggregated.timeBelowThreshold += result.metrics.timeBelowThreshold;
+        aggregated.timeAboveThreshold += result.metrics.timeAboveThreshold;
+        aggregated.totalTime += result.metrics.totalTime;
+        aggregated.zoneDistribution.zone1 += result.metrics.zoneDistribution.zone1;
+        aggregated.zoneDistribution.zone2 += result.metrics.zoneDistribution.zone2;
+        aggregated.zoneDistribution.zone3 += result.metrics.zoneDistribution.zone3;
+        aggregated.zoneDistribution.zone4 += result.metrics.zoneDistribution.zone4;
+        aggregated.zoneDistribution.zone5 += result.metrics.zoneDistribution.zone5;
+        
+        if (result.metrics.maxHR > aggregated.maxHR) aggregated.maxHR = result.metrics.maxHR;
+        if (result.metrics.minHR < aggregated.minHR) aggregated.minHR = result.metrics.minHR;
+        hrSum += result.metrics.avgHR * result.metrics.totalTime;
+        hrCount += result.metrics.totalTime;
       }
     }
     
@@ -658,6 +664,7 @@ export default function Data() {
   const totalDistance = activities.reduce((sum, a) => sum + a.distance, 0);
   const totalTime = activities.reduce((sum, a) => sum + a.moving_time, 0);
   const avgPace = totalTime > 0 ? totalDistance / totalTime : 0;
+  const totalElevation = activities.reduce((sum, a) => sum + (a.total_elevation_gain || 0), 0);
   
   // Get HR metrics from aggregated data
   const timeBelowThreshold = aggregatedMetrics?.timeBelowThreshold || 0;
@@ -818,16 +825,19 @@ export default function Data() {
               <>
                 {/* Time Below Threshold - Primary KPI */}
                 <ThresholdSection>
-                  <ThresholdLabel>Time Below {AEROBIC_THRESHOLD} BPM</ThresholdLabel>
+                  <ThresholdLabel>Time Below AeT</ThresholdLabel>
                   <ThresholdValue>{formatTime(timeBelowThreshold)}</ThresholdValue>
                 </ThresholdSection>
 
                 {/* Weekly Stats */}
                 <Section>
-                  <SectionTitle>Stats</SectionTitle>
                   <StatRow>
                     <StatLabel>Distance</StatLabel>
                     <StatValue>{formatDistance(totalDistance)}</StatValue>
+                  </StatRow>
+                  <StatRow>
+                    <StatLabel>Elevation</StatLabel>
+                    <StatValue>{formatElevation(totalElevation)}</StatValue>
                   </StatRow>
                   <StatRow>
                     <StatLabel>Avg Pace</StatLabel>
@@ -837,7 +847,6 @@ export default function Data() {
 
                 {/* HR Zones */}
                 <Section>
-                  <SectionTitle>HR Zones</SectionTitle>
                   {aggregatedMetrics ? (
                     <>
                       {[
@@ -895,7 +904,7 @@ export default function Data() {
                               ) : activityMetrics ? (
                                 <>
                                   <Section>
-                                    <SectionTitle>Time Below {AEROBIC_THRESHOLD} BPM</SectionTitle>
+                                    <SectionTitle>Time Below AeT</SectionTitle>
                                     <StatRow>
                                       <StatLabel>Below Threshold</StatLabel>
                                       <StatValue>{formatTime(activityMetrics.timeBelowThreshold)}</StatValue>
@@ -906,7 +915,6 @@ export default function Data() {
                                     </StatRow>
                                   </Section>
                                   <Section>
-                                    <SectionTitle>HR Zones</SectionTitle>
                                     {[
                                       { label: 'Z1', time: activityMetrics.zoneDistribution.zone1 },
                                       { label: 'Z2', time: activityMetrics.zoneDistribution.zone2 },
@@ -941,7 +949,6 @@ export default function Data() {
                             )}
 
                             <Section>
-                              <SectionTitle>Stats</SectionTitle>
                               <StatRow>
                                 <StatLabel>Duration</StatLabel>
                                 <StatValue>{formatTime(activity.moving_time)}</StatValue>
