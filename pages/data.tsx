@@ -821,12 +821,11 @@ export default function Data() {
     }
   };
 
-  // Calculate stats (distance only from running activities)
-  const totalDistance = activities
-    .filter(a => ['Run', 'TrailRun', 'VirtualRun'].includes(a.sport_type))
-    .reduce((sum, a) => sum + a.distance, 0);
-  const totalTime = activities.reduce((sum, a) => sum + a.moving_time, 0);
-  const avgPace = totalTime > 0 ? totalDistance / totalTime : 0;
+  // Calculate stats (distance and pace only from running activities)
+  const runningActivities = activities.filter(a => ['Run', 'TrailRun', 'VirtualRun'].includes(a.sport_type));
+  const totalDistance = runningActivities.reduce((sum, a) => sum + a.distance, 0);
+  const totalRunningTime = runningActivities.reduce((sum, a) => sum + a.moving_time, 0);
+  const avgPace = totalRunningTime > 0 ? totalDistance / totalRunningTime : 0;
   const totalElevation = activities.reduce((sum, a) => sum + (a.total_elevation_gain || 0), 0);
   
   // Get HR metrics from aggregated data (with local overrides applied)

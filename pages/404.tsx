@@ -13,6 +13,7 @@ import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
 import type { MobileNavbarRef } from "../components/MobileNavbar";
 import Image from 'next/image';
+import Link from 'next/link';
 
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ['latin'],
@@ -125,6 +126,33 @@ const AboutText = styled.p`
   @media (max-width: 440px) {
     width: 100%;
     max-width: none;
+  }
+`;
+
+const BottomLinkContainer = styled.div`
+  width: 100%;
+  height: 64px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  flex-shrink: 0;
+`;
+
+const GoHomeLink = styled.a`
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+  
+  &:hover {
+    opacity: 0.7;
   }
 `;
 
@@ -324,6 +352,7 @@ export default function NotFound() {
           showDvdToggle={false}
           show3DToggle={false}
           hideSideNavs={true}
+          hideBottomNav={true}
         />
         <StyledContent 
           ref={contentRef}
@@ -353,6 +382,11 @@ export default function NotFound() {
             Bye.
           </AboutText>
         </StyledContent>
+        <BottomLinkContainer className={jetbrainsMono.className}>
+          <Link href="/" passHref legacyBehavior>
+            <GoHomeLink>Go Home</GoHomeLink>
+          </Link>
+        </BottomLinkContainer>
       </ContentWrapper>
     </PageWrapper>
   );

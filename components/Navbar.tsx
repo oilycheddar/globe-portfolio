@@ -111,6 +111,7 @@ interface NavbarProps {
   className?: string;
   initialNoiseState?: boolean;
   hideSideNavs?: boolean;
+  hideBottomNav?: boolean;
   hideInactiveToggles?: boolean;
   showDvdToggle?: boolean;
   show3DToggle?: boolean;
@@ -130,6 +131,7 @@ export interface NavbarRef {
 
 export const Navbar = forwardRef<NavbarRef, NavbarProps>(({ 
   hideSideNavs = false,
+  hideBottomNav = false,
   hideInactiveToggles = false,
   onGridToggle,
   onNoiseToggle,
@@ -290,21 +292,23 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
           </RightNavContainer>
         </>
       )}
-      <BottomNavContainer>
-        <ToggleGroup>
-          <div ref={toggleRefs.themeBottom}>
-            <ToggleButton
-              type="expandable"
-              label="STATION"
-              value={getCurrentPageValue()}
-              options={["HOME", "WORK", "ABOUT", "PHOTOS"]}
-              onChange={() => {}}
-              isNavigation
-              paths={navigationPaths}
-            />
-          </div>
-        </ToggleGroup>
-      </BottomNavContainer>
+      {!hideBottomNav && (
+        <BottomNavContainer>
+          <ToggleGroup>
+            <div ref={toggleRefs.themeBottom}>
+              <ToggleButton
+                type="expandable"
+                label="STATION"
+                value={getCurrentPageValue()}
+                options={["HOME", "WORK", "ABOUT", "PHOTOS"]}
+                onChange={() => {}}
+                isNavigation
+                paths={navigationPaths}
+              />
+            </div>
+          </ToggleGroup>
+        </BottomNavContainer>
+      )}
     </>
   );
 }); 
