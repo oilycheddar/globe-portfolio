@@ -1020,11 +1020,11 @@ export default function Data() {
                     <>
                       <ZonesContainer onClick={() => setShowZonePercentages(!showZonePercentages)}>
                         {[
-                          { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1, range: '0-132' },
-                          { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2, range: '132-151' },
-                          { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3, range: '151-160' },
-                          { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4, range: '160-178' },
-                          { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5, range: '179+' },
+                          { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1 },
+                          { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2 },
+                          { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3 },
+                          { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4 },
+                          { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5 },
                         ].map((zone, index) => {
                           const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
                           return (
@@ -1033,8 +1033,7 @@ export default function Data() {
                               <ZoneBarContainer>
                                 <ZoneBar $width={percent} $zone={index} />
                               </ZoneBarContainer>
-                              <ZoneTime>{formatTime(zone.time)}</ZoneTime>
-                              <ZonePercent>{showZonePercentages ? `${percent.toFixed(0)}%` : zone.range}</ZonePercent>
+                              <ZoneTime>{showZonePercentages ? formatTime(zone.time) : `${percent.toFixed(0)}%`}</ZoneTime>
                             </ZoneRow>
                           );
                         })}
@@ -1109,11 +1108,11 @@ export default function Data() {
                                   <Section>
                                     <ZonesContainer onClick={(e) => { e.stopPropagation(); setShowZonePercentages(!showZonePercentages); }}>
                                       {[
-                                        { label: 'Z1', time: activityMetrics.zoneDistribution.zone1, range: '0-132' },
-                                        { label: 'Z2', time: activityMetrics.zoneDistribution.zone2, range: '132-151' },
-                                        { label: 'Z3', time: activityMetrics.zoneDistribution.zone3, range: '151-160' },
-                                        { label: 'Z4', time: activityMetrics.zoneDistribution.zone4, range: '160-178' },
-                                        { label: 'Z5', time: activityMetrics.zoneDistribution.zone5, range: '179+' },
+                                        { label: 'Z1', time: activityMetrics.zoneDistribution.zone1 },
+                                        { label: 'Z2', time: activityMetrics.zoneDistribution.zone2 },
+                                        { label: 'Z3', time: activityMetrics.zoneDistribution.zone3 },
+                                        { label: 'Z4', time: activityMetrics.zoneDistribution.zone4 },
+                                        { label: 'Z5', time: activityMetrics.zoneDistribution.zone5 },
                                       ].map((zone, index) => {
                                         const activityTotalTime = activityMetrics.zoneDistribution.zone1 +
                                           activityMetrics.zoneDistribution.zone2 +
@@ -1127,8 +1126,7 @@ export default function Data() {
                                             <ZoneBarContainer>
                                               <ZoneBar $width={percent} $zone={index} />
                                             </ZoneBarContainer>
-                                            <ZoneTime>{formatTime(zone.time)}</ZoneTime>
-                                            <ZonePercent>{showZonePercentages ? `${percent.toFixed(0)}%` : zone.range}</ZonePercent>
+                                            <ZoneTime>{showZonePercentages ? formatTime(zone.time) : `${percent.toFixed(0)}%`}</ZoneTime>
                                           </ZoneRow>
                                         );
                                       })}
