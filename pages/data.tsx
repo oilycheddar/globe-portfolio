@@ -829,8 +829,11 @@ export default function Data() {
   const avgPace = totalTime > 0 ? totalDistance / totalTime : 0;
   const totalElevation = activities.reduce((sum, a) => sum + (a.total_elevation_gain || 0), 0);
   
-  // Get HR metrics from aggregated data
-  const timeBelowThreshold = aggregatedMetrics?.timeBelowThreshold || 0;
+  // Get HR metrics from aggregated data (with local overrides applied)
+  const timeBelowThreshold = Object.entries(hrMetricsMap).reduce((sum, [activityId, metrics]) => {
+    const override = localOverrides[Number(activityId)];
+    return sum + (override?.timeBelowThreshold ?? metrics.timeBelowThreshold);
+  }, 0);
   const totalZoneTime = aggregatedMetrics ? 
     aggregatedMetrics.zoneDistribution.zone1 + 
     aggregatedMetrics.zoneDistribution.zone2 + 
@@ -1082,19 +1085,25 @@ export default function Data() {
                               activityMetricsLoading && !activityMetrics ? (
                                 <LoadingText>Loading HR data...</LoadingText>
                               ) : activityMetrics ? (
+                                (() => {
+                                  // Calculate effective times with local overrides
+                                  const effectiveTimeBelowThreshold = localOverrides[activity.id]?.timeBelowThreshold ?? activityMetrics.timeBelowThreshold;
+                                  const activityTotalHRTime = activityMetrics.timeBelowThreshold + activityMetrics.timeAboveThreshold;
+                                  const effectiveTimeAboveThreshold = activityTotalHRTime - effectiveTimeBelowThreshold;
+                                  return (
                                 <>
                                   <Section>
                                     <StatRow>
                                       <StatLabel>Below Threshold{localOverrides[activity.id] ? ' (edited)' : ''}</StatLabel>
                                       <StatDots />
                                       <StatValue>
-                                        {formatTime(localOverrides[activity.id]?.timeBelowThreshold ?? activityMetrics.timeBelowThreshold)}
+                                        {formatTime(effectiveTimeBelowThreshold)}
                                       </StatValue>
                                     </StatRow>
                                     <StatRow>
-                                      <StatLabel>Above Threshold</StatLabel>
+                                      <StatLabel>Above Threshold{localOverrides[activity.id] ? ' (edited)' : ''}</StatLabel>
                                       <StatDots />
-                                      <StatValue>{formatTime(activityMetrics.timeAboveThreshold)}</StatValue>
+                                      <StatValue>{formatTime(effectiveTimeAboveThreshold)}</StatValue>
                                     </StatRow>
                                   </Section>
                                   <Section>
@@ -1126,6 +1135,8 @@ export default function Data() {
                                     </ZonesContainer>
                                   </Section>
                                 </>
+                                  );
+                                })()
                               ) : (
                                 <EmptyText>No HR stream data available</EmptyText>
                               )
