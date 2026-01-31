@@ -319,9 +319,38 @@ const ZonePercent = styled.span`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  width: 40px;
+  width: 48px;
   text-align: right;
   flex-shrink: 0;
+`;
+
+const ZonesContainer = styled.div`
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  user-select: none;
+`;
+
+const HRRangesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--color-text-secondary);
+  border-radius: 8px;
+`;
+
+const HRRangeRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
+  color: var(--color-text);
 `;
 
 const ActivityCard = styled.button<{ $isExpanded: boolean }>`
@@ -363,6 +392,61 @@ const ActivityDetails = styled.div<{ $isVisible: boolean }>`
   padding-top: var(--space-md);
   border-top: 1px solid var(--color-text);
   margin-top: var(--space-sm);
+`;
+
+const EditSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-text-secondary);
+  margin-top: var(--space-sm);
+`;
+
+const EditRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+`;
+
+const EditInput = styled.input`
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  color: var(--color-text);
+  background: var(--color-text-secondary);
+  border: 1px solid var(--color-text);
+  border-radius: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  width: 100px;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent-primary);
+  }
+`;
+
+const EditButton = styled.button`
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
+  color: var(--color-text);
+  background: none;
+  border: 1px solid var(--color-text);
+  border-radius: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  transition: all 200ms ease;
+  
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+  }
 `;
 
 const LoadingText = styled.div`
@@ -556,10 +640,69 @@ export default function Data() {
   const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
   const [activityMetricsLoading, setActivityMetricsLoading] = useState(false);
   const [showActivities, setShowActivities] = useState(false);
-  const [showZones, setShowZones] = useState(false);
+  const [showHRRanges, setShowHRRanges] = useState(false);
+  const [showZonePercentages, setShowZonePercentages] = useState(true);
+  const [localOverrides, setLocalOverrides] = useState<{ [key: number]: { timeBelowThreshold: number } }>({});
+  const [editingActivityId, setEditingActivityId] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<string>('');
   
   const dateRanges = getDateRanges();
   const AEROBIC_THRESHOLD = 151; // BPM
+
+  // Load local overrides from localStorage on mount
+  useEffect(() => {
+    const storedOverrides: { [key: number]: { timeBelowThreshold: number } } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('activity-override-')) {
+        const activityId = parseInt(key.replace('activity-override-', ''), 10);
+        try {
+          const value = JSON.parse(localStorage.getItem(key) || '{}');
+          if (value.timeBelowThreshold !== undefined) {
+            storedOverrides[activityId] = value;
+          }
+        } catch (e) {
+          // ignore invalid JSON
+        }
+      }
+    }
+    setLocalOverrides(storedOverrides);
+  }, []);
+
+  // Helper to save override to localStorage
+  const saveOverride = (activityId: number, timeBelowThreshold: number) => {
+    const override = { timeBelowThreshold };
+    localStorage.setItem(`activity-override-${activityId}`, JSON.stringify(override));
+    setLocalOverrides(prev => ({ ...prev, [activityId]: override }));
+  };
+
+  // Helper to clear override from localStorage
+  const clearOverride = (activityId: number) => {
+    localStorage.removeItem(`activity-override-${activityId}`);
+    setLocalOverrides(prev => {
+      const newOverrides = { ...prev };
+      delete newOverrides[activityId];
+      return newOverrides;
+    });
+  };
+
+  // Parse time string (e.g., "1H 30M 45S" or "30M 45S") to seconds
+  const parseTimeToSeconds = (timeStr: string): number | null => {
+    const parts = timeStr.toUpperCase().match(/(\d+)\s*H|\s*(\d+)\s*M|\s*(\d+)\s*S/g);
+    if (!parts) return null;
+    let totalSeconds = 0;
+    for (const part of parts) {
+      const match = part.match(/(\d+)\s*([HMS])/);
+      if (match) {
+        const value = parseInt(match[1], 10);
+        const unit = match[2];
+        if (unit === 'H') totalSeconds += value * 3600;
+        else if (unit === 'M') totalSeconds += value * 60;
+        else if (unit === 'S') totalSeconds += value;
+      }
+    }
+    return totalSeconds > 0 ? totalSeconds : null;
+  };
 
   const cycleTheme = () => {
     const currentIndex = themeKeys.indexOf(theme);
@@ -678,8 +821,10 @@ export default function Data() {
     }
   };
 
-  // Calculate stats
-  const totalDistance = activities.reduce((sum, a) => sum + a.distance, 0);
+  // Calculate stats (distance only from running activities)
+  const totalDistance = activities
+    .filter(a => ['Run', 'TrailRun', 'VirtualRun'].includes(a.sport_type))
+    .reduce((sum, a) => sum + a.distance, 0);
   const totalTime = activities.reduce((sum, a) => sum + a.moving_time, 0);
   const avgPace = totalTime > 0 ? totalDistance / totalTime : 0;
   const totalElevation = activities.reduce((sum, a) => sum + (a.total_elevation_gain || 0), 0);
@@ -868,33 +1013,45 @@ export default function Data() {
 
                 {/* HR Zones */}
                 <Section>
-                  <ToggleLink onClick={() => setShowZones(!showZones)}>
-                    {showZones ? 'Hide' : 'Show'} HR Zones
-                  </ToggleLink>
-                  {showZones && (aggregatedMetrics ? (
+                  {aggregatedMetrics ? (
                     <>
-                      {[
-                        { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1 },
-                        { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2 },
-                        { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3 },
-                        { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4 },
-                        { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5 },
-                      ].map((zone, index) => {
-                        const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
-                        return (
-                          <ZoneRow key={index}>
-                            <ZoneLabel>{zone.label}</ZoneLabel>
-                            <ZoneBarContainer>
-                              <ZoneBar $width={percent} $zone={index} />
-                            </ZoneBarContainer>
-                            <ZoneTime>{formatTime(zone.time)}</ZoneTime>
-                          </ZoneRow>
-                        );
-                      })}
+                      <ZonesContainer onClick={() => setShowZonePercentages(!showZonePercentages)}>
+                        {[
+                          { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1, range: '0-132' },
+                          { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2, range: '132-151' },
+                          { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3, range: '151-160' },
+                          { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4, range: '160-178' },
+                          { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5, range: '179+' },
+                        ].map((zone, index) => {
+                          const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
+                          return (
+                            <ZoneRow key={index}>
+                              <ZoneLabel>{zone.label}</ZoneLabel>
+                              <ZoneBarContainer>
+                                <ZoneBar $width={percent} $zone={index} />
+                              </ZoneBarContainer>
+                              <ZoneTime>{formatTime(zone.time)}</ZoneTime>
+                              <ZonePercent>{showZonePercentages ? `${percent.toFixed(0)}%` : zone.range}</ZonePercent>
+                            </ZoneRow>
+                          );
+                        })}
+                      </ZonesContainer>
+                      <ToggleLink onClick={() => setShowHRRanges(!showHRRanges)}>
+                        {showHRRanges ? 'Hide' : 'Show'} HR Ranges
+                      </ToggleLink>
+                      {showHRRanges && (
+                        <HRRangesContainer>
+                          <HRRangeRow><span>Z1 (Recovery)</span><span>0-132 bpm</span></HRRangeRow>
+                          <HRRangeRow><span>Z2 (Aerobic)</span><span>132-151 bpm</span></HRRangeRow>
+                          <HRRangeRow><span>Z3 (Tempo)</span><span>151-160 bpm</span></HRRangeRow>
+                          <HRRangeRow><span>Z4 (Threshold)</span><span>160-178 bpm</span></HRRangeRow>
+                          <HRRangeRow><span>Z5 (VO2 Max)</span><span>179+ bpm</span></HRRangeRow>
+                        </HRRangesContainer>
+                      )}
                     </>
                   ) : (
                     <EmptyText>Loading HR data...</EmptyText>
-                  ))}
+                  )}
                 </Section>
 
                 {/* Activities List */}
@@ -927,11 +1084,12 @@ export default function Data() {
                               ) : activityMetrics ? (
                                 <>
                                   <Section>
-                                    <SectionTitle>Time Below AeT</SectionTitle>
                                     <StatRow>
-                                      <StatLabel>Below Threshold</StatLabel>
+                                      <StatLabel>Below Threshold{localOverrides[activity.id] ? ' (edited)' : ''}</StatLabel>
                                       <StatDots />
-                                      <StatValue>{formatTime(activityMetrics.timeBelowThreshold)}</StatValue>
+                                      <StatValue>
+                                        {formatTime(localOverrides[activity.id]?.timeBelowThreshold ?? activityMetrics.timeBelowThreshold)}
+                                      </StatValue>
                                     </StatRow>
                                     <StatRow>
                                       <StatLabel>Above Threshold</StatLabel>
@@ -940,29 +1098,32 @@ export default function Data() {
                                     </StatRow>
                                   </Section>
                                   <Section>
-                                    {[
-                                      { label: 'Z1', time: activityMetrics.zoneDistribution.zone1 },
-                                      { label: 'Z2', time: activityMetrics.zoneDistribution.zone2 },
-                                      { label: 'Z3', time: activityMetrics.zoneDistribution.zone3 },
-                                      { label: 'Z4', time: activityMetrics.zoneDistribution.zone4 },
-                                      { label: 'Z5', time: activityMetrics.zoneDistribution.zone5 },
-                                    ].map((zone, index) => {
-                                      const activityTotalTime = activityMetrics.zoneDistribution.zone1 +
-                                        activityMetrics.zoneDistribution.zone2 +
-                                        activityMetrics.zoneDistribution.zone3 +
-                                        activityMetrics.zoneDistribution.zone4 +
-                                        activityMetrics.zoneDistribution.zone5;
-                                      const percent = activityTotalTime > 0 ? (zone.time / activityTotalTime) * 100 : 0;
-                                      return (
-                                        <ZoneRow key={index}>
-                                          <ZoneLabel>{zone.label}</ZoneLabel>
-                                          <ZoneBarContainer>
-                                            <ZoneBar $width={percent} $zone={index} />
-                                          </ZoneBarContainer>
-                                          <ZoneTime>{formatTime(zone.time)}</ZoneTime>
-                                        </ZoneRow>
-                                      );
-                                    })}
+                                    <ZonesContainer onClick={(e) => { e.stopPropagation(); setShowZonePercentages(!showZonePercentages); }}>
+                                      {[
+                                        { label: 'Z1', time: activityMetrics.zoneDistribution.zone1, range: '0-132' },
+                                        { label: 'Z2', time: activityMetrics.zoneDistribution.zone2, range: '132-151' },
+                                        { label: 'Z3', time: activityMetrics.zoneDistribution.zone3, range: '151-160' },
+                                        { label: 'Z4', time: activityMetrics.zoneDistribution.zone4, range: '160-178' },
+                                        { label: 'Z5', time: activityMetrics.zoneDistribution.zone5, range: '179+' },
+                                      ].map((zone, index) => {
+                                        const activityTotalTime = activityMetrics.zoneDistribution.zone1 +
+                                          activityMetrics.zoneDistribution.zone2 +
+                                          activityMetrics.zoneDistribution.zone3 +
+                                          activityMetrics.zoneDistribution.zone4 +
+                                          activityMetrics.zoneDistribution.zone5;
+                                        const percent = activityTotalTime > 0 ? (zone.time / activityTotalTime) * 100 : 0;
+                                        return (
+                                          <ZoneRow key={index}>
+                                            <ZoneLabel>{zone.label}</ZoneLabel>
+                                            <ZoneBarContainer>
+                                              <ZoneBar $width={percent} $zone={index} />
+                                            </ZoneBarContainer>
+                                            <ZoneTime>{formatTime(zone.time)}</ZoneTime>
+                                            <ZonePercent>{showZonePercentages ? `${percent.toFixed(0)}%` : zone.range}</ZonePercent>
+                                          </ZoneRow>
+                                        );
+                                      })}
+                                    </ZonesContainer>
                                   </Section>
                                 </>
                               ) : (
@@ -991,6 +1152,72 @@ export default function Data() {
                                 </StatRow>
                               )}
                             </Section>
+
+                            {/* Edit Section */}
+                            <EditSection>
+                              {editingActivityId === activity.id ? (
+                                <>
+                                  <EditRow>
+                                    <StatLabel>Time Below AeT:</StatLabel>
+                                    <EditInput
+                                      type="text"
+                                      value={editValue}
+                                      onChange={(e) => setEditValue(e.target.value)}
+                                      onClick={(e) => e.stopPropagation()}
+                                      placeholder="e.g., 1H 30M"
+                                    />
+                                  </EditRow>
+                                  <EditRow>
+                                    <EditButton onClick={(e) => {
+                                      e.stopPropagation();
+                                      const seconds = parseTimeToSeconds(editValue);
+                                      if (seconds !== null) {
+                                        saveOverride(activity.id, seconds);
+                                        setEditingActivityId(null);
+                                        setEditValue('');
+                                      }
+                                    }}>
+                                      Save
+                                    </EditButton>
+                                    <EditButton onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingActivityId(null);
+                                      setEditValue('');
+                                    }}>
+                                      Cancel
+                                    </EditButton>
+                                    {localOverrides[activity.id] && (
+                                      <EditButton onClick={(e) => {
+                                        e.stopPropagation();
+                                        clearOverride(activity.id);
+                                        setEditingActivityId(null);
+                                        setEditValue('');
+                                      }}>
+                                        Reset
+                                      </EditButton>
+                                    )}
+                                  </EditRow>
+                                </>
+                              ) : (
+                                <EditButton onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingActivityId(activity.id);
+                                  const currentValue = localOverrides[activity.id]?.timeBelowThreshold ?? 
+                                    (activityMetrics?.timeBelowThreshold || 0);
+                                  // Convert seconds to readable format for the input
+                                  const hours = Math.floor(currentValue / 3600);
+                                  const minutes = Math.floor((currentValue % 3600) / 60);
+                                  const seconds = currentValue % 60;
+                                  let timeStr = '';
+                                  if (hours > 0) timeStr += `${hours}H `;
+                                  if (minutes > 0) timeStr += `${minutes}M `;
+                                  if (seconds > 0 || timeStr === '') timeStr += `${seconds}S`;
+                                  setEditValue(timeStr.trim());
+                                }}>
+                                  Edit
+                                </EditButton>
+                              )}
+                            </EditSection>
                           </ActivityDetails>
                         </ActivityCard>
                       );
