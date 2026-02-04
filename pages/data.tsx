@@ -279,7 +279,7 @@ const ZoneLabel = styled.span`
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  width: 24px;
+  min-width: 24px;
   flex-shrink: 0;
 `;
 
@@ -823,10 +823,20 @@ export default function Data() {
   const totalElevation = activities.reduce((sum, a) => sum + (a.total_elevation_gain || 0), 0);
   
   // Get HR metrics from aggregated data (with local overrides applied)
-  const timeBelowThreshold = Object.entries(hrMetricsMap).reduce((sum, [activityId, metrics]) => {
+  // First, sum up activities with HR data (using overrides where available)
+  const hrDataTotal = Object.entries(hrMetricsMap).reduce((sum, [activityId, metrics]) => {
     const override = localOverrides[Number(activityId)];
     return sum + (override?.timeBelowThreshold ?? metrics.timeBelowThreshold);
   }, 0);
+  // Then, add overrides for activities WITHOUT HR data (not in hrMetricsMap)
+  const noHrDataOverridesTotal = Object.entries(localOverrides).reduce((sum, [activityId, override]) => {
+    // Only include if this activity is NOT already in hrMetricsMap
+    if (!hrMetricsMap[Number(activityId)]) {
+      return sum + (override.timeBelowThreshold || 0);
+    }
+    return sum;
+  }, 0);
+  const timeBelowThreshold = hrDataTotal + noHrDataOverridesTotal;
   const totalZoneTime = aggregatedMetrics ? 
     aggregatedMetrics.zoneDistribution.zone1 + 
     aggregatedMetrics.zoneDistribution.zone2 + 
@@ -1019,14 +1029,16 @@ export default function Data() {
                         { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5, range: '179+' },
                       ].map((zone, index) => {
                         const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
+                        // In range mode: show range as label and time as value
+                        const labelValue = zoneDisplayMode === 'range' ? zone.range : zone.label;
                         const displayValue = zoneDisplayMode === 'time' 
                           ? formatTime(zone.time) 
                           : zoneDisplayMode === 'percent' 
                             ? `${percent.toFixed(0)}%` 
-                            : zone.range;
+                            : formatTime(zone.time);
                         return (
                           <ZoneRow key={index}>
-                            <ZoneLabel>{zone.label}</ZoneLabel>
+                            <ZoneLabel>{labelValue}</ZoneLabel>
                             <ZoneBarContainer>
                               <ZoneBar $width={percent} $zone={index} />
                             </ZoneBarContainer>
@@ -1107,14 +1119,16 @@ export default function Data() {
                                             activityMetrics.zoneDistribution.zone4 +
                                             activityMetrics.zoneDistribution.zone5;
                                           const percent = zoneTotalTime > 0 ? (zone.time / zoneTotalTime) * 100 : 0;
+                                          // In range mode: show range as label and time as value
+                                          const labelValue = zoneDisplayMode === 'range' ? zone.range : zone.label;
                                           const displayValue = zoneDisplayMode === 'time' 
                                             ? formatTime(zone.time) 
                                             : zoneDisplayMode === 'percent' 
                                               ? `${percent.toFixed(0)}%` 
-                                              : zone.range;
+                                              : formatTime(zone.time);
                                           return (
                                             <ZoneRow key={index}>
-                                              <ZoneLabel>{zone.label}</ZoneLabel>
+                                              <ZoneLabel>{labelValue}</ZoneLabel>
                                               <ZoneBarContainer>
                                                 <ZoneBar $width={percent} $zone={index} />
                                               </ZoneBarContainer>
