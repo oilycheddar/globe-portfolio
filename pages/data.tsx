@@ -279,14 +279,14 @@ const ZoneRow = styled.div`
   padding: var(--space-xs) 0;
 `;
 
-const ZoneLabel = styled.span`
+const ZoneLabel = styled.span<{ $isRangeMode?: boolean }>`
   font-family: ${typography.caption.fontFamily};
   font-size: ${typography.caption.fontSize};
   font-weight: ${typography.caption.fontWeight};
   letter-spacing: ${typography.caption.letterSpacing};
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
-  min-width: 24px;
+  width: ${props => props.$isRangeMode ? '52px' : '24px'};
   flex-shrink: 0;
 `;
 
@@ -738,8 +738,8 @@ export default function Data() {
       
       if (data.activities) {
         setActivities(data.activities);
-        // Fetch HR streams for each activity
-        fetchHRMetricsForActivities(data.activities);
+        // Fetch HR streams for each activity, then set loading to false
+        await fetchHRMetricsForActivities(data.activities);
       }
     } catch (err) {
       console.error('Error fetching activities:', err);
@@ -1075,7 +1075,7 @@ export default function Data() {
                             : formatTime(zone.time);
                         return (
                           <ZoneRow key={index}>
-                            <ZoneLabel>{labelValue}</ZoneLabel>
+                            <ZoneLabel $isRangeMode={zoneDisplayMode === 'range'}>{labelValue}</ZoneLabel>
                             <ZoneBarContainer>
                               <ZoneBar $width={percent} $zone={index} />
                             </ZoneBarContainer>
@@ -1165,7 +1165,7 @@ export default function Data() {
                                               : formatTime(zone.time);
                                           return (
                                             <ZoneRow key={index}>
-                                              <ZoneLabel>{labelValue}</ZoneLabel>
+                                              <ZoneLabel $isRangeMode={zoneDisplayMode === 'range'}>{labelValue}</ZoneLabel>
                                               <ZoneBarContainer>
                                                 <ZoneBar $width={percent} $zone={index} />
                                               </ZoneBarContainer>
