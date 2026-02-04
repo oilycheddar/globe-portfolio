@@ -645,6 +645,7 @@ export default function Data() {
   const [selectedRange, setSelectedRange] = useState<string>('week');
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [kpiRevealed, setKpiRevealed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hrMetricsMap, setHRMetricsMap] = useState<{ [key: number]: HRMetrics }>({});
   const [aggregatedMetrics, setAggregatedMetrics] = useState<HRMetrics | null>(null);
@@ -715,6 +716,7 @@ export default function Data() {
   // Fetch activities
   const fetchActivities = useCallback(async () => {
     setLoading(true);
+    setKpiRevealed(false);
     setError(null);
     // Clear old data immediately so user sees loading state
     setActivities([]);
@@ -860,21 +862,22 @@ export default function Data() {
 
   // Scramble animation for KPI when data loads
   useEffect(() => {
-    if (!loading && kpiValueRef.current && timeBelowThreshold >= 0) {
+    if (!loading && kpiValueRef.current && !kpiRevealed) {
       const targetText = formatTime(timeBelowThreshold);
       // Start with scrambled characters, then reveal the actual value
       gsap.to(kpiValueRef.current, {
-        duration: 0.2,
+        duration: 0.3,
         scrambleText: {
           text: targetText,
           chars: scrambleCharSets.japanese,
-          revealDelay: 0,
-          speed: 1,
+          revealDelay: 0.1,
+          speed: 0.8,
           delimiter: ""
-        }
+        },
+        onComplete: () => setKpiRevealed(true)
       });
     }
-  }, [loading, timeBelowThreshold]);
+  }, [loading, kpiRevealed, timeBelowThreshold]);
 
   // Initialize animations
   useEffect(() => {
@@ -1028,7 +1031,7 @@ export default function Data() {
                 <ThresholdSection>
                   <ThresholdLabel>Time Below AeT</ThresholdLabel>
                   <ThresholdValue ref={kpiValueRef}>
-                    {loading ? "ﾊﾐﾋｰｳｼ" : formatTime(timeBelowThreshold)}
+                    {kpiRevealed ? formatTime(timeBelowThreshold) : "ﾊﾐﾋｰｳｼﾅﾓ"}
                   </ThresholdValue>
                 </ThresholdSection>
 
