@@ -5,12 +5,19 @@ import { themes } from "../styles/themes";
 import { typography } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { gsap } from "../utils/gsap";
+import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
 import type { MobileNavbarRef } from "../components/MobileNavbar";
+
+// Character sets for scramble effects
+const scrambleCharSets = {
+  japanese: "プロダクトデザイナーノーコードエンジニア",
+  binary: "0123456789",
+  matrix: "ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ",
+};
 
 // Types
 interface Activity {
@@ -630,6 +637,7 @@ export default function Data() {
   const contentRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
   const mobileNavbarRef = useRef<MobileNavbarRef>(null);
+  const kpiValueRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   
@@ -845,6 +853,29 @@ export default function Data() {
     aggregatedMetrics.zoneDistribution.zone5 + 
     noHrDataOverridesTotal : noHrDataOverridesTotal;
 
+  // Register GSAP plugins
+  useEffect(() => {
+    gsap.registerPlugin(ScrambleTextPlugin);
+  }, []);
+
+  // Scramble animation for KPI when data loads
+  useEffect(() => {
+    if (!loading && kpiValueRef.current && timeBelowThreshold >= 0) {
+      const targetText = formatTime(timeBelowThreshold);
+      // Start with scrambled characters, then reveal the actual value
+      gsap.to(kpiValueRef.current, {
+        duration: 0.2,
+        scrambleText: {
+          text: targetText,
+          chars: scrambleCharSets.japanese,
+          revealDelay: 0,
+          speed: 1,
+          delimiter: ""
+        }
+      });
+    }
+  }, [loading, timeBelowThreshold]);
+
   // Initialize animations
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -996,7 +1027,9 @@ export default function Data() {
                 {/* Time Below Threshold - Primary KPI */}
                 <ThresholdSection>
                   <ThresholdLabel>Time Below AeT</ThresholdLabel>
-                  <ThresholdValue>{formatTime(timeBelowThreshold)}</ThresholdValue>
+                  <ThresholdValue ref={kpiValueRef}>
+                    {loading ? "ﾊﾐﾋｰｳｼ" : formatTime(timeBelowThreshold)}
+                  </ThresholdValue>
                 </ThresholdSection>
 
                 {/* Weekly Stats */}
