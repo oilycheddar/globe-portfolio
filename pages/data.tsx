@@ -332,27 +332,6 @@ const ZonesContainer = styled.div`
   user-select: none;
 `;
 
-const HRRangesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  margin-top: var(--space-sm);
-  padding: var(--space-sm);
-  background: var(--color-text-secondary);
-  border-radius: 8px;
-`;
-
-const HRRangeRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-family: ${typography.caption.fontFamily};
-  font-size: ${typography.caption.fontSize};
-  font-weight: ${typography.caption.fontWeight};
-  letter-spacing: ${typography.caption.letterSpacing};
-  text-transform: ${typography.caption.textTransform};
-  color: var(--color-text);
-`;
-
 const ActivityCard = styled.button<{ $isExpanded: boolean }>`
   display: flex;
   flex-direction: column;
@@ -409,7 +388,13 @@ const EditRow = styled.div`
   gap: var(--space-sm);
 `;
 
-const EditInput = styled.input`
+const TimeInputGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const TimeInput = styled.input`
   font-family: ${typography.caption.fontFamily};
   font-size: ${typography.caption.fontSize};
   font-weight: ${typography.caption.fontWeight};
@@ -418,13 +403,31 @@ const EditInput = styled.input`
   background: var(--color-text-secondary);
   border: 1px solid var(--color-text);
   border-radius: 4px;
-  padding: var(--space-xs) var(--space-sm);
-  width: 100px;
+  padding: var(--space-xs);
+  width: 45px;
+  text-align: center;
   
   &:focus {
     outline: none;
     border-color: var(--color-accent-primary);
   }
+  
+  /* Hide spinner buttons */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+`;
+
+const TimeUnitLabel = styled.span`
+  font-family: ${typography.caption.fontFamily};
+  font-size: ${typography.caption.fontSize};
+  font-weight: ${typography.caption.fontWeight};
+  letter-spacing: ${typography.caption.letterSpacing};
+  text-transform: ${typography.caption.textTransform};
+  color: var(--color-text);
 `;
 
 const EditButton = styled.button`
@@ -640,11 +643,20 @@ export default function Data() {
   const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
   const [activityMetricsLoading, setActivityMetricsLoading] = useState(false);
   const [showActivities, setShowActivities] = useState(false);
-  const [showHRRanges, setShowHRRanges] = useState(false);
-  const [showZonePercentages, setShowZonePercentages] = useState(true);
+  const [zoneDisplayMode, setZoneDisplayMode] = useState<'time' | 'percent' | 'range'>('time');
   const [localOverrides, setLocalOverrides] = useState<{ [key: number]: { timeBelowThreshold: number } }>({});
+
+  // Cycle through zone display modes: time → percent → range → time
+  const cycleZoneDisplayMode = () => {
+    setZoneDisplayMode(current => {
+      if (current === 'time') return 'percent';
+      if (current === 'percent') return 'range';
+      return 'time';
+    });
+  };
   const [editingActivityId, setEditingActivityId] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState<string>('');
+  const [editUnit1, setEditUnit1] = useState<string>(''); // hours or minutes depending on activity length
+  const [editUnit2, setEditUnit2] = useState<string>(''); // minutes or seconds depending on activity length
   
   const dateRanges = getDateRanges();
   const AEROBIC_THRESHOLD = 151; // BPM
@@ -684,24 +696,6 @@ export default function Data() {
       delete newOverrides[activityId];
       return newOverrides;
     });
-  };
-
-  // Parse time string (e.g., "1H 30M 45S" or "30M 45S") to seconds
-  const parseTimeToSeconds = (timeStr: string): number | null => {
-    const parts = timeStr.toUpperCase().match(/(\d+)\s*H|\s*(\d+)\s*M|\s*(\d+)\s*S/g);
-    if (!parts) return null;
-    let totalSeconds = 0;
-    for (const part of parts) {
-      const match = part.match(/(\d+)\s*([HMS])/);
-      if (match) {
-        const value = parseInt(match[1], 10);
-        const unit = match[2];
-        if (unit === 'H') totalSeconds += value * 3600;
-        else if (unit === 'M') totalSeconds += value * 60;
-        else if (unit === 'S') totalSeconds += value;
-      }
-    }
-    return totalSeconds > 0 ? totalSeconds : null;
   };
 
   const cycleTheme = () => {
@@ -1016,40 +1010,31 @@ export default function Data() {
                 {/* HR Zones */}
                 <Section>
                   {aggregatedMetrics ? (
-                    <>
-                      <ZonesContainer onClick={() => setShowZonePercentages(!showZonePercentages)}>
-                        {[
-                          { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1 },
-                          { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2 },
-                          { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3 },
-                          { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4 },
-                          { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5 },
-                        ].map((zone, index) => {
-                          const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
-                          return (
-                            <ZoneRow key={index}>
-                              <ZoneLabel>{zone.label}</ZoneLabel>
-                              <ZoneBarContainer>
-                                <ZoneBar $width={percent} $zone={index} />
-                              </ZoneBarContainer>
-                              <ZoneTime>{showZonePercentages ? formatTime(zone.time) : `${percent.toFixed(0)}%`}</ZoneTime>
-                            </ZoneRow>
-                          );
-                        })}
-                      </ZonesContainer>
-                      <ToggleLink onClick={() => setShowHRRanges(!showHRRanges)}>
-                        {showHRRanges ? 'Hide' : 'Show'} HR Ranges
-                      </ToggleLink>
-                      {showHRRanges && (
-                        <HRRangesContainer>
-                          <HRRangeRow><span>Z1 (Recovery)</span><span>0-132 bpm</span></HRRangeRow>
-                          <HRRangeRow><span>Z2 (Aerobic)</span><span>132-151 bpm</span></HRRangeRow>
-                          <HRRangeRow><span>Z3 (Tempo)</span><span>151-160 bpm</span></HRRangeRow>
-                          <HRRangeRow><span>Z4 (Threshold)</span><span>160-178 bpm</span></HRRangeRow>
-                          <HRRangeRow><span>Z5 (VO2 Max)</span><span>179+ bpm</span></HRRangeRow>
-                        </HRRangesContainer>
-                      )}
-                    </>
+                    <ZonesContainer onClick={cycleZoneDisplayMode}>
+                      {[
+                        { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1, range: '0-132' },
+                        { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2, range: '132-151' },
+                        { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3, range: '151-160' },
+                        { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4, range: '160-178' },
+                        { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5, range: '179+' },
+                      ].map((zone, index) => {
+                        const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
+                        const displayValue = zoneDisplayMode === 'time' 
+                          ? formatTime(zone.time) 
+                          : zoneDisplayMode === 'percent' 
+                            ? `${percent.toFixed(0)}%` 
+                            : zone.range;
+                        return (
+                          <ZoneRow key={index}>
+                            <ZoneLabel>{zone.label}</ZoneLabel>
+                            <ZoneBarContainer>
+                              <ZoneBar $width={percent} $zone={index} />
+                            </ZoneBarContainer>
+                            <ZoneTime>{displayValue}</ZoneTime>
+                          </ZoneRow>
+                        );
+                      })}
+                    </ZonesContainer>
                   ) : (
                     <EmptyText>Loading HR data...</EmptyText>
                   )}
@@ -1079,17 +1064,17 @@ export default function Data() {
                           </ActivityMeta>
                           
                           <ActivityDetails $isVisible={isExpanded}>
-                            {activity.has_heartrate ? (
-                              activityMetricsLoading && !activityMetrics ? (
-                                <LoadingText>Loading HR data...</LoadingText>
-                              ) : activityMetrics ? (
-                                (() => {
-                                  // Calculate effective times with local overrides
-                                  const effectiveTimeBelowThreshold = localOverrides[activity.id]?.timeBelowThreshold ?? activityMetrics.timeBelowThreshold;
-                                  const activityTotalHRTime = activityMetrics.timeBelowThreshold + activityMetrics.timeAboveThreshold;
-                                  const effectiveTimeAboveThreshold = activityTotalHRTime - effectiveTimeBelowThreshold;
-                                  return (
+                            {(() => {
+                              // Calculate effective times - use local overrides, then HR data, then default to 0
+                              const baseTimeBelowThreshold = activityMetrics?.timeBelowThreshold ?? 0;
+                              const baseTimeAboveThreshold = activityMetrics?.timeAboveThreshold ?? activity.moving_time;
+                              const effectiveTimeBelowThreshold = localOverrides[activity.id]?.timeBelowThreshold ?? baseTimeBelowThreshold;
+                              const activityTotalTime = activity.moving_time;
+                              const effectiveTimeAboveThreshold = activityTotalTime - effectiveTimeBelowThreshold;
+                              
+                              return (
                                 <>
+                                  {/* Threshold Stats - always shown */}
                                   <Section>
                                     <StatRow>
                                       <StatLabel>Below Threshold{localOverrides[activity.id] ? ' (edited)' : ''}</StatLabel>
@@ -1104,42 +1089,50 @@ export default function Data() {
                                       <StatValue>{formatTime(effectiveTimeAboveThreshold)}</StatValue>
                                     </StatRow>
                                   </Section>
-                                  <Section>
-                                    <ZonesContainer onClick={(e) => { e.stopPropagation(); setShowZonePercentages(!showZonePercentages); }}>
-                                      {[
-                                        { label: 'Z1', time: activityMetrics.zoneDistribution.zone1 },
-                                        { label: 'Z2', time: activityMetrics.zoneDistribution.zone2 },
-                                        { label: 'Z3', time: activityMetrics.zoneDistribution.zone3 },
-                                        { label: 'Z4', time: activityMetrics.zoneDistribution.zone4 },
-                                        { label: 'Z5', time: activityMetrics.zoneDistribution.zone5 },
-                                      ].map((zone, index) => {
-                                        const activityTotalTime = activityMetrics.zoneDistribution.zone1 +
-                                          activityMetrics.zoneDistribution.zone2 +
-                                          activityMetrics.zoneDistribution.zone3 +
-                                          activityMetrics.zoneDistribution.zone4 +
-                                          activityMetrics.zoneDistribution.zone5;
-                                        const percent = activityTotalTime > 0 ? (zone.time / activityTotalTime) * 100 : 0;
-                                        return (
-                                          <ZoneRow key={index}>
-                                            <ZoneLabel>{zone.label}</ZoneLabel>
-                                            <ZoneBarContainer>
-                                              <ZoneBar $width={percent} $zone={index} />
-                                            </ZoneBarContainer>
-                                            <ZoneTime>{showZonePercentages ? formatTime(zone.time) : `${percent.toFixed(0)}%`}</ZoneTime>
-                                          </ZoneRow>
-                                        );
-                                      })}
-                                    </ZonesContainer>
-                                  </Section>
+
+                                  {/* HR Zones - only shown if HR data available */}
+                                  {activity.has_heartrate && activityMetrics && (
+                                    <Section>
+                                      <ZonesContainer onClick={(e) => { e.stopPropagation(); cycleZoneDisplayMode(); }}>
+                                        {[
+                                          { label: 'Z1', time: activityMetrics.zoneDistribution.zone1, range: '0-132' },
+                                          { label: 'Z2', time: activityMetrics.zoneDistribution.zone2, range: '132-151' },
+                                          { label: 'Z3', time: activityMetrics.zoneDistribution.zone3, range: '151-160' },
+                                          { label: 'Z4', time: activityMetrics.zoneDistribution.zone4, range: '160-178' },
+                                          { label: 'Z5', time: activityMetrics.zoneDistribution.zone5, range: '179+' },
+                                        ].map((zone, index) => {
+                                          const zoneTotalTime = activityMetrics.zoneDistribution.zone1 +
+                                            activityMetrics.zoneDistribution.zone2 +
+                                            activityMetrics.zoneDistribution.zone3 +
+                                            activityMetrics.zoneDistribution.zone4 +
+                                            activityMetrics.zoneDistribution.zone5;
+                                          const percent = zoneTotalTime > 0 ? (zone.time / zoneTotalTime) * 100 : 0;
+                                          const displayValue = zoneDisplayMode === 'time' 
+                                            ? formatTime(zone.time) 
+                                            : zoneDisplayMode === 'percent' 
+                                              ? `${percent.toFixed(0)}%` 
+                                              : zone.range;
+                                          return (
+                                            <ZoneRow key={index}>
+                                              <ZoneLabel>{zone.label}</ZoneLabel>
+                                              <ZoneBarContainer>
+                                                <ZoneBar $width={percent} $zone={index} />
+                                              </ZoneBarContainer>
+                                              <ZoneTime>{displayValue}</ZoneTime>
+                                            </ZoneRow>
+                                          );
+                                        })}
+                                      </ZonesContainer>
+                                    </Section>
+                                  )}
+
+                                  {/* Loading state for HR data */}
+                                  {activity.has_heartrate && activityMetricsLoading && !activityMetrics && (
+                                    <LoadingText>Loading HR zones...</LoadingText>
+                                  )}
                                 </>
-                                  );
-                                })()
-                              ) : (
-                                <EmptyText>No HR stream data available</EmptyText>
-                              )
-                            ) : (
-                              <EmptyText>No heart rate data</EmptyText>
-                            )}
+                              );
+                            })()}
 
                             <Section>
                               <StatRow>
@@ -1164,63 +1157,102 @@ export default function Data() {
                             {/* Edit Section */}
                             <EditSection>
                               {editingActivityId === activity.id ? (
-                                <>
-                                  <EditRow>
-                                    <StatLabel>Time Below AeT:</StatLabel>
-                                    <EditInput
-                                      type="text"
-                                      value={editValue}
-                                      onChange={(e) => setEditValue(e.target.value)}
-                                      onClick={(e) => e.stopPropagation()}
-                                      placeholder="e.g., 1H 30M"
-                                    />
-                                  </EditRow>
-                                  <EditRow>
-                                    <EditButton onClick={(e) => {
-                                      e.stopPropagation();
-                                      const seconds = parseTimeToSeconds(editValue);
-                                      if (seconds !== null) {
-                                        saveOverride(activity.id, seconds);
-                                        setEditingActivityId(null);
-                                        setEditValue('');
-                                      }
-                                    }}>
-                                      Save
-                                    </EditButton>
-                                    <EditButton onClick={(e) => {
-                                      e.stopPropagation();
-                                      setEditingActivityId(null);
-                                      setEditValue('');
-                                    }}>
-                                      Cancel
-                                    </EditButton>
-                                    {localOverrides[activity.id] && (
-                                      <EditButton onClick={(e) => {
-                                        e.stopPropagation();
-                                        clearOverride(activity.id);
-                                        setEditingActivityId(null);
-                                        setEditValue('');
-                                      }}>
-                                        Reset
-                                      </EditButton>
-                                    )}
-                                  </EditRow>
-                                </>
+                                (() => {
+                                  // Determine if activity uses hours (>= 1 hour) or just minutes/seconds
+                                  const usesHours = activity.moving_time >= 3600;
+                                  const unit1Label = usesHours ? 'H' : 'M';
+                                  const unit2Label = usesHours ? 'M' : 'S';
+                                  
+                                  return (
+                                    <>
+                                      <EditRow>
+                                        <StatLabel>Below AeT:</StatLabel>
+                                        <TimeInputGroup>
+                                          <TimeInput
+                                            type="number"
+                                            value={editUnit1}
+                                            onChange={(e) => setEditUnit1(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            min="0"
+                                          />
+                                          <TimeUnitLabel>{unit1Label}</TimeUnitLabel>
+                                          <TimeInput
+                                            type="number"
+                                            value={editUnit2}
+                                            onChange={(e) => setEditUnit2(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            min="0"
+                                            max={usesHours ? "59" : "59"}
+                                          />
+                                          <TimeUnitLabel>{unit2Label}</TimeUnitLabel>
+                                        </TimeInputGroup>
+                                      </EditRow>
+                                      <EditRow>
+                                        <EditButton onClick={(e) => {
+                                          e.stopPropagation();
+                                          const val1 = parseInt(editUnit1) || 0;
+                                          const val2 = parseInt(editUnit2) || 0;
+                                          const totalSeconds = usesHours 
+                                            ? (val1 * 3600) + (val2 * 60)
+                                            : (val1 * 60) + val2;
+                                          saveOverride(activity.id, totalSeconds);
+                                          setEditingActivityId(null);
+                                          setEditUnit1('');
+                                          setEditUnit2('');
+                                        }}>
+                                          Save
+                                        </EditButton>
+                                        <EditButton onClick={(e) => {
+                                          e.stopPropagation();
+                                          setEditingActivityId(null);
+                                          setEditUnit1('');
+                                          setEditUnit2('');
+                                        }}>
+                                          Cancel
+                                        </EditButton>
+                                        <EditButton onClick={(e) => {
+                                          e.stopPropagation();
+                                          saveOverride(activity.id, activity.moving_time);
+                                          setEditingActivityId(null);
+                                          setEditUnit1('');
+                                          setEditUnit2('');
+                                        }}>
+                                          Max
+                                        </EditButton>
+                                        {localOverrides[activity.id] && (
+                                          <EditButton onClick={(e) => {
+                                            e.stopPropagation();
+                                            clearOverride(activity.id);
+                                            setEditingActivityId(null);
+                                            setEditUnit1('');
+                                            setEditUnit2('');
+                                          }}>
+                                            Reset
+                                          </EditButton>
+                                        )}
+                                      </EditRow>
+                                    </>
+                                  );
+                                })()
                               ) : (
                                 <EditButton onClick={(e) => {
                                   e.stopPropagation();
                                   setEditingActivityId(activity.id);
                                   const currentValue = localOverrides[activity.id]?.timeBelowThreshold ?? 
                                     (activityMetrics?.timeBelowThreshold || 0);
-                                  // Convert seconds to readable format for the input
-                                  const hours = Math.floor(currentValue / 3600);
-                                  const minutes = Math.floor((currentValue % 3600) / 60);
-                                  const seconds = currentValue % 60;
-                                  let timeStr = '';
-                                  if (hours > 0) timeStr += `${hours}H `;
-                                  if (minutes > 0) timeStr += `${minutes}M `;
-                                  if (seconds > 0 || timeStr === '') timeStr += `${seconds}S`;
-                                  setEditValue(timeStr.trim());
+                                  // Determine if activity uses hours or minutes/seconds
+                                  const usesHours = activity.moving_time >= 3600;
+                                  if (usesHours) {
+                                    const hours = Math.floor(currentValue / 3600);
+                                    const minutes = Math.floor((currentValue % 3600) / 60);
+                                    setEditUnit1(hours.toString());
+                                    setEditUnit2(minutes.toString());
+                                  } else {
+                                    const minutes = Math.floor(currentValue / 60);
+                                    const seconds = currentValue % 60;
+                                    setEditUnit1(minutes.toString());
+                                    setEditUnit2(seconds.toString());
+                                  }
                                 }}>
                                   Edit
                                 </EditButton>
