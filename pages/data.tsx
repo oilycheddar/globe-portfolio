@@ -260,6 +260,7 @@ const ThresholdValue = styled.div`
   font-family: ${typography.caption.fontFamily};
   font-size: 24px;
   font-weight: ${typography.caption.fontWeight};
+  line-height: 1.2;
   color: var(--color-page-content);
 `;
 
