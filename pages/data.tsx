@@ -823,26 +823,27 @@ export default function Data() {
   const totalElevation = activities.reduce((sum, a) => sum + (a.total_elevation_gain || 0), 0);
   
   // Get HR metrics from aggregated data (with local overrides applied)
-  // First, sum up activities with HR data (using overrides where available)
-  const hrDataTotal = Object.entries(hrMetricsMap).reduce((sum, [activityId, metrics]) => {
-    const override = localOverrides[Number(activityId)];
-    return sum + (override?.timeBelowThreshold ?? metrics.timeBelowThreshold);
-  }, 0);
-  // Then, add overrides for activities WITHOUT HR data (not in hrMetricsMap)
+  // For activities WITH HR data: use Z1 + Z2 from zones (consistent with what's displayed)
+  const hrDataTotal = aggregatedMetrics 
+    ? aggregatedMetrics.zoneDistribution.zone1 + aggregatedMetrics.zoneDistribution.zone2 
+    : 0;
+  // For activities WITHOUT HR data: add any local overrides
   const noHrDataOverridesTotal = Object.entries(localOverrides).reduce((sum, [activityId, override]) => {
-    // Only include if this activity is NOT already in hrMetricsMap
+    // Only include if this activity is NOT in hrMetricsMap (no HR data)
     if (!hrMetricsMap[Number(activityId)]) {
       return sum + (override.timeBelowThreshold || 0);
     }
     return sum;
   }, 0);
   const timeBelowThreshold = hrDataTotal + noHrDataOverridesTotal;
+  // Include manual overrides in total zone time (added to Z1)
   const totalZoneTime = aggregatedMetrics ? 
     aggregatedMetrics.zoneDistribution.zone1 + 
     aggregatedMetrics.zoneDistribution.zone2 + 
     aggregatedMetrics.zoneDistribution.zone3 + 
     aggregatedMetrics.zoneDistribution.zone4 + 
-    aggregatedMetrics.zoneDistribution.zone5 : 0;
+    aggregatedMetrics.zoneDistribution.zone5 + 
+    noHrDataOverridesTotal : noHrDataOverridesTotal;
 
   // Initialize animations
   useEffect(() => {
@@ -1019,14 +1020,14 @@ export default function Data() {
 
                 {/* HR Zones */}
                 <Section>
-                  {aggregatedMetrics ? (
+                  {(aggregatedMetrics || noHrDataOverridesTotal > 0) ? (
                     <ZonesContainer onClick={cycleZoneDisplayMode}>
                       {[
-                        { label: 'Z1', time: aggregatedMetrics.zoneDistribution.zone1, range: '0-132' },
-                        { label: 'Z2', time: aggregatedMetrics.zoneDistribution.zone2, range: '132-151' },
-                        { label: 'Z3', time: aggregatedMetrics.zoneDistribution.zone3, range: '151-160' },
-                        { label: 'Z4', time: aggregatedMetrics.zoneDistribution.zone4, range: '160-178' },
-                        { label: 'Z5', time: aggregatedMetrics.zoneDistribution.zone5, range: '179+' },
+                        { label: 'Z1', time: (aggregatedMetrics?.zoneDistribution.zone1 || 0) + noHrDataOverridesTotal, range: '0-132' },
+                        { label: 'Z2', time: aggregatedMetrics?.zoneDistribution.zone2 || 0, range: '132-151' },
+                        { label: 'Z3', time: aggregatedMetrics?.zoneDistribution.zone3 || 0, range: '151-160' },
+                        { label: 'Z4', time: aggregatedMetrics?.zoneDistribution.zone4 || 0, range: '160-178' },
+                        { label: 'Z5', time: aggregatedMetrics?.zoneDistribution.zone5 || 0, range: '179+' },
                       ].map((zone, index) => {
                         const percent = totalZoneTime > 0 ? (zone.time / totalZoneTime) * 100 : 0;
                         // In range mode: show range as label and time as value
