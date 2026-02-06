@@ -650,6 +650,15 @@ export default function Data() {
   const [error, setError] = useState<string | null>(null);
   const [hrMetricsMap, setHRMetricsMap] = useState<{ [key: number]: HRMetrics }>({});
   const [aggregatedMetrics, setAggregatedMetrics] = useState<HRMetrics | null>(null);
+  
+  // Cache for fetched data per date range (persists during session)
+  const dataCache = useRef<{
+    [rangeId: string]: {
+      activities: Activity[];
+      hrMetricsMap: { [key: number]: HRMetrics };
+      aggregatedMetrics: HRMetrics | null;
+    };
+  }>({});
   const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null);
   const [activityMetricsLoading, setActivityMetricsLoading] = useState(false);
   const [showActivities, setShowActivities] = useState(false);
@@ -714,18 +723,34 @@ export default function Data() {
     setTheme(themeKeys[nextIndex]);
   };
 
-  // Fetch activities
+  // Fetch activities (with caching)
   const fetchActivities = useCallback(async () => {
-    setLoading(true);
     setKpiRevealed(false);
     setError(null);
-    // Clear old data immediately so user sees loading state
+    setExpandedActivityId(null);
+    
+    const range = dateRanges.find(r => r.id === selectedRange);
+    if (!range) return;
+    
+    // Check if we have cached data for this range
+    const cached = dataCache.current[selectedRange];
+    if (cached) {
+      // Use cached data - still show brief loading for smooth transition
+      setLoading(true);
+      setActivities(cached.activities);
+      setHRMetricsMap(cached.hrMetricsMap);
+      setAggregatedMetrics(cached.aggregatedMetrics);
+      // Small delay to allow scramble animation to start
+      await new Promise(resolve => setTimeout(resolve, 50));
+      setLoading(false);
+      return;
+    }
+    
+    // No cache - fetch from API
+    setLoading(true);
     setActivities([]);
     setHRMetricsMap({});
     setAggregatedMetrics(null);
-    setExpandedActivityId(null);
-    const range = dateRanges.find(r => r.id === selectedRange);
-    if (!range) return;
     
     const { after, before } = range.getRange();
     
@@ -740,7 +765,14 @@ export default function Data() {
       if (data.activities) {
         setActivities(data.activities);
         // Fetch HR streams for each activity, then set loading to false
-        await fetchHRMetricsForActivities(data.activities);
+        const { metricsMap, aggregated } = await fetchHRMetricsForActivities(data.activities);
+        
+        // Cache the results
+        dataCache.current[selectedRange] = {
+          activities: data.activities,
+          hrMetricsMap: metricsMap,
+          aggregatedMetrics: aggregated
+        };
       }
     } catch (err) {
       console.error('Error fetching activities:', err);
@@ -751,7 +783,10 @@ export default function Data() {
   }, [selectedRange]);
 
   // Fetch HR metrics from streams for all activities (in parallel)
-  const fetchHRMetricsForActivities = async (acts: Activity[]) => {
+  const fetchHRMetricsForActivities = async (acts: Activity[]): Promise<{
+    metricsMap: { [key: number]: HRMetrics };
+    aggregated: HRMetrics | null;
+  }> => {
     // Fetch all HR metrics in parallel
     const results = await Promise.all(
       acts.filter(a => a.has_heartrate).map(activity =>
@@ -805,6 +840,8 @@ export default function Data() {
     
     setHRMetricsMap(metricsMap);
     setAggregatedMetrics(aggregated);
+    
+    return { metricsMap, aggregated };
   };
 
   // Fetch HR metrics for expanded activity
