@@ -395,7 +395,7 @@ export default function About() {
             
               I ENJOY SOME OF THE OLD, AND I ENJOY SOME OF THE   NEW. I'M IN LOVE. RUNNING GETS MY HEART RATE UP,  MUSIC    SLOWS IT DOWN. I SEEK MY OWN WAY. HONOURING MY INTUITION TOOK   MANY   YEARS. MY NEXT JOB WILL BE OPENING A <StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">HI-FI </StyledLink><StyledLink href="https://insheepsclothinghifi.com/tokyo-jazz-kissa/" target="_blank" rel="noopener noreferrer">BAR</StyledLink>. <br /><br />
 
-              I built this site using Cursor and designed the 3D logo using three.js. Learning to code made me 10x more curious and detail oriented. there's no going back now. This project is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open</StyledLink><StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer"> source</StyledLink> and available in your terminal when you run npx georgevisan.
+              I built this site using Cursor and designed the 3D logo using three.js. Learning to code made me 10x more curious and detail oriented. there's no going back now. This project is <StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer">open</StyledLink><StyledLink href="https://github.com/oilycheddar/globe-portfolio" target="_blank" rel="noopener noreferrer"> source</StyledLink>{' '}and available in your terminal when you run npx georgevisan.
             
           </AboutText>
         </StyledContent>
