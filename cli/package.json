@@ -1,6 +1,6 @@
 {
   "name": "georgevisan",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "George Visan's portfolio — in your terminal. Run: npx georgevisan",
   "bin": {
     "georgevisan": "./index.js"

@@ -263,7 +263,7 @@ function startInput() {
 
   if (key.name === 'q' || (key.ctrl && key.name === 'c')) {
     exitAltScreen();
-    console.log(lime('\n  Thanks for stopping by, godspeed my creative friend.\n'));
+    console.log(lime('\n  Thanks for stopping by. Godspeed, my creative friend.\n'));
     process.exit(0);
   }
 
