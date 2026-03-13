@@ -41,7 +41,7 @@ const PROJECTS = [
   {
     title: 'Treasury @ Ramp',
     desc: 'Led the zero-to-one design for Ramp\'s business & investment accounts.',
-    team: 'Front End · Back End · Product · Data · Marketing · Brand',
+    team: 'Financial Products',
     link: LINKS.ramp,
   },
   {
