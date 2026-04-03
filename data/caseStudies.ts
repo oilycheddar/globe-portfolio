@@ -35,6 +35,16 @@ export const caseStudies: CaseStudy[] = [
     ]
   },
   {
+    id: 'the-pre',
+    title: 'Design & Development for The Pre',
+    link: 'https://thepre.ca',
+    description: 'A CUSTOM WEBSITE FOR EMILY AND HER EVENT PLANNING BUSINESS.',
+    videoUrl: '/the-pre.mp4',
+    posterUrl: 'none',
+    team: [],
+    hideTeam: true
+  },
+  {
     id: 'affirmations',
     title: 'Affirmations @ Loom',
     link: 'https://www.loom.com',
