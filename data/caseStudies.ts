@@ -35,6 +35,16 @@ export const caseStudies: CaseStudy[] = [
     ]
   },
   {
+    id: 'product-graphics',
+    title: 'Product Graphics Generator @ Ramp',
+    link: 'none',
+    description: 'I designed and developed our in-house graphics generator.',
+    videoUrl: '/product_graphics.mp4',
+    posterUrl: '/product-graphics-cover.png',
+    team: [],
+    hideTeam: true
+  },
+  {
     id: 'the-pre',
     title: 'Design & Development for The Pre',
     link: 'https://thepre.ca',
