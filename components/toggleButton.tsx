@@ -239,7 +239,11 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
     if (props.type === 'expandable' && props.isNavigation && props.paths) {
       const path = props.paths[option];
       if (path) {
-        router.push(path);
+        if (path.startsWith('mailto:')) {
+          window.location.href = path;
+        } else {
+          router.push(path);
+        }
       }
     } else if (props.type === 'strava' && props.onChange) {
       props.onChange(option as string);

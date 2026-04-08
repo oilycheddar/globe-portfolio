@@ -184,7 +184,8 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     'HOME': '/',
     'WORK': '/work',
     'ABOUT': '/about',
-    'PHOTOS': '/photos'
+    'PHOTOS': '/photos',
+    'CONTACT': 'mailto:info@georgevisan.com'
   };
 
   // Expose toggle refs to parent component
@@ -300,7 +301,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
                 type="expandable"
                 label="STATION"
                 value={getCurrentPageValue()}
-                options={["HOME", "WORK", "ABOUT", "PHOTOS"]}
+                options={["HOME", "WORK", "ABOUT", "PHOTOS", "CONTACT"]}
                 onChange={() => {}}
                 isNavigation
                 paths={navigationPaths}
