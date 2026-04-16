@@ -11,7 +11,6 @@
     "optimize-photos": "node scripts/optimize-photos.js"
   },
   "dependencies": {
-    "@next/swc-darwin-arm64": "^16.2.4",
     "@react-three/drei": "^10.0.3",
     "@react-three/fiber": "^9.0.4",
     "@types/styled-components": "^5.1.34",
