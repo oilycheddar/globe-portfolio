@@ -11,6 +11,7 @@
     "optimize-photos": "node scripts/optimize-photos.js"
   },
   "dependencies": {
+    "@next/swc-darwin-arm64": "^16.2.4",
     "@react-three/drei": "^10.0.3",
     "@react-three/fiber": "^9.0.4",
     "@types/styled-components": "^5.1.34",
@@ -20,7 +21,7 @@
     "framer-motion": "^12.4.7",
     "gsap": "^3.12.7",
     "lenis": "^1.1.21",
-    "next": "^15.5.11",
+    "next": "^16.2.4",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
