@@ -130,7 +130,7 @@ export default function Download() {
         if (data.valid) {
           setStatus('valid');
           setTimeout(() => {
-            window.location.href = '/HyperPaste.zip';
+            window.location.href = '/HyperPaste.dmg';
           }, 500);
         } else {
           setStatus('invalid');
@@ -195,7 +195,7 @@ export default function Download() {
                 <p className={`${textStyles.caption} text-[var(--color-text)]`}>
                   YOUR DOWNLOAD SHOULD START AUTOMATICALLY.
                 </p>
-                <ManualLink href="/HyperPaste.zip" download>
+                <ManualLink href="/HyperPaste.dmg" download>
                   CLICK HERE IF IT DOESN&apos;T
                 </ManualLink>
               </>
