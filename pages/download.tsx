@@ -1,12 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useThemeStore } from "../hooks/useThemeStore";
+import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
+import { Navbar } from "../components/Navbar";
+import type { NavbarRef } from "../components/Navbar";
+import { MobileNavbar } from "../components/MobileNavbar";
+import type { MobileNavbarRef } from "../components/MobileNavbar";
 import Head from 'next/head';
 
 const jetbrainsMono = JetBrains_Mono({
@@ -23,6 +28,20 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  .mobile-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 31;
+  }
+
+  @media (max-width: 440px) {
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const StyledContent = styled.div`
@@ -33,6 +52,10 @@ const StyledContent = styled.div`
   justify-content: center;
   gap: var(--space-lg);
   padding: 0 var(--space-xl);
+
+  @media (max-width: 440px) {
+    padding: 0 var(--space-md);
+  }
 `;
 
 const ManualLink = styled.a`
@@ -52,9 +75,21 @@ const ManualLink = styled.a`
 `;
 
 export default function Download() {
-  const { noiseEnabled } = useThemeStore();
+  const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
+  const themeKeys = Object.keys(themes);
+  const navbarRef = useRef<NavbarRef>(null);
+  const mobileNavbarRef = useRef<MobileNavbarRef>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isNavExpanded, setIsNavExpanded] = useState(false);
   const router = useRouter();
   const [status, setStatus] = useState<'verifying' | 'valid' | 'invalid'>('verifying');
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 440);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const sessionId = router.query.session_id as string | undefined;
@@ -78,6 +113,15 @@ export default function Download() {
       .catch(() => setStatus('invalid'));
   }, [router.isReady, router.query.session_id]);
 
+  const cycleTheme = () => {
+    const currentIndex = themeKeys.indexOf(theme);
+    setTheme(themeKeys[(currentIndex + 1) % themeKeys.length]);
+  };
+
+  const handleGridToggle = () => {};
+  const handleNoiseToggle = (value: boolean) => setNoiseEnabled(value);
+  const handleNavExpandedChange = (value: boolean) => setIsNavExpanded(value);
+
   return (
     <>
       <Head>
@@ -86,7 +130,34 @@ export default function Download() {
       </Head>
       <PageWrapper noiseEnabled={noiseEnabled}>
         <ContentWrapper>
-          <StyledContent className={jetbrainsMono.className}>
+          {isMobile ? (
+            <MobileNavbar
+              ref={mobileNavbarRef}
+              className="mobile-navbar"
+              onGridToggle={handleGridToggle}
+              onNoiseToggle={handleNoiseToggle}
+              onExpandedChange={handleNavExpandedChange}
+              initialNoiseState={noiseEnabled}
+              hideInactiveToggles={false}
+              showDvdToggle={false}
+              show3DToggle={false}
+            />
+          ) : null}
+          <Navbar
+            ref={navbarRef}
+            onGridToggle={handleGridToggle}
+            onNoiseToggle={handleNoiseToggle}
+            onThemeChange={cycleTheme}
+            initialNoiseState={noiseEnabled}
+            hideInactiveToggles={false}
+            showDvdToggle={false}
+            show3DToggle={false}
+            hideSideNavs={true}
+          />
+          <StyledContent
+            className={jetbrainsMono.className}
+            style={isMobile && isNavExpanded ? { filter: 'blur(8px)' } : undefined}
+          >
             {status === 'verifying' && (
               <p className={`${textStyles.caption} text-[var(--color-text)]`}>
                 VERIFYING PURCHASE...
