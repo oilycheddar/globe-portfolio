@@ -108,7 +108,7 @@ export const caseStudies: CaseStudy[] = [
   {
     id: 'hyperpaste',
     title: 'HyperPaste',
-    link: 'https://buy.stripe.com/14A28q0z89DaaZN8HX43S00',
+    link: 'https://buy.stripe.com/14A14mdlU02A3xle2h43S01',
     description: 'Replace any text with a link just like in Slack. Available on Mac.',
     videoUrl: '/hyperPaste.mp4',
     posterUrl: 'none',

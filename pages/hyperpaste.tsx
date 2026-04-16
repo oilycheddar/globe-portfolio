@@ -336,7 +336,7 @@ export default function HyperPaste() {
             </TextBlock>
 
             <div className="fade-in">
-              <BuyButton href="https://buy.stripe.com/14A28q0z89DaaZN8HX43S00">
+              <BuyButton href="https://buy.stripe.com/14A14mdlU02A3xle2h43S01">
                 Buy for $10
               </BuyButton>
             </div>
