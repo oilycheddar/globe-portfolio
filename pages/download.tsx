@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { useThemeStore } from "../hooks/useThemeStore";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
@@ -52,13 +53,30 @@ const ManualLink = styled.a`
 
 export default function Download() {
   const { noiseEnabled } = useThemeStore();
+  const router = useRouter();
+  const [status, setStatus] = useState<'verifying' | 'valid' | 'invalid'>('verifying');
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      window.location.href = '/HyperPaste.zip';
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    const sessionId = router.query.session_id as string | undefined;
+    if (!sessionId) {
+      if (router.isReady) setStatus('invalid');
+      return;
+    }
+
+    fetch(`/api/verify-purchase?session_id=${sessionId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.valid) {
+          setStatus('valid');
+          setTimeout(() => {
+            window.location.href = '/HyperPaste.zip';
+          }, 500);
+        } else {
+          setStatus('invalid');
+        }
+      })
+      .catch(() => setStatus('invalid'));
+  }, [router.isReady, router.query.session_id]);
 
   return (
     <>
@@ -69,12 +87,31 @@ export default function Download() {
       <PageWrapper noiseEnabled={noiseEnabled}>
         <ContentWrapper>
           <StyledContent className={jetbrainsMono.className}>
-            <p className={`${textStyles.caption} text-[var(--color-text)]`}>
-              YOUR DOWNLOAD SHOULD START AUTOMATICALLY.
-            </p>
-            <ManualLink href="/HyperPaste.zip" download>
-              CLICK HERE IF IT DOESN&apos;T
-            </ManualLink>
+            {status === 'verifying' && (
+              <p className={`${textStyles.caption} text-[var(--color-text)]`}>
+                VERIFYING PURCHASE...
+              </p>
+            )}
+            {status === 'valid' && (
+              <>
+                <p className={`${textStyles.caption} text-[var(--color-text)]`}>
+                  YOUR DOWNLOAD SHOULD START AUTOMATICALLY.
+                </p>
+                <ManualLink href="/HyperPaste.zip" download>
+                  CLICK HERE IF IT DOESN&apos;T
+                </ManualLink>
+              </>
+            )}
+            {status === 'invalid' && (
+              <>
+                <p className={`${textStyles.caption} text-[var(--color-text)]`}>
+                  PURCHASE NOT FOUND.
+                </p>
+                <ManualLink href="/hyperpaste">
+                  BUY HYPERPASTE
+                </ManualLink>
+              </>
+            )}
           </StyledContent>
         </ContentWrapper>
       </PageWrapper>
