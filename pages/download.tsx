@@ -13,6 +13,7 @@ import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
 import type { MobileNavbarRef } from "../components/MobileNavbar";
 import Head from 'next/head';
+import Link from 'next/link';
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -55,6 +56,31 @@ const StyledContent = styled.div`
 
   @media (max-width: 440px) {
     padding: 0 var(--space-md);
+  }
+`;
+
+const BottomLinkContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  min-height: 64px;
+  flex-shrink: 0;
+`;
+
+const GoHomeLink = styled.a`
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 15.8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 1;
   }
 `;
 
@@ -153,6 +179,7 @@ export default function Download() {
             showDvdToggle={false}
             show3DToggle={false}
             hideSideNavs={true}
+            hideBottomNav={true}
           />
           <StyledContent
             className={jetbrainsMono.className}
@@ -184,6 +211,11 @@ export default function Download() {
               </>
             )}
           </StyledContent>
+          <BottomLinkContainer className={jetbrainsMono.className}>
+            <Link href="/" passHref legacyBehavior>
+              <GoHomeLink>Go Home</GoHomeLink>
+            </Link>
+          </BottomLinkContainer>
         </ContentWrapper>
       </PageWrapper>
     </>
