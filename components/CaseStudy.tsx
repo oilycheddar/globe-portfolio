@@ -869,7 +869,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     }
   }, [autoplay]);
 
-  const isLoopingVideo = data.videoUrl.includes('loom');
+  const isLoopingVideo = data.videoUrl.includes('loom') || data.videoUrl.includes('hyperPaste');
   const isClickableVideo = data.videoUrl !== 'none'; // All videos should be clickable for pause/play
 
   const handleVideoClick = () => {
@@ -1214,7 +1214,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
               muted
               playsInline
               autoPlay={autoplay}
-              loop={data.videoUrl.includes('loom')}
+              loop={data.videoUrl.includes('loom') || data.videoUrl.includes('hyperPaste')}
               onEnded={handleVideoEnded}
               style={{ 
                 display: (isLoopingVideo && hasVideoStarted) ? 'block' : ((isVideoPlaying || data.posterUrl === 'none') ? 'block' : 'none')

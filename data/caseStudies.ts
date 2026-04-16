@@ -106,6 +106,16 @@ export const caseStudies: CaseStudy[] = [
     hideTeam: true
   },
   {
+    id: 'hyperpaste',
+    title: 'HyperPaste',
+    link: 'https://buy.stripe.com/14A28q0z89DaaZN8HX43S00',
+    description: 'Replace any text with a link just like in Slack. Available on Mac.',
+    videoUrl: '/hyperPaste.mp4',
+    posterUrl: 'none',
+    team: [],
+    hideTeam: true
+  },
+  {
     id: 'fig-psychology',
     title: 'Fig Psychology',
     link: 'none',

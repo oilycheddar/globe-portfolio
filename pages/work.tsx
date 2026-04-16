@@ -456,7 +456,7 @@ export default function Work() {
               style={isMobile && isNavExpanded ? {
                 filter: 'blur(8px)'
               } : undefined}
-              autoplay={study.id === 'the-pre'}
+              autoplay={study.id === 'the-pre' || study.id === 'hyperpaste'}
             />
           ))}
         </CaseStudiesList>
