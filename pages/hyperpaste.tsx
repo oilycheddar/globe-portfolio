@@ -275,6 +275,10 @@ export default function HyperPaste() {
         <meta property="og:title" content="HyperPaste — Turn any text into a hyperlink with Cmd+V" />
         <meta property="og:description" content="Copy a URL, select text, Cmd+V. The text becomes a clickable hyperlink. Works in Gmail, Notes, Google Docs, and everywhere else." />
         <meta property="og:image" content="https://www.georgevisan.com/hyperpaste-og.png" />
+        <meta property="og:image:width" content="2644" />
+        <meta property="og:image:height" content="1650" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="HyperPaste — Turn any text into a hyperlink with Cmd+V" />
         <meta property="og:url" content="https://www.georgevisan.com/hyperpaste" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="HyperPaste — Turn any text into a hyperlink with Cmd+V" />
