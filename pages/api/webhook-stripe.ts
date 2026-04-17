@@ -32,24 +32,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const downloadUrl = `https://www.georgebugg.com/download?session_id=${session.id}`;
 
       await resend.emails.send({
-        from: 'HyperPaste <noreply@georgebugg.com>',
+        from: 'George <george@georgebugg.com>',
+        replyTo: 'info@georgevisan.com',
         to: session.customer_details.email,
-        subject: 'Your HyperPaste download',
+        subject: 'Pasting links just got better',
         html: `
-          <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Thanks for buying HyperPaste!</h2>
-            <p style="font-size: 14px; line-height: 1.6; color: #444; margin-bottom: 24px;">
-              Your download link is below. Bookmark this email if you ever need to re-download.
-            </p>
-            <a href="${downloadUrl}" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
-              Download HyperPaste
-            </a>
-            <p style="font-size: 13px; line-height: 1.6; color: #888; margin-top: 32px;">
-              After downloading, open the app and grant Accessibility permission when prompted. HyperPaste will restart automatically once permission is granted.
-            </p>
-            <p style="font-size: 13px; color: #888; margin-top: 24px;">
-              Questions? Reply to this email.
-            </p>
+          <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 20px;">
+            <p style="font-size: 16px; line-height: 1.7; color: #111; margin: 0 0 24px;">Hey there,</p>
+            <p style="font-size: 16px; line-height: 1.7; color: #111; margin: 0 0 24px;">Thanks for downloading HyperPaste. Installing is easy. Just open the app, accept the system permissions, and that's it. Whether it's Gmail, Notes, or Google Docs, you can now create hyperlinks by pasting them directly onto text.</p>
+            <p style="font-size: 16px; line-height: 1.7; color: #111; margin: 0 0 16px;">Here's your unique download link:</p>
+            <a href="${downloadUrl}" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600;">Download HyperPaste</a>
+            <p style="font-size: 16px; line-height: 1.7; color: #111; margin: 48px 0 0;">Thanks for supporting indie software.</p>
+            <p style="font-size: 16px; line-height: 1.7; color: #111; margin: 8px 0 0;">George</p>
           </div>
         `,
       });
