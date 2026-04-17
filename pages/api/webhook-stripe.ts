@@ -32,8 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const downloadUrl = `https://www.georgebugg.com/download?session_id=${session.id}`;
 
       await resend.emails.send({
-        from: 'George <george@georgebugg.com>',
-        replyTo: 'info@georgevisan.com',
+        from: 'George <info@georgevisan.com>',
         to: session.customer_details.email,
         subject: 'Pasting links just got better',
         html: `
