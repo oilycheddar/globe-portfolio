@@ -338,10 +338,10 @@ export default function HyperPaste() {
 
             <TextBlock>
               <p className={`${textStyles.caption} text-[var(--color-text)] fade-in`} style={{ opacity: 0.6 }}>
-                ADD A LINK TO ANY TEXT JUST LIKE IN SLACK.
+                RIGHT-CLICK. INSERT LINK. PASTE URL. CLICK OK. EVERY SINGLE TIME.
               </p>
               <p className={`${textStyles.caption} text-[var(--color-text)] fade-in`} style={{ opacity: 0.6 }}>
-                WORKS IN GMAIL, APPLE NOTES, GOOGLE DOCS, NOTION, OUTLOOK, AND EVERYWHERE RICH TEXT LIVES. ONE-TIME PURCHASE. MACOS.
+                OR JUST CMD+V. WORKS IN GMAIL, NOTES, GOOGLE DOCS, NOTION, AND OUTLOOK. ONE-TIME PURCHASE. MACOS.
               </p>
             </TextBlock>
 
