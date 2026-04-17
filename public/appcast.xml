@@ -7,10 +7,10 @@
         <language>en</language>
 
         <item>
-            <title>Version 1.1.0</title>
-            <pubDate>Wed, 16 Apr 2026 12:00:00 +0000</pubDate>
-            <sparkle:version>1.1.0</sparkle:version>
-            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <title>Version 1.1.1</title>
+            <pubDate>Thu, 17 Apr 2026 17:00:00 +0000</pubDate>
+            <sparkle:version>1.1.1</sparkle:version>
+            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
             <description><![CDATA[
                 <h2>What's New</h2>
@@ -21,10 +21,10 @@
                 </ul>
             ]]></description>
             <enclosure
-                url="https://www.georgevisan.com/releases/HyperPaste-1.1.0.zip"
-                length="2492350"
+                url="https://www.georgevisan.com/releases/HyperPaste-1.1.1.zip"
+                length="2493008"
                 type="application/octet-stream"
-                sparkle:edSignature="plU/l48sA7g2BR+F0pl8ELNO3couYxeP1lju0CUTXnYyfX3MHNO+2+B6f8OzBx7PP74WBdecjIcQAnZ1F0r1Bw=="
+                sparkle:edSignature="+3jhgGguVVr47DILEKVCl9oLo4Ecg8uss4LhlWBXs4KGM69SDN47QNbTSj9t7xG93hKvukZkdML8agKMkoloBA=="
             />
         </item>
 
