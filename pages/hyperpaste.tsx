@@ -272,8 +272,14 @@ export default function HyperPaste() {
       <Head>
         <title>HyperPaste — Paste links onto text, everywhere</title>
         <meta name="description" content="Copy a URL, select text, Cmd+V. The text becomes a clickable hyperlink. Works in Gmail, Notes, Docs, and everywhere else." />
-        <meta property="og:title" content="HyperPaste — Paste links onto text, everywhere" />
-        <meta property="og:description" content="Copy a URL, select text, Cmd+V. The text becomes a clickable hyperlink. A macOS utility." />
+        <meta property="og:title" content="HyperPaste — Turn any text into a hyperlink with Cmd+V" />
+        <meta property="og:description" content="Copy a URL, select text, Cmd+V. The text becomes a clickable hyperlink. Works in Gmail, Notes, Google Docs, and everywhere else." />
+        <meta property="og:image" content="https://www.georgevisan.com/hyperpaste-og.png" />
+        <meta property="og:url" content="https://www.georgevisan.com/hyperpaste" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="HyperPaste — Turn any text into a hyperlink with Cmd+V" />
+        <meta name="twitter:description" content="Copy a URL, select text, Cmd+V. The text becomes a clickable hyperlink. Works in Gmail, Notes, Google Docs, and everywhere else." />
+        <meta name="twitter:image" content="https://www.georgevisan.com/hyperpaste-og.png" />
       </Head>
       <PageWrapper noiseEnabled={noiseEnabled}>
         <ContentWrapper>
