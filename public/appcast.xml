@@ -7,6 +7,28 @@
         <language>en</language>
 
         <item>
+            <title>Version 1.1.5</title>
+            <pubDate>Thu, 17 Apr 2026 21:30:00 +0000</pubDate>
+            <sparkle:version>1.1.5</sparkle:version>
+            <sparkle:shortVersionString>1.1.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>What's New</h2>
+                <ul>
+                    <li>Fixed hyperlink paste in Pages, Google Docs, Google Slides, Word, and PowerPoint</li>
+                    <li>Menu opens on every launch so you always know where HyperPaste lives</li>
+                    <li>On first launch, menu waits until after permissions are granted</li>
+                </ul>
+            ]]></description>
+            <enclosure
+                url="https://www.georgevisan.com/releases/HyperPaste-1.1.5.zip"
+                length="2491239"
+                type="application/octet-stream"
+                sparkle:edSignature="YIYC8NBSyE6XcA8O6XCmJAd+4rX8YdXfaig5FdnktdRO1jZ2KXb/5/IGuJRgIP+u37QnX/AwBzvNeZ94Ejf9AA=="
+            />
+        </item>
+
+        <item>
             <title>Version 1.1.4</title>
             <pubDate>Thu, 17 Apr 2026 21:00:00 +0000</pubDate>
             <sparkle:version>1.1.4</sparkle:version>
