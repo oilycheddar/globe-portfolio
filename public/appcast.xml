@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>HyperPaste Updates</title>
+        <link>https://www.georgevisan.com/hyperpaste</link>
+        <description>Most recent updates to HyperPaste</description>
+        <language>en</language>
+
+        <item>
+            <title>Version 1.0.1</title>
+            <pubDate>Thu, 17 Apr 2026 12:00:00 +0000</pubDate>
+            <sparkle:version>1.0.1</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>What's New</h2>
+                <ul>
+                    <li>Auto-update support via Sparkle</li>
+                    <li>Fixed accessibility permission flow</li>
+                    <li>Added "Check for Updates" menu item</li>
+                </ul>
+            ]]></description>
+            <enclosure
+                url="https://www.georgevisan.com/releases/HyperPaste-1.0.1.zip"
+                length="2483352"
+                type="application/octet-stream"
+                sparkle:edSignature="cSKmHXmd5gp5Z2flC7YOyqxD/Q5xMvkyL94EtgckXyHko44+SgLHLmSRh+AIPzbX3A3Vk1LPHbt6HM4AyJu7BQ=="
+            />
+        </item>
+    </channel>
+</rss>
