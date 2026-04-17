@@ -29,21 +29,21 @@ export default function App({ Component, pageProps }: AppProps) {
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:url" content="https://georgevisan.com" />
+        <meta key="og:url" property="og:url" content="https://georgevisan.com" />
         <meta property="og:site_name" content="George Visan — Product Designer" />
-        <meta property="og:title" content="George Visan — Product Designer" />
-        <meta property="og:description" content="Hello, world. I'm a product designer, AI maximalist and long distance athlete." />
-        <meta property="og:image" content="https://georgevisan.com/og-image.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="George Visan — Product Designer" />
-        <meta property="og:image:type" content="image/jpeg" />
-        
+        <meta key="og:title" property="og:title" content="George Visan — Product Designer" />
+        <meta key="og:description" property="og:description" content="Hello, world. I'm a product designer, AI maximalist and long distance athlete." />
+        <meta key="og:image" property="og:image" content="https://georgevisan.com/og-image.jpg" />
+        <meta key="og:image:width" property="og:image:width" content="1200" />
+        <meta key="og:image:height" property="og:image:height" content="630" />
+        <meta key="og:image:alt" property="og:image:alt" content="George Visan — Product Designer" />
+        <meta key="og:image:type" property="og:image:type" content="image/jpeg" />
+
         {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="George Visan — Product Designer" />
-        <meta name="twitter:description" content="Hello, world. I'm a product designer, AI maximalist and long distance athlete." />
-        <meta name="twitter:image" content="https://georgevisan.com/og-image.jpg" />
+        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+        <meta key="twitter:title" name="twitter:title" content="George Visan — Product Designer" />
+        <meta key="twitter:description" name="twitter:description" content="Hello, world. I'm a product designer, AI maximalist and long distance athlete." />
+        <meta key="twitter:image" name="twitter:image" content="https://georgevisan.com/og-image.jpg" />
         
         {/* Icons */}
         <link rel="icon" href="/favicon.ico" />
