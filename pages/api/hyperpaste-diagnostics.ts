@@ -20,10 +20,25 @@ export default async function handler(
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const subject = `HyperPaste: couldn't paste in ${appName || bundleId}${windowTitle ? ` — ${windowTitle.slice(0, 60)}` : ""}`;
+  const displayApp = appName || bundleId;
+  const subject = `HyperPaste failed in ${displayApp}`;
 
-  const row = (label: string, value: string | undefined) =>
-    value ? `<tr><td style="padding: 4px 16px 4px 0; font-weight: bold; white-space: nowrap;">${label}</td><td>${value}</td></tr>` : "";
+  const stepExplanations: Record<string, string> = {
+    selected_text: "Couldn't read the selected text (AX API and Cmd+C fallback both failed)",
+  };
+
+  const formatTime = (ts: string | undefined) => {
+    if (!ts) return new Date().toLocaleString("en-US", { timeZone: "America/Denver" });
+    try {
+      return new Date(ts).toLocaleString("en-US", {
+        timeZone: "America/Denver",
+        weekday: "short", month: "short", day: "numeric",
+        hour: "numeric", minute: "2-digit", hour12: true,
+      });
+    } catch { return ts; }
+  };
+
+  const what = description || stepExplanations[failedStep] || failedStep;
 
   try {
     await resend.emails.send({
@@ -31,17 +46,16 @@ export default async function handler(
       to: "info@georgevisan.com",
       subject,
       html: `
-        <h2>HyperPaste Diagnostic Report</h2>
-        ${description ? `<p style="font-family: -apple-system, sans-serif; color: #333; margin-bottom: 16px;">${description}</p>` : ""}
-        <table style="border-collapse: collapse; font-family: -apple-system, sans-serif;">
-          ${row("App", appName ? `${appName} (${bundleId})` : bundleId)}
-          ${row("Window", windowTitle)}
-          ${row("URL on clipboard", clipboardURL)}
-          ${row("Failed step", failedStep)}
-          ${row("macOS", osVersion)}
-          ${row("HyperPaste", appVersion)}
-          ${row("Time", timestamp || new Date().toISOString())}
-        </table>
+        <div style="font-family: -apple-system, sans-serif; color: #333; max-width: 480px;">
+          <p style="font-size: 15px; line-height: 1.5; margin: 0 0 20px;">
+            <strong>${displayApp}</strong>${windowTitle ? ` — ${windowTitle}` : ""}<br>
+            ${what}
+          </p>
+          ${clipboardURL ? `<p style="font-size: 13px; margin: 0 0 20px; color: #666;">URL on clipboard: <a href="${clipboardURL}" style="color: #0066cc;">${clipboardURL.length > 80 ? clipboardURL.slice(0, 80) + "…" : clipboardURL}</a></p>` : ""}
+          <p style="font-size: 12px; color: #999; margin: 0;">
+            v${appVersion || "?"} · macOS ${osVersion || "?"} · ${formatTime(timestamp)}
+          </p>
+        </div>
       `,
     });
 
