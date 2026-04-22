@@ -36,10 +36,10 @@ export function parseAndConvertDistance(distanceString: string): string {
   if (!match) {
     return distanceString; // Return as-is if format is unexpected
   }
-  
+
   const value = parseInt(match[1], 10);
   const unit = match[2];
-  
+
   if (unit === 'km') {
     return formatDistance(value);
   } else if (unit === 'mi') {
@@ -47,6 +47,47 @@ export function parseAndConvertDistance(distanceString: string): string {
     const kmValue = Math.round(value / 0.621371);
     return formatDistance(kmValue);
   }
-  
+
   return distanceString;
-} 
+}
+
+// US uses feet for elevation. Canada and everywhere else use metres.
+function usesImperialElevation(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return navigator.language === 'en-US' ||
+         navigator.language.startsWith('en-US') ||
+         navigator.languages.some(lang => lang.startsWith('en-US'));
+}
+
+export function convertElevationToLocalUnit(elevationMeters: number): { value: number; unit: string } {
+  if (usesImperialElevation()) {
+    const feet = Math.round(elevationMeters * 3.28084);
+    return { value: feet, unit: 'ft' };
+  }
+  return { value: Math.round(elevationMeters), unit: 'm' };
+}
+
+export function formatElevation(elevationMeters: number): string {
+  const { value, unit } = convertElevationToLocalUnit(elevationMeters);
+  return `${value}${unit}`;
+}
+
+// Parse a canonical elevation string (always stored as "1234m") and convert to the user's locale unit.
+export function parseAndConvertElevation(elevationString: string): string {
+  const match = elevationString.match(/^(\d+)(m|ft)$/);
+  if (!match) {
+    return elevationString;
+  }
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2];
+
+  if (unit === 'm') {
+    return formatElevation(value);
+  } else if (unit === 'ft') {
+    const meters = Math.round(value / 3.28084);
+    return formatElevation(meters);
+  }
+
+  return elevationString;
+}

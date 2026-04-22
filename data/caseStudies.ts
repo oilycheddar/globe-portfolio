@@ -55,6 +55,16 @@ export const caseStudies: CaseStudy[] = [
     hideTeam: true
   },
   {
+    id: 'hyperpaste',
+    title: 'HyperPaste',
+    link: 'https://buy.stripe.com/14A14mdlU02A3xle2h43S01',
+    description: 'Save time when creating links. All you have to do is paste! (⌘V)',
+    videoUrl: '/hyperPaste.mp4',
+    posterUrl: 'none',
+    team: [],
+    hideTeam: true
+  },
+  {
     id: 'affirmations',
     title: 'Affirmations @ Loom',
     link: 'https://www.loom.com',
@@ -103,16 +113,6 @@ export const caseStudies: CaseStudy[] = [
       { role: 'MARKETING', names: ['BECKY', 'CHRISTY'] },
       { role: 'BRAND', names: ['EMILY', 'SHIVANI'] }
     ],
-    hideTeam: true
-  },
-  {
-    id: 'hyperpaste',
-    title: 'HyperPaste',
-    link: 'https://buy.stripe.com/14A14mdlU02A3xle2h43S01',
-    description: 'Save time when creating links. All you have to do is paste! (⌘V)',
-    videoUrl: '/hyperPaste.mp4',
-    posterUrl: 'none',
-    team: [],
     hideTeam: true
   },
   {

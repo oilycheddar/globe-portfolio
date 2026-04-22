@@ -5,8 +5,7 @@ import { themes } from '../styles/themes';
 import { useState, forwardRef, useRef, useImperativeHandle, useEffect, memo } from 'react';
 import { textStyles } from '../styles/text';
 import { useRouter } from 'next/router';
-import { getYTDRunningDistance } from '../services/strava';
-import { parseAndConvertDistance } from '../utils/unitConversion';
+import { getYTDRunningStats } from '../services/strava';
 
 const NavContainer = styled.nav.attrs<{ className?: string }>(props => ({
   className: props.className || ''
@@ -94,6 +93,13 @@ const ToggleGroup = styled.div`
   text-transform: uppercase;
 `;
 
+const StatsGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
+
 const StyledLink = styled.a`
   text-decoration: none;
   color: inherit;
@@ -147,6 +153,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [runningDistance, setRunningDistance] = useState('407km');
+  const [runningElevation, setRunningElevation] = useState('8500m');
   
   // Create refs for each toggle button container
   const toggleRefs = {
@@ -207,9 +214,10 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   };
 
   useEffect(() => {
-    // Fetch running distance on mount
-    getYTDRunningDistance().then(distance => {
+    // Fetch running stats (distance + elevation) on mount
+    getYTDRunningStats().then(({ distance, elevation }) => {
       setRunningDistance(distance);
+      setRunningElevation(elevation);
     });
   }, []);
 
@@ -264,17 +272,26 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
         <>
           <LeftNavContainer>
             <ToggleGroup>
-              <div ref={toggleRefs.themeLeft}>
+              <StatsGroup ref={toggleRefs.themeLeft}>
                 <ToggleButton
                   type="strava"
-                  label={`${new Date().getFullYear()} running distance`}
+                  label={`${new Date().getFullYear()} running stats`}
                   value={runningDistance}
                   fallbackValue="407km"
                   onChange={() => {}}
                   $isActive={true}
                   href="https://www.strava.com/athletes/42678770"
                 />
-              </div>
+                <ToggleButton
+                  type="strava"
+                  label=""
+                  value={runningElevation}
+                  fallbackValue="8500m"
+                  onChange={() => {}}
+                  $isActive={true}
+                  href="https://www.strava.com/athletes/42678770"
+                />
+              </StatsGroup>
             </ToggleGroup>
           </LeftNavContainer>
           <RightNavContainer>

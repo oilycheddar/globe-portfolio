@@ -1,51 +1,49 @@
-import { getStravaStats } from '../utils/strava-redis';
-import { parseAndConvertDistance } from '../utils/unitConversion';
+import { parseAndConvertDistance, parseAndConvertElevation } from '../utils/unitConversion';
 
-interface StravaStats {
+const TEMPORARY_DISTANCE_OVERRIDE = '407km';
+const TEMPORARY_ELEVATION_OVERRIDE = '8500m';
+
+interface RunningStats {
   distance: string;
-  lastUpdated: string;
-  lastKnownGoodDistance?: string;
+  elevation: string;
 }
 
-const TEMPORARY_OVERRIDE = '407km';  // Temporary override until API catches up
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
-
-export async function getYTDRunningDistance(): Promise<string> {
+async function fetchStravaStats(): Promise<{ distance?: string; elevation?: string; lastKnownGoodDistance?: string; lastKnownGoodElevation?: string } | null> {
   try {
-    // Use fetch to get stats from API route
     const response = await fetch('/api/strava/stats');
-    
-    // Check if the response is ok and actually JSON
+
     if (!response.ok) {
       console.error('API response not ok:', response.status, response.statusText);
-      return parseAndConvertDistance(TEMPORARY_OVERRIDE);
+      return null;
     }
 
-    // Check content type to ensure it's JSON
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       console.error('Response is not JSON, got:', contentType);
-      const text = await response.text();
-      console.error('Response body:', text.substring(0, 200) + '...');
-      return parseAndConvertDistance(TEMPORARY_OVERRIDE);
+      return null;
     }
 
-    const stats = await response.json();
-    
-    // Convert to local units
-    if (stats.distance) {
-      return parseAndConvertDistance(stats.distance);
-    }
-    
-    // Fall back to last known good distance if available
-    if (stats.lastKnownGoodDistance) {
-      return parseAndConvertDistance(stats.lastKnownGoodDistance);
-    }
-    
-    // Final fallback to temporary override
-    return parseAndConvertDistance(TEMPORARY_OVERRIDE);
+    return await response.json();
   } catch (error) {
     console.error('Error fetching Strava stats:', error);
-    return parseAndConvertDistance(TEMPORARY_OVERRIDE);
+    return null;
   }
-} 
+}
+
+export async function getYTDRunningStats(): Promise<RunningStats> {
+  const stats = await fetchStravaStats();
+
+  const rawDistance = stats?.distance || stats?.lastKnownGoodDistance || TEMPORARY_DISTANCE_OVERRIDE;
+  const rawElevation = stats?.elevation || stats?.lastKnownGoodElevation || TEMPORARY_ELEVATION_OVERRIDE;
+
+  return {
+    distance: parseAndConvertDistance(rawDistance),
+    elevation: parseAndConvertElevation(rawElevation),
+  };
+}
+
+// Kept for backwards compatibility with any other callers.
+export async function getYTDRunningDistance(): Promise<string> {
+  const { distance } = await getYTDRunningStats();
+  return distance;
+}

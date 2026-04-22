@@ -2,12 +2,15 @@ import { getRedisClient } from './redis';
 
 export interface StravaStats {
   distance: string;
+  elevation?: string;
   lastUpdated: string;
   lastKnownGoodDistance?: string;
+  lastKnownGoodElevation?: string;
 }
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000; // 15 minutes in milliseconds
 const TEMPORARY_OVERRIDE = '407km';
+const TEMPORARY_ELEVATION_OVERRIDE = '8500m';
 
 // Check if data is stale (older than 15 minutes)
 export function isDataStale(lastUpdated: string): boolean {
@@ -25,8 +28,10 @@ export async function getStravaStats(): Promise<StravaStats> {
       // If no stats exist, return default with current timestamp
       return {
         distance: TEMPORARY_OVERRIDE,
+        elevation: TEMPORARY_ELEVATION_OVERRIDE,
         lastUpdated: new Date().toISOString(),
-        lastKnownGoodDistance: TEMPORARY_OVERRIDE
+        lastKnownGoodDistance: TEMPORARY_OVERRIDE,
+        lastKnownGoodElevation: TEMPORARY_ELEVATION_OVERRIDE
       };
     }
     
@@ -36,8 +41,10 @@ export async function getStravaStats(): Promise<StravaStats> {
     // Return default stats if Redis read fails
     return {
       distance: TEMPORARY_OVERRIDE,
+      elevation: TEMPORARY_ELEVATION_OVERRIDE,
       lastUpdated: new Date().toISOString(),
-      lastKnownGoodDistance: TEMPORARY_OVERRIDE
+      lastKnownGoodDistance: TEMPORARY_OVERRIDE,
+      lastKnownGoodElevation: TEMPORARY_ELEVATION_OVERRIDE
     };
   }
 }

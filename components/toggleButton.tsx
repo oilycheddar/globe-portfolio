@@ -279,7 +279,7 @@ export function ToggleButton<T extends string>(props: ToggleButtonProps<T>) {
       ref={containerRef}
       style={props.fullWidth ? { gridColumn: '1 / -1', justifySelf: 'center' } : undefined}
     >
-      <Label>{props.label}</Label>
+      {props.label && <Label>{props.label}</Label>}
       <ButtonWrapper $isExpandable={props.type === 'expandable'}>
         <Button 
           ref={buttonRef}

@@ -44,7 +44,7 @@ async function getAccessToken(): Promise<string> {
   }
 }
 
-async function fetchFreshStravaStats(): Promise<{ distance: string; lastKnownGoodDistance?: string }> {
+async function fetchFreshStravaStats(): Promise<{ distance: string; elevation: string; lastKnownGoodDistance?: string; lastKnownGoodElevation?: string }> {
   if (!ATHLETE_ID) {
     throw new Error('STRAVA_ATHLETE_ID environment variable is not set');
   }
@@ -62,24 +62,32 @@ async function fetchFreshStravaStats(): Promise<{ distance: string; lastKnownGoo
     );
 
     console.log('Raw Strava API response:', response.data);
-    
+
     // Validate response structure
     if (!response.data?.ytd_run_totals) {
       throw new Error('Invalid Strava API response: missing ytd_run_totals');
     }
-    
+
     const distance = response.data.ytd_run_totals.distance;
     if (typeof distance !== 'number' || isNaN(distance)) {
       throw new Error(`Invalid distance value from Strava API: ${distance}`);
     }
-    
+
+    const elevationGain = response.data.ytd_run_totals.elevation_gain;
+    const elevationInMeters = typeof elevationGain === 'number' && !isNaN(elevationGain)
+      ? Math.round(elevationGain)
+      : 0;
+
     const distanceInKm = Math.round(distance / 1000);
     const newDistance = `${distanceInKm}km`; // Always store in km
-    console.log('Parsed distance:', newDistance);
+    const newElevation = `${elevationInMeters}m`; // Always store in metres
+    console.log('Parsed distance:', newDistance, 'elevation:', newElevation);
 
     return {
       distance: newDistance,
-      ...(distanceInKm > 0 ? { lastKnownGoodDistance: newDistance } : {})
+      elevation: newElevation,
+      ...(distanceInKm > 0 ? { lastKnownGoodDistance: newDistance } : {}),
+      ...(elevationInMeters > 0 ? { lastKnownGoodElevation: newElevation } : {})
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -117,9 +125,12 @@ export async function GET() {
         const updatedStats: StravaStats = {
           ...freshStats,
           lastUpdated: new Date().toISOString(),
-          lastKnownGoodDistance: freshStats.distance !== '0km' 
-            ? freshStats.distance 
-            : currentStats?.lastKnownGoodDistance
+          lastKnownGoodDistance: freshStats.distance !== '0km'
+            ? freshStats.distance
+            : currentStats?.lastKnownGoodDistance,
+          lastKnownGoodElevation: freshStats.elevation !== '0m'
+            ? freshStats.elevation
+            : currentStats?.lastKnownGoodElevation
         };
         
         // Try to update Redis, but don't fail if it doesn't work
@@ -136,8 +147,10 @@ export async function GET() {
         // Return current stats if available, otherwise fallback
         return NextResponse.json(currentStats || {
           distance: '407km',
+          elevation: '8500m',
           lastUpdated: new Date().toISOString(),
-          lastKnownGoodDistance: '407km'
+          lastKnownGoodDistance: '407km',
+          lastKnownGoodElevation: '8500m'
         });
       } finally {
         try {
