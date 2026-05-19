@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const AEROBIC_THRESHOLD = 151; // BPM
@@ -37,18 +36,27 @@ async function getAccessToken(): Promise<string> {
     throw new Error('Missing required Strava environment variables');
   }
 
-  const response = await axios.post('https://www.strava.com/oauth/token', {
-    client_id: clientId,
-    client_secret: clientSecret,
-    refresh_token: refreshToken,
-    grant_type: 'refresh_token'
+  const response = await fetch('https://www.strava.com/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
+    }),
   });
 
-  if (!response.data?.access_token) {
+  if (!response.ok) {
+    throw new Error(`Strava token refresh failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data?.access_token) {
     throw new Error('Failed to get access token from Strava');
   }
 
-  return response.data.access_token;
+  return data.access_token as string;
 }
 
 // Try to get Redis client, return null if unavailable
@@ -202,18 +210,24 @@ export async function GET(
     console.log(`Fetching HR stream for activity ${id}...`);
     const accessToken = await getAccessToken();
     
-    const response = await axios.get<StreamData[]>(
-      `${STRAVA_API_URL}/activities/${id}/streams`,
+    const query = new URLSearchParams({
+      keys: 'heartrate,time',
+      key_by_type: 'true',
+    });
+    const response = await fetch(
+      `${STRAVA_API_URL}/activities/${id}/streams?${query}`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
-        params: { 
-          keys: 'heartrate,time',
-          key_by_type: true
-        }
       }
     );
 
-    const streams = response.data;
+    if (!response.ok) {
+      throw new Error(`Strava streams fetch failed: ${response.status}`);
+    }
+
+    const streams = (await response.json()) as
+      | StreamData[]
+      | Record<string, { data: number[] }>;
     console.log(`Raw streams response for activity ${id}:`, JSON.stringify(streams).substring(0, 500));
 
     // Extract HR and time data

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
 import { getStravaStats, updateStravaStats, isDataStale, acquireUpdateLock, releaseUpdateLock, StravaStats } from '../../../../utils/strava-redis';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
@@ -19,27 +18,31 @@ async function getAccessToken(): Promise<string> {
       client_id: clientId,
       refresh_token: refreshToken.substring(0, 5) + '...'
     });
-    const response = await axios.post(
-      'https://www.strava.com/oauth/token',
-      {
+    const response = await fetch('https://www.strava.com/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         client_id: clientId,
         client_secret: clientSecret,
         refresh_token: refreshToken,
-        grant_type: 'refresh_token'
-      }
-    );
-    
-    if (!response.data?.access_token) {
+        grant_type: 'refresh_token',
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      console.error('Token refresh error:', response.status, errorBody);
+      throw new Error(`Strava token refresh failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data?.access_token) {
       throw new Error('Invalid response from Strava token endpoint: missing access_token');
     }
-    
-    return response.data.access_token;
+
+    return data.access_token as string;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Token refresh error:', error.response?.data || error.message);
-    } else {
-      console.error('Token refresh error:', error);
-    }
+    console.error('Token refresh error:', error);
     throw error;
   }
 }
@@ -52,28 +55,33 @@ async function fetchFreshStravaStats(): Promise<{ distance: string; elevation: s
   try {
     const accessToken = await getAccessToken();
     console.log('Got access token, fetching stats for athlete:', ATHLETE_ID);
-    const response = await axios.get(
+    const response = await fetch(
       `${STRAVA_API_URL}/athletes/${ATHLETE_ID}/stats`,
       {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
 
-    console.log('Raw Strava API response:', response.data);
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      console.error('Error fetching Strava stats:', response.status, errorBody);
+      throw new Error(`Strava stats fetch failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Raw Strava API response:', data);
 
     // Validate response structure
-    if (!response.data?.ytd_run_totals) {
+    if (!data?.ytd_run_totals) {
       throw new Error('Invalid Strava API response: missing ytd_run_totals');
     }
 
-    const distance = response.data.ytd_run_totals.distance;
+    const distance = data.ytd_run_totals.distance;
     if (typeof distance !== 'number' || isNaN(distance)) {
       throw new Error(`Invalid distance value from Strava API: ${distance}`);
     }
 
-    const elevationGain = response.data.ytd_run_totals.elevation_gain;
+    const elevationGain = data.ytd_run_totals.elevation_gain;
     const elevationInMeters = typeof elevationGain === 'number' && !isNaN(elevationGain)
       ? Math.round(elevationGain)
       : 0;
@@ -90,11 +98,7 @@ async function fetchFreshStravaStats(): Promise<{ distance: string; elevation: s
       ...(elevationInMeters > 0 ? { lastKnownGoodElevation: newElevation } : {})
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error fetching Strava stats:', error.response?.data || error.message);
-    } else {
-      console.error('Error fetching Strava stats:', error);
-    }
+    console.error('Error fetching Strava stats:', error);
     throw error;
   }
 }

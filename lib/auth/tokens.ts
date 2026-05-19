@@ -1,9 +1,8 @@
 import { getRedisClient } from '../../utils/redis';
-import axios from 'axios';
 
 interface StravaTokens {
   access_token: string;
-  refresh_token: string; 
+  refresh_token: string;
   expires_at: number;
 }
 
@@ -41,19 +40,26 @@ async function refreshTokens(refresh_token: string): Promise<StravaTokens> {
     throw new Error('Missing required Strava environment variables: STRAVA_CLIENT_ID or STRAVA_CLIENT_SECRET');
   }
 
-  const response = await axios.post<StravaTokens>(
-    'https://www.strava.com/oauth/token',
-    {
+  const response = await fetch('https://www.strava.com/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
       client_id: clientId,
       client_secret: clientSecret,
       refresh_token: refresh_token,
-      grant_type: 'refresh_token'
-    }
-  );
-  
-  if (!response.data?.access_token || !response.data?.refresh_token) {
+      grant_type: 'refresh_token',
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Strava token refresh failed: ${response.status}`);
+  }
+
+  const data = (await response.json()) as StravaTokens;
+
+  if (!data?.access_token || !data?.refresh_token) {
     throw new Error('Invalid response from Strava token endpoint: missing required tokens');
   }
-  
-  return response.data;
+
+  return data;
 }

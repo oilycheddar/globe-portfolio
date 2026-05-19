@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 
@@ -31,18 +30,27 @@ async function getAccessToken(): Promise<string> {
     throw new Error('Missing required Strava environment variables: STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET, or STRAVA_REFRESH_TOKEN');
   }
 
-  const response = await axios.post('https://www.strava.com/oauth/token', {
-    client_id: clientId,
-    client_secret: clientSecret,
-    refresh_token: refreshToken,
-    grant_type: 'refresh_token'
+  const response = await fetch('https://www.strava.com/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
+    }),
   });
 
-  if (!response.data?.access_token) {
+  if (!response.ok) {
+    throw new Error(`Strava token refresh failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data?.access_token) {
     throw new Error('Failed to get access token from Strava');
   }
 
-  return response.data.access_token;
+  return data.access_token as string;
 }
 
 // Try to get Redis client, return null if unavailable
@@ -102,12 +110,21 @@ async function fetchAllActivities(accessToken: string, after: number, before: nu
   const perPage = 100;
 
   while (true) {
-    const response = await axios.get<StravaActivity[]>(`${STRAVA_API_URL}/athlete/activities`, {
+    const query = new URLSearchParams({
+      after: String(after),
+      before: String(before),
+      page: String(page),
+      per_page: String(perPage),
+    });
+    const response = await fetch(`${STRAVA_API_URL}/athlete/activities?${query}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
-      params: { after, before, page, per_page: perPage }
     });
 
-    const activities = response.data;
+    if (!response.ok) {
+      throw new Error(`Strava activities fetch failed: ${response.status}`);
+    }
+
+    const activities = (await response.json()) as StravaActivity[];
     if (!activities || activities.length === 0) {
       break;
     }

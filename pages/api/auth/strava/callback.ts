@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
 import { storeTokens } from '../../../../lib/auth/tokens';
 
 interface StravaTokens {
@@ -9,16 +8,22 @@ interface StravaTokens {
 }
 
 async function exchangeCodeForTokens(code: string): Promise<StravaTokens> {
-  const response = await axios.post<StravaTokens>(
-    'https://www.strava.com/oauth/token',
-    {
+  const response = await fetch('https://www.strava.com/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
       client_id: process.env.STRAVA_CLIENT_ID,
       client_secret: process.env.STRAVA_CLIENT_SECRET,
       code,
-      grant_type: 'authorization_code'
-    }
-  );
-  return response.data;
+      grant_type: 'authorization_code',
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Strava code exchange failed: ${response.status}`);
+  }
+
+  return (await response.json()) as StravaTokens;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
