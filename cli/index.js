@@ -12,7 +12,7 @@ let inputStarted = false;
 
 async function fetchStrava() {
   try {
-    const res = await fetch('https://georgevisan.com/api/strava/stats');
+    const res = await fetch('https://georgebugg.com/api/strava/stats');
     const data = await res.json();
     if (data.distance) {
       stravaDistance = `${data.distance} YTD`;
@@ -29,7 +29,7 @@ fetchStrava();
 // ── Data ──────────────────────────────────────────────────────────────
 
 const LINKS = {
-  portfolio: 'https://georgevisan.com',
+  portfolio: 'https://georgebugg.com',
   github: 'https://github.com/oilycheddar/globe-portfolio',
   strava: 'https://www.strava.com/athletes/42678770',
   ramp: 'https://www.ramp.com/treasury',

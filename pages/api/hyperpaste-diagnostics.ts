@@ -42,8 +42,8 @@ export default async function handler(
 
   try {
     await resend.emails.send({
-      from: "HyperPaste Diagnostics <info@georgevisan.com>",
-      to: "info@georgevisan.com",
+      from: "HyperPaste Diagnostics <info@georgebugg.com>",
+      to: "info@georgebugg.com",
       subject,
       html: `
         <div style="font-family: -apple-system, sans-serif; color: #333; max-width: 480px;">

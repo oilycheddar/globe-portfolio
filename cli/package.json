@@ -1,9 +1,9 @@
 {
-  "name": "georgevisan",
+  "name": "georgebugg",
   "version": "1.0.2",
-  "description": "George Visan's portfolio — in your terminal. Run: npx georgevisan",
+  "description": "George Bugg's portfolio — in your terminal. Run: npx georgebugg",
   "bin": {
-    "georgevisan": "./index.js"
+    "georgebugg": "./index.js"
   },
   "files": [
     "index.js"
@@ -18,7 +18,7 @@
     "design",
     "product-designer"
   ],
-  "author": "George Visan",
+  "author": "George Bugg",
   "license": "MIT",
   "type": "module",
   "repository": {

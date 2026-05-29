@@ -192,7 +192,7 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
     'WORK': '/work',
     'ABOUT': '/about',
     'PHOTOS': '/photos',
-    'CONTACT': 'mailto:info@georgevisan.com'
+    'CONTACT': 'mailto:info@georgebugg.com'
   };
 
   // Expose toggle refs to parent component

@@ -37,10 +37,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (session.payment_status === 'paid' && session.customer_details?.email) {
-      const downloadUrl = `https://www.georgevisan.com/download?session_id=${session.id}`;
+      const downloadUrl = `https://www.georgebugg.com/download?session_id=${session.id}`;
 
       await resend.emails.send({
-        from: 'George <info@georgevisan.com>',
+        from: 'George <info@georgebugg.com>',
         to: session.customer_details.email,
         subject: 'Pasting links just got better',
         html: `
