@@ -1,11 +1,10 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useMemo, useRef } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { OrbitControls, useTexture } from "@react-three/drei"
+import { OrbitControls } from "@react-three/drei"
 import * as THREE from "three"
 import { useThemeStore } from '../hooks/useThemeStore'
-import styled from "styled-components"
 import { Suspense } from "react"
 import { useLoader } from "@react-three/fiber"
 import { TextureLoader } from "three"
@@ -32,27 +31,16 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
   const meshRef = useRef<THREE.Group>(null)
   const time = useRef(0)
 
-  useEffect(() => {
-    if (meshRef.current) {
-      console.log('[Logo3D] Globe mounted:', {
-        timestamp: new Date().toISOString(),
-        position: meshRef.current.position,
-        rotation: meshRef.current.rotation,
-        scale: meshRef.current.scale
-      })
+  const { outerGeometry, innerGeometry } = useMemo(() => {
+    const geometries = {
+      outerGeometry: new THREE.SphereGeometry(3.5034375, 64, 32),
+      innerGeometry: new THREE.SphereGeometry(3.4534375, 64, 32),
     }
+    const scale = new THREE.Matrix4().makeScale(1.401375, 0.7006875, 0.7006875)
+    geometries.outerGeometry.applyMatrix4(scale)
+    geometries.innerGeometry.applyMatrix4(scale)
+    return geometries
   }, [])
-
-  // Create geometries
-  const outerGeometry = new THREE.SphereGeometry(3.5034375, 64, 32)
-  const innerGeometry = new THREE.SphereGeometry(3.4534375, 64, 32)
-  const coreGeometry = new THREE.SphereGeometry(3.4034375, 64, 32)
-  
-  // Apply ellipsoid scaling
-  const scale = new THREE.Matrix4().makeScale(1.401375, 0.7006875, 0.7006875)
-  outerGeometry.applyMatrix4(scale)
-  innerGeometry.applyMatrix4(scale)
-  coreGeometry.applyMatrix4(scale)
 
   // Load texture with error handling
   const decalTexture = useLoader(TextureLoader, '/GEORGE.png')
@@ -60,7 +48,7 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
   decalTexture.magFilter = THREE.NearestFilter
 
   // Create outer material with grid lines and noise
-  const outerMaterial = new THREE.ShaderMaterial({
+  const outerMaterial = useMemo(() => new THREE.ShaderMaterial({
     uniforms: {
       color: { 
         value: new THREE.Color().setStyle(theme === 'slime' ? '#C1DF1E' : 
@@ -163,10 +151,10 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
     side: THREE.DoubleSide,
     depthWrite: true,
     depthTest: true,
-  })
+  }), [theme])
 
   // Create decal material
-  const decalMaterial = new THREE.ShaderMaterial({
+  const decalMaterial = useMemo(() => new THREE.ShaderMaterial({
     uniforms: {
       color: { 
         value: new THREE.Color().setStyle(theme === 'slime' ? '#C1DF1E' : 
@@ -224,17 +212,17 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
     side: THREE.FrontSide,
     depthWrite: true,
     depthTest: true,
-  })
+  }), [decalTexture, theme])
 
   // Create core material
-  const coreMaterial = new THREE.MeshBasicMaterial({
+  const coreMaterial = useMemo(() => new THREE.MeshBasicMaterial({
     colorWrite: false,
     transparent: true,
     opacity: 0,
     side: THREE.DoubleSide,
     depthWrite: true,
     depthTest: true,
-  })
+  }), [])
 
   useFrame((state, delta) => {
     if (!meshRef.current) return
@@ -250,16 +238,6 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
     // Apply only horizontal rotation
     meshRef.current.rotation.y = baseRotation + ambientRotationY
     meshRef.current.rotation.x = 0  // Keep it level by setting to 0
-
-    // Log position every 5 seconds
-    if (Math.floor(time.current) % 5 === 0) {
-      console.log('[Logo3D] Frame update:', {
-        timestamp: new Date().toISOString(),
-        position: meshRef.current.position,
-        rotation: meshRef.current.rotation,
-        scale: meshRef.current.scale
-      })
-    }
 
     // Update shader uniforms
     outerMaterial.uniforms.time.value = time.current
@@ -309,57 +287,9 @@ function GlobeWithErrorHandling(props: { theme: string; noiseEnabled: boolean })
 
 export default function Logo3D({ className = '', style, noiseEnabled = true }: Logo3DProps) {
   const { theme } = useThemeStore()
-  const logoRef = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0, width: 0 })
-
-  // Log position on mount and updates
-  useEffect(() => {
-    if (logoRef.current) {
-      const rect = logoRef.current.getBoundingClientRect()
-      const newPosition = {
-        x: rect.left,
-        y: rect.top,
-        width: rect.width
-      }
-      setPosition(newPosition)
-      console.log('Logo3D Position:', {
-        timestamp: Date.now(),
-        position: newPosition,
-        containerWidth: (logoRef.current as HTMLDivElement).offsetWidth,
-        parentWidth: (logoRef.current.parentElement as HTMLDivElement)?.offsetWidth || 0,
-        computedStyle: window.getComputedStyle(logoRef.current)
-      })
-    }
-  }, [])
-
-  // Log position changes
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const rect = entry.target.getBoundingClientRect()
-        console.log('Logo3D Position Updated:', {
-          timestamp: Date.now(),
-          position: {
-            x: rect.left,
-            y: rect.top,
-            width: rect.width
-          },
-          containerWidth: (entry.target as HTMLDivElement).offsetWidth,
-          parentWidth: (entry.target.parentElement as HTMLDivElement)?.offsetWidth || 0
-        })
-      }
-    })
-
-    if (logoRef.current) {
-      observer.observe(logoRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
 
   return (
     <div 
-      ref={logoRef}
       className={`w-full overflow-visible ${className}`}
       style={{ 
         filter: `drop-shadow(var(--${theme}_shadow))`,
@@ -406,34 +336,3 @@ export default function Logo3D({ className = '', style, noiseEnabled = true }: L
     </div>
   )
 }
-
-const BlurWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: filter 0.4s ease;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: visible;
-  ...
-`;
-
-const StyledContent = styled.div`
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-  --navbar-height: 64px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-md);
-  transition: filter 0.4s ease;
-  overflow: visible;
-  ...
-`; 

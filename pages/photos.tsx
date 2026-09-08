@@ -2,11 +2,8 @@
 
 import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
-import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import { Ref, useEffect, useRef, useState } from "react";
-import { gsap, ScrambleTextPlugin, SplitText } from "../utils/gsap";
-import { JetBrains_Mono } from 'next/font/google';
+import { useEffect, useRef, useState } from "react";
 import styled from 'styled-components';
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
@@ -14,12 +11,6 @@ import { MobileNavbar } from "../components/MobileNavbar";
 import type { MobileNavbarRef } from "../components/MobileNavbar";
 import Image from 'next/image';
 import photos, { Photo } from '../data/photos';
-
-const jetbrainsMono = JetBrains_Mono({ 
-  subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
-});
 
 const ContentWrapper = styled.div`
   position: absolute;
@@ -45,66 +36,6 @@ const ContentWrapper = styled.div`
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-  }
-`;
-
-const StyledContent = styled.div`
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-  --navbar-height: 64px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-lg);
-  transition: filter 0.4s ease;
-
-  /* Add padding to prevent content from overlapping with navs */
-  padding: 0 var(--space-xl);
-
-  /* Initial state to prevent FOUC */
-  opacity: 0;
-  transform: translateY(20px);
-  
-  /* Responsive adjustments */
-  @media (max-width: 440px) {
-    --mobile-navbar-height: 32px;
-    padding: var(--space-md);
-    gap: var(--space-lg);
-    min-height: 0;
-    position: relative;
-    flex: 1;
-    overflow: hidden;
-  }
-`;
-
-const ImageWrapper = styled.div`
-  width: 300px;
-  max-width: 100%;
-  position: relative;
-  aspect-ratio: 1064/1331;
-  
-  @media (max-width: 440px) {
-    width: 100%;
-    aspect-ratio: 1064/1000;
-    position: relative;
-  }
-`;
-
-const ProfileImage = styled(Image)`
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  mix-blend-mode: hard-light;
-  object-fit: cover;
-  object-position: center 0%;
-  
-  @media (max-width: 440px) {
-    object-position: center 0%;
   }
 `;
 
@@ -223,17 +154,6 @@ const ImageSection = styled.div`
     max-height: 100%;
     object-fit: contain;
     object-position: center;
-    opacity: 0;
-    animation: fadeIn 0.6s ease-in-out forwards;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
 `;
 
@@ -268,12 +188,11 @@ const ImageSection = styled.div`
 export default function Photos() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
-  const contentRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
   const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   // const containerRef = useRef<HTMLDivElement>(null); // Commented out - no longer needed for orbital animation
   const [isMobile, setIsMobile] = useState(false);
-  const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const [, setIsNavExpanded] = useState(false);
   // Commented out orbital animation state
   // const [radius, setRadius] = useState(200); // Default desktop radius
   // const [config, setConfig] = useState<OrbitalConfig>({
@@ -411,7 +330,7 @@ export default function Photos() {
   //   }));
   // }, [radius]);
 
-  const handleGridToggle = (value: boolean) => {
+  const handleGridToggle = () => {
     // Implement grid toggle functionality
   };
 
@@ -512,8 +431,8 @@ export default function Photos() {
                 width={800}
                 height={1000}
                 quality={85}
-                priority={i === 0}
-                loading={i === 0 ? undefined : "lazy"}
+                priority={i < 3}
+                loading={i < 3 ? undefined : "lazy"}
                 sizes="(max-width: 440px) 100vw, (max-width: 768px) 90vw, (max-width: 1400px) 80vw, 1400px"
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRseHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/2wBDAR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="

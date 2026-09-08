@@ -35,12 +35,6 @@ export default class MyDocument extends Document {
             body { visibility: hidden; }
             body.loaded { visibility: visible; }
           `}</style>
-          
-          {/* Google Fonts */}
-          <link 
-            rel="stylesheet" 
-            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&display=swap"
-          />
         </Head>
         <body>
           <Main />

@@ -2,11 +2,17 @@ import type { AppProps } from 'next/app';
 import { StyledComponentsProvider } from '../providers/StyledComponentsProvider';
 import "../styles/globals.css";
 import Head from 'next/head';
-import Script from 'next/script';
 import { defaultTheme } from '../styles/theme-init';
 import { ThemeColorManager } from '../components/ThemeColorManager';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { JetBrains_Mono } from 'next/font/google';
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -49,53 +55,13 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" type="image/png" />
         <link rel="manifest" href="/site.webmanifest" />
-
-        {/* Preconnect to Google Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Preload critical fonts */}
-        <link 
-          rel="preload" 
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" 
-          as="style"
-        />
-        
-        {/* Preload critical assets */}
-        <link rel="preload" href="/images/optimized/bg-noise-dune.webp" as="image" />
-        <link rel="preload" href="/images/optimized/page-noise-dune.webp" as="image" />
-        <link rel="preload" href="/images/optimized/dune_logo_noise.webp" as="image" />
       </Head>
 
-      {/* Font loading optimization */}
-      <Script id="font-loading" strategy="afterInteractive">
-        {`
-          const fontLink = document.querySelector('link[rel="stylesheet"][media="print"]');
-          if (fontLink) {
-            fontLink.media = 'all';
-          }
-        `}
-      </Script>
-
-      {/* Initial theme setup */}
-      <Script id="theme-init" strategy="beforeInteractive">
-        {`
-          (function() {
-            const style = document.createElement('style');
-            style.textContent = \`
-              :root {
-                --color-page-content: ${defaultTheme['--color-bg']};
-                --color-bg: ${defaultTheme['--color-bg']};
-                --color-text: ${defaultTheme['--color-text']};
-                --bg-noise: ${defaultTheme['--bg-noise']};
-                --page-noise: ${defaultTheme['--page-noise']};
-                --logo-noise: ${defaultTheme['--logo-noise']};
-              }
-            \`;
-            document.head.appendChild(style);
-          })();
-        `}
-      </Script>
+      <style jsx global>{`
+        :root {
+          --font-mono: ${jetbrainsMono.style.fontFamily};
+        }
+      `}</style>
 
       <StyledComponentsProvider>
         <ThemeColorManager />

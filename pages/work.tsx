@@ -2,9 +2,8 @@
 
 import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
-import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import { Ref, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
@@ -20,15 +19,6 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
   weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
 });
-
-// Define different character sets for scramble effects
-const scrambleCharSets = {
-  japanese: "プロダクトデザイナーノーコードエンジニア",
-  binary: "0123456789",
-  symbols: "!<>-_\\/[]{}—=+*^?#",
-  matrix: "ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ",
-  code: "{([/\\])}@#$%^&*<>+="
-};
 
 const ContentWrapper = styled.div`
   position: absolute;
@@ -91,191 +81,6 @@ const CaseStudiesList = styled.div`
   }
 `;
 
-const PlayButton = styled.div`
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  z-index: 10;
-  
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  &::before {
-    content: '';
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 15px 0 15px 25px;
-    border-color: transparent transparent transparent white;
-    margin-left: 5px;
-  }
-
-  @media (max-width: 440px) {
-    width: 60px;
-    height: 60px;
-
-    &::before {
-      border-width: 12px 0 12px 20px;
-      margin-left: 4px;
-    }
-  }
-`;
-
-const ImageWrapper = styled.div`
-  width: 100%;
-  position: relative;
-  aspect-ratio: 16/9;
-  margin: 0 calc(-1 * var(--space-lg));
-  overflow: hidden;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  @media (max-width: 440px) {
-    margin: 0 calc(-1 * var(--space-md));
-    aspect-ratio: 16/9;
-  }
-`;
-
-const WorkSampleVideo = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  max-height: 100%;
-  max-width: 100%;
-`;
-
-const WorkSampleTitle = styled.h2`
-  margin: 0;
-  text-align: left;
-  white-space: nowrap;
-  width: fit-content;
-  
-  @media (max-width: 440px) {
-    width: fit-content;
-  }
-`;
-
-const WorkTitleLink = styled.a`
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  text-decoration: none;
-  color: inherit;
-  font: inherit;
-  
-  &:hover {
-    opacity: 0.8;
-  }
-
-  img {
-    width: 16px;
-    height: 16px;
-  }
-
-  ${WorkSampleTitle} {
-    text-decoration: underline;
-  }
-`;
-
-const WorkSampleDescription = styled.p`
-  margin: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  text-align: right;
-  overflow: visible;
-  width: fit-content;
-  
-  @media (max-width: 440px) {
-    width: 100%;
-  }
-`;
-
-const WorkSampleCopyContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-md);
-  width: fit-content;
-  overflow: visible;
-  
-  ${WorkSampleTitle}, ${WorkSampleDescription} {
-    text-align: left;
-  }
-  
-  @media (max-width: 440px) {
-    width: 100%;
-      gap: var(--space-sm);
-
-  }
-`;
-
-const WorkSampleTeamContainer = styled(WorkSampleCopyContainer)`
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-end;
-  gap: var(--space-lg);
-  width: fit-content;
-
-  ${WorkSampleTitle}, ${WorkSampleDescription} {
-    text-align: right;
-  }
-
-  @media (max-width: 440px) {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: var(--space-sm);
-    width: 100%;
-
-    ${WorkSampleTitle}, ${WorkSampleDescription} {
-      text-align: left;
-    }
-  }
-`;
-
-const CollaboratorRole = styled(WorkSampleTitle)`
-  white-space: pre-line;
-`;
-
-const CollaboratorNames = styled(WorkSampleDescription)`
-  white-space: pre-line;
-  width: fit-content;
-  
-  @media (max-width: 440px) {
-    min-width: unset;
-    width: auto;
-    flex: 1;
-  }
-`;
-
-const WorkSampleText = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  overflow: visible;
-  gap: var(--space-xl);
-  
-  @media (max-width: 768px) {
-    gap: var(--space-sm);
-  }
-  
-  @media (max-width: 440px) {
-    flex-direction: column;
-    gap: var(--space-xl);
-    align-items: stretch;
-  }
-`;
-
 export default function Work() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
@@ -284,7 +89,6 @@ export default function Work() {
   const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const [currentCaseStudyIndex, setCurrentCaseStudyIndex] = useState(0);
 
 
   // Initialize GSAP animations
@@ -400,7 +204,7 @@ export default function Work() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleGridToggle = (value: boolean) => {
+  const handleGridToggle = () => {
     // Implement grid toggle functionality
   };
 

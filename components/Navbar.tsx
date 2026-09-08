@@ -2,8 +2,7 @@ import { ToggleButton } from './toggleButton';
 import styled from 'styled-components';
 import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
-import { useState, forwardRef, useRef, useImperativeHandle, useEffect, memo } from 'react';
-import { textStyles } from '../styles/text';
+import { useState, forwardRef, useRef, useImperativeHandle, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { getYTDRunningStats } from '../services/strava';
 
@@ -100,15 +99,6 @@ const StatsGroup = styled.div`
   gap: 8px;
 `;
 
-const StyledLink = styled.a`
-  text-decoration: none;
-  color: inherit;
-  &:hover {
-    text-decoration: none;
-    color: inherit;
-  }
-`;
-
 interface NavbarProps {
   onGridToggle: (value: boolean) => void;
   onNoiseToggle: (value: boolean) => void;
@@ -139,7 +129,6 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
   hideSideNavs = false,
   hideBottomNav = false,
   hideInactiveToggles = false,
-  onGridToggle,
   onNoiseToggle,
   onThemeChange,
   onDvdToggle = () => {},
@@ -329,4 +318,6 @@ export const Navbar = forwardRef<NavbarRef, NavbarProps>(({
       )}
     </>
   );
-}); 
+});
+
+Navbar.displayName = 'Navbar';

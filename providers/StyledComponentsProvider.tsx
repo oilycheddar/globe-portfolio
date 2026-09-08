@@ -1,9 +1,11 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { themes } from '../styles/themes';
 import { useThemeStore } from '../hooks/useThemeStore';
 
-const GlobalStyle = createGlobalStyle<{ theme: any }>`
+type PortfolioTheme = (typeof themes)[keyof typeof themes];
+
+const GlobalStyle = createGlobalStyle<{ theme: PortfolioTheme }>`
   :root {
     --font-mono: "JetBrains Mono", monospace;
     --space-xs: 8px;
@@ -12,10 +14,6 @@ const GlobalStyle = createGlobalStyle<{ theme: any }>`
     --space-lg: 24px;
     --space-xl: 40px;
     --space-xxl: 80px;
-    /* Reset noise-related properties to avoid leftover values */
-    --bg-noise: none;
-    --page-noise: none;
-    --logo-noise: none;
 
     /* Apply theme variables */
     ${({ theme }) => {

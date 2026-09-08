@@ -11,9 +11,6 @@ export const createDefaultThemeStyle = () => {
       --color-page-content: ${defaultTheme['--color-page-content']};
       --color-bg: ${defaultTheme['--color-bg']};
       --color-text: ${defaultTheme['--color-text']};
-      --bg-noise: ${defaultTheme['--bg-noise']};
-      --page-noise: ${defaultTheme['--page-noise']};
-      --logo-noise: ${defaultTheme['--logo-noise']};
     }
   `;
   return style;

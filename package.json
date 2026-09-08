@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "watch-photos": "ts-node scripts/update-photos.ts",
     "optimize-photos": "node scripts/optimize-photos.js"
   },
@@ -17,12 +17,12 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "gsap": "^3.12.7",
-    "next": "^15.5.18",
+    "next": "^15.5.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "redis": "^4.6.13",
     "resend": "^6.12.0",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.4",
     "stripe": "^22.0.2",
     "styled-components": "^6.4.1",
     "three": "^0.174.0",
@@ -35,9 +35,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
     "autoprefixer": "^10.4.20",
     "chokidar": "^4.0.3",
-    "postcss": "^8.5.14",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.25",
+    "postcss": "^8.5.26",
     "postcss-import": "^16.1.0",
     "tailwindcss": "^4.0.9",
     "ts-node": "^10.9.2",
@@ -50,6 +54,7 @@
   "overrides": {
     "glob": ">=10.4.6",
     "uuid": ">=11.1.1",
+    "sharp": "$sharp",
     "next": {
       "postcss": "$postcss"
     }

@@ -2,18 +2,18 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-const sourceDir = path.join(process.cwd(), 'public', 'photography');
+const sourceDir = path.join(process.cwd(), 'source-assets', 'photography');
 const outputDir = path.join(process.cwd(), 'public', 'photography', 'optimized');
 
-// Create output directory if it doesn't exist
+// Create the browser-ready output directory if it doesn't exist
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
 // Optimization settings
 const settings = {
-  quality: 80, // Still high quality
-  compressionLevel: 9, // Maximum compression
+  quality: 80,
+  compressionLevel: 9,
 };
 
 // Process all images in the photography directory
@@ -31,15 +31,16 @@ async function optimizePhotos() {
 
     try {
       await sharp(inputPath)
+        .resize({ width: 2800, withoutEnlargement: true })
         .webp(settings)
         .toFile(outputPath);
 
       const originalSize = fs.statSync(inputPath).size;
       const optimizedSize = fs.statSync(outputPath).size;
-      
+
       console.log(`Optimized ${file}:`);
-      console.log(`Original size: ${(originalSize / 1024 / 1024).toFixed(2)}MB`);
-      console.log(`Optimized size: ${(optimizedSize / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`  Original:  ${(originalSize / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`  Desktop:   ${(optimizedSize / 1024 / 1024).toFixed(2)}MB`);
       console.log('---');
     } catch (error) {
       console.error(`Error processing ${file}:`, error);

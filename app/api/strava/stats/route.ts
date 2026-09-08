@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getStravaStats, updateStravaStats, isDataStale, acquireUpdateLock, releaseUpdateLock, StravaStats } from '../../../../utils/strava-redis';
+import { getStravaStats, updateStravaStats, acquireUpdateLock, releaseUpdateLock, StravaStats } from '../../../../utils/strava-redis';
 
 const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 const ATHLETE_ID = process.env.STRAVA_ATHLETE_ID;

@@ -195,16 +195,6 @@ const Section = styled.div`
   gap: var(--space-sm);
 `;
 
-const SectionTitle = styled.h2`
-  font-family: ${typography.caption.fontFamily};
-  font-size: ${typography.caption.fontSize};
-  font-weight: ${typography.caption.fontWeight};
-  letter-spacing: ${typography.caption.letterSpacing};
-  text-transform: ${typography.caption.textTransform};
-  color: var(--color-text);
-  margin: 0;
-`;
-
 const StatRow = styled.div`
   display: flex;
   align-items: baseline;
@@ -316,18 +306,6 @@ const ZoneTime = styled.span`
   text-transform: ${typography.caption.textTransform};
   color: var(--color-text);
   width: 80px;
-  text-align: right;
-  flex-shrink: 0;
-`;
-
-const ZonePercent = styled.span`
-  font-family: ${typography.caption.fontFamily};
-  font-size: ${typography.caption.fontSize};
-  font-weight: ${typography.caption.fontWeight};
-  letter-spacing: ${typography.caption.letterSpacing};
-  text-transform: ${typography.caption.textTransform};
-  color: var(--color-text);
-  width: 48px;
   text-align: right;
   flex-shrink: 0;
 `;
@@ -678,7 +656,6 @@ export default function Data() {
   const [editUnit2, setEditUnit2] = useState<string>(''); // minutes or seconds depending on activity length
   
   const dateRanges = getDateRanges();
-  const AEROBIC_THRESHOLD = 151; // BPM
 
   // Load local overrides from localStorage on mount
   useEffect(() => {
@@ -692,7 +669,7 @@ export default function Data() {
           if (value.timeBelowThreshold !== undefined) {
             storedOverrides[activityId] = value;
           }
-        } catch (e) {
+        } catch {
           // ignore invalid JSON
         }
       }
@@ -1154,7 +1131,6 @@ export default function Data() {
                             {(() => {
                               // Calculate effective times - use local overrides, then HR data, then default to 0
                               const baseTimeBelowThreshold = activityMetrics?.timeBelowThreshold ?? 0;
-                              const baseTimeAboveThreshold = activityMetrics?.timeAboveThreshold ?? activity.moving_time;
                               const effectiveTimeBelowThreshold = localOverrides[activity.id]?.timeBelowThreshold ?? baseTimeBelowThreshold;
                               const activityTotalTime = activity.moving_time;
                               const effectiveTimeAboveThreshold = activityTotalTime - effectiveTimeBelowThreshold;

@@ -139,13 +139,6 @@ const BuyButton = styled.a`
   }
 `;
 
-const Kbd = styled.span`
-  display: inline;
-  background: var(--color-accent-secondary);
-  border-radius: 3px;
-  padding: 1px 5px;
-`;
-
 export default function HyperPaste() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);

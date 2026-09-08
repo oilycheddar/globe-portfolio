@@ -4,7 +4,7 @@ import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import { Ref, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap, ScrambleTextPlugin, SplitText } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
@@ -314,7 +314,7 @@ export default function NotFound() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleGridToggle = (value: boolean) => {
+  const handleGridToggle = () => {
     // Implement grid toggle functionality
   };
 

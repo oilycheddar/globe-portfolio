@@ -30,14 +30,6 @@ import { CursorTooltip } from './CursorTooltip';
  *   - Left 2x2 grid (A4 posters): 210:297 (A4 portrait)
  *   - Right column (videos): 16:9 (landscape)
  */
-const BENTO_ASPECT_RATIOS = {
-  2: { cell: '1:1' }, // Square
-  3: { left: '16:15', right: '16:15' }, // Slightly landscape
-  4: { cell: '7:2' }, // Wide landscape
-  5: { top: '16:9', bottom: '16:13.5' },
-  6: { left: '210:297', right: '16:9' } // A4 portrait + landscape video
-} as const;
-
 const CaseStudyWrapper = styled.div`
   --space-xs: 8px;
   --space-sm: 12px;
@@ -84,14 +76,6 @@ const ImageWrapper = styled.div<ImageWrapperProps>`
   @media (max-width: 440px) {
     margin: 0;
     max-height: none;
-  }
-`;
-
-const PlayButton = styled.div`
-  display: none; /* Hidden on desktop - use hover tooltip instead */
-  
-  @media (max-width: 440px) {
-    display: none; /* Also hidden on mobile - use MobilePlayButton instead */
   }
 `;
 
@@ -458,14 +442,6 @@ const BentoVideo = styled.video<{ $caseStudyId?: string; $index?: number }>`
           : 'none'
       };
     }
-  }
-`;
-
-const BentoPlayButton = styled.div`
-  display: none; /* Hidden on desktop - use hover tooltip instead */
-  
-  @media (max-width: 440px) {
-    display: none; /* Also hidden on mobile - use MobileBentoPlayButton instead */
   }
 `;
 
@@ -908,11 +884,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
   // Initialize bento video playing state
   useEffect(() => {
     if (data.useBentoLayout && data.images) {
-      const initialPlayState = data.images.map((mediaSrc, index) => {
-        const isVideo = mediaSrc.endsWith('.mp4') || mediaSrc.endsWith('.webm') || mediaSrc.endsWith('.mov');
-        // No autoplay - all videos start paused
-        return false;
-      });
+      const initialPlayState = data.images.map(() => false);
       setBentoVideosPlaying(initialPlayState);
     }
   }, [data.useBentoLayout, data.images, data.id]);
@@ -1361,4 +1333,6 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
       />
     </CaseStudyWrapper>
   );
-}); 
+});
+
+CaseStudy.displayName = 'CaseStudy';

@@ -1,6 +1,5 @@
 import { useState, forwardRef, useRef, useImperativeHandle, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { textStyles } from '../styles/text';
 import { ToggleButton } from './toggleButton';
 import { useThemeStore } from '../hooks/useThemeStore';
 import { themes } from '../styles/themes';
@@ -118,7 +117,6 @@ export interface MobileNavbarRef {
 }
 
 export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
-  onGridToggle,
   onNoiseToggle,
   onDvdToggle = () => {},
   onExpandedChange,
@@ -334,4 +332,6 @@ export const MobileNavbar = forwardRef<MobileNavbarRef, MobileNavbarProps>(({
       </NavContainer>
     </>
   );
-}); 
+});
+
+MobileNavbar.displayName = 'MobileNavbar';

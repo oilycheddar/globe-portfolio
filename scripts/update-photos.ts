@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import chokidar from 'chokidar';
 
-const PHOTOGRAPHY_DIR = path.join(process.cwd(), 'public', 'photography');
+const PHOTOGRAPHY_DIR = path.join(process.cwd(), 'public', 'photography', 'optimized');
 const PHOTOS_DATA_FILE = path.join(process.cwd(), 'data', 'photos.ts');
 
 // Function to generate the photos data file content
@@ -14,7 +14,7 @@ function generatePhotosData(files: string[]): string {
       return ['.jpg', '.jpeg', '.png', '.webp'].includes(ext) && !file.startsWith('.');
     })
     .map((file, index) => ({
-      src: `/photography/${file}`,
+      src: `/photography/optimized/${file}`,
       alt: `Photography ${index + 1}`
     }));
 

@@ -5,11 +5,10 @@ import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
 import LogoContainer from "../components/LogoContainer";
-import { Ref, useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrambleTextPlugin } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
-import { ToggleButton } from "../components/toggleButton";
 import { Navbar } from "../components/Navbar";
 import type { NavbarRef } from "../components/Navbar";
 import { MobileNavbar } from "../components/MobileNavbar";
@@ -106,20 +105,12 @@ const StyledContent = styled.div`
   }
 `;
 
-interface NavbarProps {
-  onGridToggle: (value: boolean) => void;
-  onNoiseToggle: (value: boolean) => void;
-  onThemeChange?: () => void;
-}
-
 export default function Home() {
   const { theme, setTheme, noiseEnabled, setNoiseEnabled, logo3DEnabled } = useThemeStore();
   const themeKeys = Object.keys(themes);
   const contentRef = useRef<HTMLDivElement>(null);
-  const helloTextRef = useRef<HTMLHeadingElement>(null);
   const topTextRef = useRef<HTMLHeadingElement>(null);
   const bottomTextRef = useRef<HTMLParagraphElement>(null);
-  const toggleRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<NavbarRef>(null);
   const mobileNavbarRef = useRef<MobileNavbarRef>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -127,7 +118,6 @@ export default function Home() {
   const logoRef = useRef<HTMLDivElement>(null);
   const [isDvdActive, setIsDvdActive] = useState(false);
   const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
-  const [logoVelocity, setLogoVelocity] = useState({ x: 5, y: 5 });
   const currentPositionRef = useRef({ x: 0, y: 0 });
   const currentVelocityRef = useRef({ x: 5, y: 5 });
   const lastTimeRef = useRef<number>(0);
@@ -137,7 +127,6 @@ export default function Home() {
   const SPEED = 180; // pixels per second
   const blurWrapperRef = useRef<HTMLDivElement>(null);
   const dvdLogoRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Inactivity timer state and refs
@@ -343,7 +332,7 @@ export default function Home() {
   };
 
   // Test handlers for navbar
-  const handleGridToggle = (value: boolean) => {
+  const handleGridToggle = () => {
     // Implement grid toggle functionality
   };
 
@@ -359,10 +348,6 @@ export default function Home() {
   useEffect(() => {
     currentPositionRef.current = logoPosition;
   }, [logoPosition]);
-
-  useEffect(() => {
-    currentVelocityRef.current = logoVelocity;
-  }, [logoVelocity]);
 
   // DVD animation logic
   const startDvdAnimation = useCallback(() => {
@@ -439,7 +424,7 @@ export default function Home() {
 
     // Use setInterval for consistent timing even in background tabs
     intervalRef.current = setInterval(animate, FRAME_TIME);
-  }, [isMobile]); // Add isMobile to dependencies
+  }, [FRAME_TIME, isMobile]); // Add isMobile to dependencies
 
   const stopDvdAnimation = useCallback(() => {
     if (intervalRef.current) {
@@ -608,7 +593,7 @@ export default function Home() {
         }, 5000); // Clean up after 5 seconds
       }
     }, INACTIVITY_DURATION);
-  }, [isDvdActive, isInactivityTriggered, handleDvdToggle]);
+  }, [INACTIVITY_DURATION, isDvdActive, isInactivityTriggered, handleDvdToggle]);
 
   // Activity event handlers
   const handleUserActivity = useCallback(() => {
@@ -672,20 +657,8 @@ export default function Home() {
     }
   }, [logo3DEnabled]);
 
-  // Add logging for 3D toggle state
-  useEffect(() => {
-    console.log('[index] 3D toggle state changed:', {
-      timestamp: new Date().toISOString(),
-      logo3DEnabled,
-      containerWidth: containerRef.current?.offsetWidth,
-      logoWidth: logoRef.current?.offsetWidth,
-      containerRect: containerRef.current?.getBoundingClientRect(),
-      logoRect: logoRef.current?.getBoundingClientRect()
-    })
-  }, [logo3DEnabled]);
-
   // Handle click to exit DVD mode
-  const handleClick = useCallback((e: React.MouseEvent) => {
+  const handleClick = useCallback(() => {
     if (isDvdActive) {
       handleDvdToggle(false);
       // Reset inactivity timer when user clicks to exit DVD mode

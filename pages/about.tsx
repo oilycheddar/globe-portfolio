@@ -4,7 +4,7 @@ import { useThemeStore } from "../hooks/useThemeStore";
 import { themes } from "../styles/themes";
 import { textStyles } from "../styles/text";
 import PageWrapper from "../components/pageWrapper";
-import { Ref, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap, ScrambleTextPlugin, SplitText } from "../utils/gsap";
 import { JetBrains_Mono } from 'next/font/google';
 import styled from 'styled-components';
@@ -19,15 +19,6 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
   weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
 });
-
-// Define different character sets for scramble effects
-const scrambleCharSets = {
-  japanese: "プロダクトデザイナーノーコードエンジニア",
-  binary: "0123456789",
-  symbols: "!<>-_\\/[]{}—=+*^?#",
-  matrix: "ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ",
-  code: "{([/\\])}@#$%^&*<>+="
-};
 
 const ContentWrapper = styled.div`
   position: fixed;
@@ -332,7 +323,7 @@ export default function About() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleGridToggle = (value: boolean) => {
+  const handleGridToggle = () => {
     // Implement grid toggle functionality
   };
 

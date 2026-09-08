@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../utils/gsap';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 
 const Container = styled.div`
   display: flex;

@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
+  outputFileTracingRoot: process.cwd(),
   compiler: {
     styledComponents: true,
   },
@@ -10,7 +11,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/images/optimized/:all*',
+        source: '/photography/:all*',
         headers: [
           {
             key: 'Cache-Control',

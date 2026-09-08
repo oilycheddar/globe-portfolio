@@ -6,13 +6,6 @@ export function convertDistanceToLocalUnit(distanceKm: number): { value: number;
                navigator.language.startsWith('en-US') ||
                navigator.languages.some(lang => lang.startsWith('en-US'));
   
-  // Canada uses kilometers (metric system)
-  const isCanada = navigator.language === 'en-CA' || 
-                   navigator.language === 'fr-CA' ||
-                   navigator.language.startsWith('en-CA') ||
-                   navigator.language.startsWith('fr-CA') ||
-                   navigator.languages.some(lang => lang.startsWith('en-CA') || lang.startsWith('fr-CA'));
-  
   if (isUS) {
     // Convert to miles (1 km = 0.621371 miles)
     const miles = Math.round(distanceKm * 0.621371);

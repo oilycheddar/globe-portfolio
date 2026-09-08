@@ -44,14 +44,6 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
       width: containerRef.current.offsetWidth,
       height: containerRef.current.offsetHeight
     }
-    console.log('[LogoContainer] Initial dimensions:', {
-      timestamp: new Date().toISOString(),
-      dimensions: initialDimensions,
-      logo3DEnabled,
-      containerWidth: containerRef.current.offsetWidth,
-      containerHeight: containerRef.current.offsetHeight,
-      computedStyle: window.getComputedStyle(containerRef.current)
-    })
     setDimensions(initialDimensions)
 
     const resizeObserver = new ResizeObserver(entries => {
@@ -61,14 +53,6 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
           width: entry.contentRect.width,
           height: entry.contentRect.height
         }
-        console.log('[LogoContainer] Resize dimensions:', {
-          timestamp: new Date().toISOString(),
-          dimensions: newDimensions,
-          logo3DEnabled,
-          containerWidth: containerRef.current.offsetWidth,
-          containerHeight: containerRef.current.offsetHeight,
-          computedStyle: window.getComputedStyle(containerRef.current)
-        })
         setDimensions(newDimensions)
       }
     })
@@ -78,17 +62,6 @@ export default function LogoContainer({ className = '', style }: LogoContainerPr
 
     return () => resizeObserver.disconnect()
   }, [logo3DEnabled])
-
-  useEffect(() => {
-    if (dimensions) {
-      console.log('[LogoContainer] Dimensions updated:', {
-        timestamp: new Date().toISOString(),
-        dimensions,
-        logo3DEnabled,
-        isLoading
-      })
-    }
-  }, [dimensions, logo3DEnabled, isLoading])
 
   // Don't render 3D logo until we have dimensions
   if (isLoading || !dimensions) {

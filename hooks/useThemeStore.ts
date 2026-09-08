@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { themes } from "../styles/themes";
 
 interface ThemeState {
   theme: string;
