@@ -22,7 +22,7 @@ export default function Logo({ className = '', style }: LogoProps) {
         viewBox="0 0 692 346" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full relative z-10"
+        className="block w-full h-full relative z-10"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
