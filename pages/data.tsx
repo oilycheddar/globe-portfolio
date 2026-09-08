@@ -706,7 +706,7 @@ export default function Data() {
     setError(null);
     setExpandedActivityId(null);
     
-    const range = dateRanges.find(r => r.id === selectedRange);
+    const range = getDateRanges().find(r => r.id === selectedRange);
     if (!range) return;
     
     // Check if we have cached data for this range

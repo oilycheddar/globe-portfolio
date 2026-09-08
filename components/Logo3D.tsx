@@ -151,6 +151,8 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
     side: THREE.DoubleSide,
     depthWrite: true,
     depthTest: true,
+    // noiseEnabled is synchronized every frame without recreating the material.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [theme])
 
   // Create decal material
@@ -212,6 +214,8 @@ function Globe({ theme, noiseEnabled }: { theme: string; noiseEnabled: boolean }
     side: THREE.FrontSide,
     depthWrite: true,
     depthTest: true,
+    // noiseEnabled is synchronized every frame without recreating the material.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [decalTexture, theme])
 
   // Create core material

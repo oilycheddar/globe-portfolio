@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { textStyles } from '../styles/text';
 import { CaseStudy as CaseStudyType } from '../data/caseStudies';
@@ -996,7 +996,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     }
   };
 
-  const navigateLightbox = (direction: 'prev' | 'next') => {
+  const navigateLightbox = useCallback((direction: 'prev' | 'next') => {
     if (!data.images) return;
     
     const totalItems = data.images.length;
@@ -1010,7 +1010,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
     if (lightboxVideoRef.current) {
       lightboxVideoRef.current.pause();
     }
-  };
+  }, [data.images]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -1034,7 +1034,7 @@ export const CaseStudy = React.forwardRef<HTMLDivElement, CaseStudyProps>(({ dat
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen]);
+  }, [lightboxOpen, navigateLightbox]);
 
   // Cleanup on unmount
   useEffect(() => {
