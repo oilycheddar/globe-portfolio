@@ -119,10 +119,11 @@ function NoiseShader({ opacity }: { opacity: number }) {
       width={1}
       height={1}
       aria-hidden="true"
-      className="absolute inset-0 h-full w-full pointer-events-none"
+      className="absolute inset-0 h-full w-full pointer-events-none rounded-[inherit] overflow-hidden"
       style={{
         mixBlendMode: "soft-light",
         opacity,
+        borderRadius: "inherit",
       }}
     />
   );
@@ -191,4 +192,3 @@ export default function PageWrapper({ children, noiseEnabled = true }: PageWrapp
     </div>
   );
 }
-
